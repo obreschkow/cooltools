@@ -1,10 +1,13 @@
 Package: cooltools
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Routines for scientific research
 Version: 0.1
 Author: Danail Obreschkow
 Maintainer: The package maintainer <danail.obreschkow@gmail.com>
 Description: Collection of routines for scientific research.
+Imports:
+    magicaxis,
+    pracma
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

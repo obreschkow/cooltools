@@ -4,7 +4,7 @@
 \name{cooltools}
 \alias{cooltools}
 \alias{cooltools-package}
-\title{cooltools: collection of routines for scientific research}
+\title{Routines for scientific research}
 \description{
 This package contains a useful collection of routines for scientific research, gathered through paractical experience.
 }
