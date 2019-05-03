@@ -34,7 +34,7 @@ dpqr = function(fun,min,max) {
   norm = integrate(fun,min,max)$value
   d = function(x) fun(x)/norm # PDF
   p = function(x) integrate(d,min,x)$value # CDF
-  q = function(p) uniroot(function(x) p(x)-p,c(min-e,max+e))$root # QF
-  r = function(n) Vectorize(q)(runif(n)) # RNG
-  return(list(d = d, p = Vectorize(p), q = Vectorize(q), r = r))
+  q = function(p) Vectorize(uniroot(function(x) p(x)-p,c(min-e,max+e))$root) # QF
+  r = function(n) q(runif(n)) # RNG
+  return(list(d = d, p = Vectorize(p), q = q, r = r))
 }
