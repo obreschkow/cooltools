@@ -1,7 +1,6 @@
 #' d/p/q/r-family for a custom distribution
 #'
 #' @importFrom stats integrate uniroot
-#' @importFrom pracma primes
 #'
 #' @description Produces the family of d/p/q/r functions associated with a custom distribution function; similarly to the standard families dnorm/pnorm/qnorm/rnorm, dunif/punif/...
 #'
@@ -16,7 +15,6 @@
 #'
 #' @examples
 #'
-#' ## Numerically integrate sin(x)
 #' f = function(x) sin(x)
 #' rsin = dpqr(f,0,pi)$r
 #' x = rsin(1e3)
@@ -34,7 +32,7 @@ dpqr = function(fun,min,max) {
   norm = integrate(fun,min,max)$value
   d = function(x) fun(x)/norm # PDF
   p = function(x) integrate(d,min,x)$value # CDF
-  q = function(p) Vectorize(uniroot(function(x) p(x)-p,c(min-e,max+e))$root) # QF
-  r = function(n) q(runif(n)) # RNG
-  return(list(d = d, p = Vectorize(p), q = q, r = r))
+  q = function(p) uniroot(function(x) p(x)-p,c(min-e,max+e))$root # QF
+  r = function(n) Vectorize(q)(runif(n)) # RNG
+  return(list(d = d, p = Vectorize(p), q = Vectorize(q), r = r))
 }

@@ -47,7 +47,8 @@ mcintegral = function(f,a,b,n=1e5,qmc=FALSE,seed=NULL) {
   dx = prod(b-a)/m
   Q = array(0,m)
   if (qmc) {
-    alpha = sqrt(pracma::primes(1000)) # vector of irrational numbers
+    np = d*log(d*sqrt(log(d+2)))*1.02+20 # upper bound for n, such that the nb of primes<=n is >=d
+    alpha = sqrt(pracma::primes(np)) # vector of irrational numbers
   } else {
     if (!is.null(seed)) set.seed(seed)
   }

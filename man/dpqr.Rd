@@ -23,7 +23,6 @@ Produces the family of d/p/q/r functions associated with a custom distribution f
 }
 \examples{
 
-## Numerically integrate sin(x)
 f = function(x) sin(x)
 rsin = dpqr(f,0,pi)$r
 x = rsin(1e3)
