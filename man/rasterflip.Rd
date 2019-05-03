@@ -7,14 +7,10 @@
 rasterflip(A)
 }
 \arguments{
-\item{A}{n-by-m or n-by-m-by-k array of an image}
+\item{A}{n-by-m or n-by-m-by-k array of an image (where k is 3 or 4)}
 }
 \description{
-Flips the raster image A to be displayed with rasterImage, such that the first index runs
-}
-\examples{
-col = transparent('purple',0.5)
-
+Flips the array A to be displayed with rasterImage, such that the first index runs
 }
 \author{
 Danail Obreschkow

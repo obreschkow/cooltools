@@ -1,4 +1,4 @@
-#' Monte Carlo and Quasi-Monte Carlo integration in any dimension
+#' d/p/q/r-family for a custom distribution
 #'
 #' @importFrom stats integrate uniroot
 #' @importFrom pracma primes

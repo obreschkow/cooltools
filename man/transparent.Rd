@@ -7,12 +7,12 @@
 transparent(col, alpha = 0.3)
 }
 \arguments{
-\item{col}{is a color or vector of colors, specified as text (e.g. 'purple') or 7/9-character (e.g. '#A020F0')}
+\item{col}{is a color or vector/array of colors, specified as text (e.g. 'purple') or 7/9-character (e.g. '#A020F0')}
 
 \item{alpha}{tranparency value between 0 and 1}
 }
 \value{
-Returns a 9-character color or vector of 9-character colors.
+Returns a 9-character color or vector/array of 9-character colors.
 }
 \description{
 Add transparency to a color

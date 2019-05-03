@@ -1,12 +1,9 @@
 #' Flip array to be displayed with rasterImage()
 #'
-#' @param A n-by-m or n-by-m-by-k array of an image
+#' @param A n-by-m or n-by-m-by-k array of an image (where k is 3 or 4)
 #'
-#' @description Flips the raster image A to be displayed with rasterImage, such that the first index runs
-# from left to right and second index runs from bottom to top.
-#'
-#' @examples
-#' col = transparent('purple',0.5)
+#' @description Flips the array A to be displayed with rasterImage, such that the first index runs
+# from left to right and second index runs from bottom to top. In this way \code{rasterImage(rasterflip(A))} has the same orientation as \code{image(A)}.
 #'
 #' @author Danail Obreschkow
 #'

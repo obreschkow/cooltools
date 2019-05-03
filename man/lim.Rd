@@ -2,7 +2,7 @@
 % Please edit documentation in R/lim.R
 \name{lim}
 \alias{lim}
-\title{Crop values of vector or array to a set range}
+\title{Crop values of vector or array to a custom range}
 \usage{
 lim(x, min = 0, max = 1)
 }

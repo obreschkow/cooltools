@@ -2,7 +2,7 @@
 % Please edit documentation in R/dpqr.R
 \name{dpqr}
 \alias{dpqr}
-\title{Monte Carlo and Quasi-Monte Carlo integration in any dimension}
+\title{d/p/q/r-family for a custom distribution}
 \usage{
 dpqr(fun, min, max)
 }

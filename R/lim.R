@@ -1,4 +1,4 @@
-#' Crop values of vector or array to a set range
+#' Crop values of vector or array to a custom range
 #'
 #' @description limits the values of a vector or array to a desired interval, while keeping the shape of the vector/array
 #'
