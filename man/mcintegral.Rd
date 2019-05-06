@@ -13,11 +13,11 @@ mcintegral(f, a, b, n = 1e+05, qmc = FALSE, seed = NULL)
 
 \item{b}{D-vector with upper limit(s) of the integration}
 
-\item{n}{Approximate number of random evaluations. (The exact number is max(1,round(sqrt(n)))^2.)}
+\item{n}{approximate number of random evaluations. (The exact number is max(1,round(sqrt(n)))^2.)}
 
-\item{qmc}{Logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers, generated from an additive recursion algorithm are used.}
+\item{qmc}{logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers, generated from an additive recursion algorithm are used.}
 
-\item{seed}{Seed for random number generator. Only used of \code{qmc} is false.}
+\item{seed}{seed for random number generator. Only used of \code{qmc} is false.}
 }
 \value{
 Returns a list of items:
@@ -25,7 +25,7 @@ Returns a list of items:
 \item{sigma}{an estimate of the statistical 1-sigma uncertainty.}
 }
 \description{
-Numerical integration using a MC or QMC algorithm. These algorithms are of low order (1/sqrt(n) for MC, log(n)/n for QMC) compared to the typical orders of 1D deterministic integrators, such as those available in the \code{integrate} function. The MC and QMC are suitable to compute *D*-dimensional integrals with *D>>1*, since the order of most deterministic methods deteriorates exponentially with *D*, whereas the order of MC remains *1/sqrt(n)*, irrespective of *D*, and the order of QMC is *log(n)^D/n*.
+Numerical integration using a Monte Carlo (MC) or Quasi-Monte Carlo (QMC) algorithm. These algorithms are of low order (1/sqrt(n) for MC, log(n)/n for QMC) compared to the typical orders of 1D deterministic integrators, such as those available in the \code{integrate} function. The MC and QMC are suitable to compute *D*-dimensional integrals with *D>>1*, since the order of most deterministic methods deteriorates exponentially with *D*, whereas the order of MC remains *1/sqrt(n)*, irrespective of *D*, and the order of QMC is *log(n)^D/n*.
 }
 \examples{
 
