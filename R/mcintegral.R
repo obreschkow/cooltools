@@ -33,7 +33,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export mcintegral
+#' @export
 
 mcintegral = function(f,a,b,n=1e5,qmc=FALSE,seed=NULL) {
 

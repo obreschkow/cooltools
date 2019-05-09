@@ -1,16 +1,16 @@
-#' Random number generator for a custom $d$-dimensional distribution
+#' Random number generator for a custom *d*-dimensional distribution
 #'
 #' @importFrom stats runif optim optimize
 #'
 #' @description Brute-force algorithm for generating a series of random number drawn from an $N$-dimensional distribution.
 #'
-#' @param f function of an $d$-vector represending an $d$-dimensional distribution function. This function must be non-negative on the whole domain.
+#' @param f function of an *d*-vector represending an *d*-dimensional distribution function. This function must be non-negative on the whole domain.
 #' @param n number of random number to be generated
-#' @param min,max are $d$-vectors specifying the domain of distribution function; the domain must be finite and should be set as small as possible to increase the speed.
-#' @param fmax maximum value of $f$ on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if $d=1$) and \code{\link[stats]{optim}} (if $d>1$) function with its default options. A value for \code{fmax} should only be set, if the automatically determined value (see out put list) is incorret.
+#' @param min,max are *d*-vectors specifying the domain of distribution function; the domain must be finite and should be as restrictive as possible to keep the number of random trials as low as possible.
+#' @param fmax maximum value of $f$ on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if *d=1*) and \code{\link[stats]{optim}} (if *d>1*) function with its default options. A value for \code{fmax} should only be set, if the automatically determined value (see out put list) is incorret.
 #'
 #' @return Returns list of items:
-#' \item{x}{n-by-d matrix of $n$ random $d$-vectors.}
+#' \item{x}{n-by-d matrix of *n* random *d*-vectors.}
 #' \item{fmax}{maximum value of the distribution function \code{f} on the domain.}
 #' \item{n}{number of random vectors (same as argument \code{n}).}
 #' \item{ntrials}{number of trials.}
@@ -31,7 +31,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export rng
+#' @export
 
 rng = function(f,n,min,max,fmax=NULL) {
 

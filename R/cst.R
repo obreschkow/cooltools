@@ -4,7 +4,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export cst
+#' @export
 
 cst = list(G = 6.67408e-11, # [m^3/kg/s^2] gravitational constant
            kb = 1.38064852e-23, # [m^2 kg s^(-2) K^(-1)] Boltzmann constant

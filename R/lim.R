@@ -10,7 +10,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export lim
+#' @export
 
 lim = function(x,min=0,max=1) {
   x[x<min] = min

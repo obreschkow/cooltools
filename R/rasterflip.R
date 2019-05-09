@@ -7,7 +7,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export transparent
+#' @export
 
 rasterflip = function(A) {
   if (length(dim(A))==2) {

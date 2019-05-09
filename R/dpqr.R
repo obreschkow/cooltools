@@ -23,7 +23,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export dpqr
+#' @export
 
 dpqr = function(fun,min,max) {
   # fun = function of one variable, represending an arbitrary non-normalised PDF

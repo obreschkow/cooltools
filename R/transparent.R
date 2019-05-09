@@ -12,7 +12,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @export transparent
+#' @export
 
 transparent = function(col,alpha=0.3) {
   for (i in seq(length(col))) {
