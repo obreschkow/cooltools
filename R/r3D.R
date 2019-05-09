@@ -20,7 +20,7 @@
 
 r3D = function(n=1,r=c(0,1),azimuth=c(0,2*pi),polarangle=c(0,pi)) {
 
-  r = runif(n,r[1],r[2])
+  r = runif(n,r[1]^3,r[2]^3)^(1/3)
   phi = runif(n,azimuth[1],azimuth[2])
   z = runif(n,cos(polarangle[2]),cos(polarangle[1]))
   xy = sqrt(1-z^2)*r
