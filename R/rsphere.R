@@ -12,10 +12,10 @@
 #'
 #' @export
 
-rsphere = function(n,azimuth=c(0,2*pi),polarangle=c(0,pi)) {
+rsphere = function(n=1,azimuth=c(0,2*pi),polarangle=c(0,pi)) {
 
   phi = runif(n,azimuth[1],azimuth[2])
-  z = runif(1e3,cos(polarangle[2]),cos(polarangle[1]))
+  z = runif(n,cos(polarangle[2]),cos(polarangle[1]))
   xy = sqrt(1-z^2)
   vec = cbind(xy*cos(phi),xy*sin(phi),z)
   return(vec)

@@ -4,7 +4,7 @@
 \alias{rsphere}
 \title{Generate random unit vectors in 3D}
 \usage{
-rsphere(n, azimuth = c(0, 2 * pi), polarangle = c(0, pi))
+rsphere(n = 1, azimuth = c(0, 2 * pi), polarangle = c(0, pi))
 }
 \arguments{
 \item{n}{number of random vectors to be generated}
