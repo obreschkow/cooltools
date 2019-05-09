@@ -12,7 +12,6 @@
 #' @examples
 #'
 #' ## DFT of a 2D normal Gaussian function
-#'
 #' n = 30
 #' f = array(0,c(n,n))
 #' for (i in seq(n)) {
