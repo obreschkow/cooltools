@@ -4,23 +4,22 @@
 \alias{LandySzalay}
 \title{Two-point correlation estimation}
 \usage{
-LandySzalay(D, R, dr = 0.1)
+LandySzalay(D, R, dr = 0.1, cpp = TRUE)
 }
 \arguments{
 \item{D}{n-element vector or n-by-d matrix of d-dimensional positions of data points}
 
 \item{R}{m-element vector or m-by-d matrix of d-dimensional positions of random comparison points}
 
-\item{dr}{bin size for the evaulation of the two-point correlation function}
+\item{dr}{bin size for the evaluation of the two-point correlation function}
+
+\item{cpp}{logical flat; if set to TRUE (default) a fast implementation in C++ is used to count the point-pairs in distance bins, otherwise the counting is performed less efficiently in R.}
 }
 \value{
 Returns a list with the two-point statistics of the data points:
 \item{r}{vector with the mid-points of the distance bins for which the two-point correlation function has been evaluated.}
 \item{xi}{values of the two-point correlation function at the distances r.}
 \item{err}{Poisson errors of xi.}
-\item{DD}{normalised DD pair-counts (without zero-distance pairs).}
-\item{RR}{normalised RR pair-counts (without zero-distance pairs).}
-\item{DR}{normalised DR pair-counts (without zero-distance pairs).}
 }
 \description{
 Evaluates the Landy-Szalay (1993) estimator of the two-point correlation function of a point set D given a random comparison set R.

@@ -4,24 +4,19 @@
 #'
 #' @param D n-element vector or n-by-d matrix of d-dimensional positions of data points
 #' @param R m-element vector or m-by-d matrix of d-dimensional positions of random comparison points
-#' @param dr bin size for the evaulation of the two-point correlation function
+#' @param dr bin size for the evaluation of the two-point correlation function
+#' @param cpp logical flat; if set to TRUE (default) a fast implementation in C++ is used to count the point-pairs in distance bins, otherwise the counting is performed less efficiently in R.
 #'
 #' @return Returns a list with the two-point statistics of the data points:
 #' \item{r}{vector with the mid-points of the distance bins for which the two-point correlation function has been evaluated.}
 #' \item{xi}{values of the two-point correlation function at the distances r.}
 #' \item{err}{Poisson errors of xi.}
-#' \item{DD}{normalised DD pair-counts (without zero-distance pairs).}
-#' \item{RR}{normalised RR pair-counts (without zero-distance pairs).}
-#' \item{DR}{normalised DR pair-counts (without zero-distance pairs).}
 #'
 #' @author Danail Obreschkow
 #'
 #' @export
 
-LandySzalay = function(D,R,dr=0.1) {
-
-  # D: n-by-d matrix with d-dimensional positions of the observed point set
-  # R: m-by-d matrix with d-dimensional positions of the random point set
+LandySzalay = function(D,R,dr=0.1,cpp=TRUE) {
 
   # convert vectors (1D) and data frames into matrices
   D = as.matrix(D)
@@ -43,15 +38,9 @@ LandySzalay = function(D,R,dr=0.1) {
   rmax = sqrt(rmax)
 
   # count pairs
-  DD = .paircount(D,dr=dr,rmax=rmax)
-  RR = .paircount(R,dr=dr,rmax=rmax)
-  DR = .paircount(D,R,dr=dr,rmax=rmax)
-
-  # shell radii
-  nc = length(DD)
-  r.min = seq(0,nc-1)*dr
-  r.max = seq(1,nc)*dr
-  r.mid = (r.min+r.max)/2
+  DD = paircount(D,dr=dr,rmax=rmax,cpp=cpp)$n
+  RR = paircount(R,dr=dr,rmax=rmax,cpp=cpp)$n
+  DR = paircount(D,R,dr=dr,rmax=rmax,cpp=cpp)$n
 
   # compute L-S estimator
   nDD = nD^2/2
@@ -62,38 +51,7 @@ LandySzalay = function(D,R,dr=0.1) {
   xi[RR==0 | DD==0] = err[RR==0 | DD==0] = NA
 
   # return results
-  return(list(r=r.mid, xi=xi, err=err, DD=DD/nDD, RR=RR/nRR, DR=DR/nDR))
+  return(list(r=seq(0,length(DD)-1)*dr, xi=xi, err=err))
 
 }
 
-.paircount = function(x, y=NULL, dr, rmax) {
-
-  nx = dim(x)[1]
-  nr = ceiling(rmax/dr)
-  count = array(0,nr)
-
-  if (is.null(y)) {
-    for (i in seq(nx-1)) {
-      for (j in seq(i+1,nx)) {
-        d = sqrt(sum((x[i,]-x[j,])^2))
-        if (d>0 & d<=rmax) {
-          index = ceiling(d/dr)
-          count[index] = count[index]+1
-        }
-      }
-    }
-  } else {
-    ny = dim(y)[1]
-    for (i in seq(nx)) {
-      for (j in seq(ny)) {
-        d = sqrt(sum((x[i,]-y[j,])^2))
-        if (d>0 & d<=rmax) {
-          index = ceiling(d/dr)
-          count[index] = count[index]+1
-        }
-      }
-    }
-  }
-
-  return(count)
-}
