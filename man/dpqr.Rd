@@ -15,7 +15,7 @@ dpqr(fun, min, max)
 Returns a list of items:
 \item{d(x)}{Probability distribution function (PDF), i.e. a normalised version of \code{fun}, limited to the domain \code{[xmin,xmax]}.}
 \item{p(x)}{Cumulative distributiont function, defined as the integrated PDF up to x.}
-\item{q(p)}{Quantile function, returning the position *x*, at which the cumulative probability equals \code{p}.}
+\item{q(p)}{Quantile function, returning the position x, at which the cumulative probability equals \code{p}.}
 \item{r(n)}{A vector of \code{n} random numbers drawn from the PDF.}
 }
 \description{

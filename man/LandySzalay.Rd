@@ -13,7 +13,7 @@ LandySzalay(D, R, dr = 0.1, cpp = TRUE)
 
 \item{dr}{bin size for the evaluation of the two-point correlation function}
 
-\item{cpp}{logical flat; if set to TRUE (default) a fast implementation in C++ is used to count the point-pairs in distance bins, otherwise the counting is performed less efficiently in R.}
+\item{cpp}{logical flag; if set to TRUE (default) a fast implementation in C++ is used to count the point-pairs in distance bins, otherwise the counting is performed less efficiently in R.}
 }
 \value{
 Returns a list with the two-point statistics of the data points:

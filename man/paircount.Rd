@@ -15,7 +15,7 @@ paircount(x, y = NULL, dr, rmax, cpp = TRUE)
 
 \item{rmax}{maximum distance to be considered}
 
-\item{cpp}{logical flat; if set to TRUE (default) a fast implementation in C++ is used, otherwise the counting is performed less efficiently in R.}
+\item{cpp}{logical flag; if set to TRUE (default) a fast implementation in C++ is used, otherwise the counting is performed less efficiently in R.}
 }
 \value{
 Returns a list with two vectors

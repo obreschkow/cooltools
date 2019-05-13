@@ -6,7 +6,7 @@
 #' @param y optional m-element vector or m-by-d matrix of d-dimensional positions of a second point set
 #' @param dr distance bin size
 #' @param rmax maximum distance to be considered
-#' @param cpp logical flat; if set to TRUE (default) a fast implementation in C++ is used, otherwise the counting is performed less efficiently in R.
+#' @param cpp logical flag; if set to TRUE (default) a fast implementation in C++ is used, otherwise the counting is performed less efficiently in R.
 #'
 #' @return Returns a list with two vectors
 #' \item{r}{vector with the mid-points of the distance bins.}
