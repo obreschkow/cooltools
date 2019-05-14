@@ -13,12 +13,14 @@
 #'
 #' @examples
 #' ## draw 20 unit vectors on a sphere
-#' x = runif3D(20,r=c(1,1))
+#' x = runif3(20,r=c(1,1))
 #' print(rowSums(x^2))
+#'
+#' @seealso \code{\link{runif2}}
 #'
 #' @export
 
-runif3D = function(n=1,r=c(0,1), azimuth=c(0,2*pi), polarangle=c(0,pi)) {
+runif3 = function(n=1,r=c(0,1), azimuth=c(0,2*pi), polarangle=c(0,pi)) {
 
   # make random vectors
   r = runif(n,r[1]^3,r[2]^3)^(1/3)

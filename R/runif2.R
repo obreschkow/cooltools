@@ -12,13 +12,15 @@
 #'
 #' @examples
 #' ## generate 500 unit vectors with radii between 0.5 and 1
-#' x = runif2D(500,r=c(0.5,1))
+#' x = runif2(500,r=c(0.5,1))
 #' par(pty='s')
 #' plot(x,pch=20)
 #'
+#' @seealso \code{\link{runif3}}
+#'
 #' @export
 
-runif2D = function(n=1, r=c(0,1), azimuth=c(0,2*pi)) {
+runif2 = function(n=1, r=c(0,1), azimuth=c(0,2*pi)) {
 
   # make random vectors
   r = runif(n,r[1]^2,r[2]^2)^(1/2)
