@@ -25,7 +25,7 @@ f = array(0,c(n,n))
 for (i in seq(n)) {
   for (j in seq(n)) f[i,j] = exp(-(i-6)^2/4-(j-8)^2/2-(i-6)*(j-8)/2)
 }
-qplot(xlim=c(0,2.1),ylim=c(0,1.1),asp=1)
+nplot(xlim=c(0,2.1),ylim=c(0,1.1),asp=1)
 rasterImage(rasterflip(f),0,0,1,1,interpolate=FALSE)
 g = dft(f)
 img = array(hsv((pracma::angle(g)/2/pi)\%\%1,1,abs(g)/max(abs(g))),c(n,n))
