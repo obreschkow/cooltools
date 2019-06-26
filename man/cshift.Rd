@@ -7,7 +7,7 @@
 cshift(x, s)
 }
 \arguments{
-\item{x}{vector or array of any rank}
+\item{x}{vector or array (up to rank 5)}
 
 \item{s}{scalar, if x is a vector, or a vector of length matching the rank of x, if x is an array}
 }
@@ -15,7 +15,7 @@ cshift(x, s)
 Returns a vector or array of the same shape as x.
 }
 \description{
-Circulates each dimension of an array. This routine is identical to \code{\link[pracma]{circshift}}, but also works with arrays up to 5 dimensions.
+Circulates each dimension of an array. This routine is identical to \code{\link[pracma]{circshift}}, but works with arrays up to 5 dimensions.
 }
 \author{
 Danail Obreschkow

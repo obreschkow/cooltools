@@ -1,8 +1,8 @@
 #' Circularly shift each dimension of an array
 #'
-#' @description Circulates each dimension of an array. This routine is identical to \code{\link[pracma]{circshift}}, but also works with arrays up to 5 dimensions.
+#' @description Circulates each dimension of an array. This routine is identical to \code{\link[pracma]{circshift}}, but works with arrays up to 5 dimensions.
 #'
-#' @param x vector or array of any rank
+#' @param x vector or array (up to rank 5)
 #' @param s scalar, if x is a vector, or a vector of length matching the rank of x, if x is an array
 #'
 #' @return Returns a vector or array of the same shape as x.
@@ -23,6 +23,7 @@ cshift = function(x,s) {
 
   } else if (is.array(x)) {
 
+    if (length(dim(x))>5) stop("x must be an array of rank 1-5.")
     if (length(dim(x))!=length(s)) stop("Length of s must be equal to the number of dimensions of x.")
 
     n = dim(x)

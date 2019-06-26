@@ -4,7 +4,7 @@
 \alias{lim}
 \title{Crop values of vector or array to a custom range}
 \usage{
-lim(x, min = 0, max = 1)
+lim(x, min = 0, max = 1, clip = NULL, na = NULL)
 }
 \arguments{
 \item{x}{vector or array}
@@ -12,6 +12,10 @@ lim(x, min = 0, max = 1)
 \item{min}{minimum value}
 
 \item{max}{maximum value}
+
+\item{clip}{optional value specifying the value assigned to clipped data, e.g. \code{clip=NA}}
+
+\item{na}{optional value specifying the value assigned to non-numbers (NA and NaN)}
 }
 \value{
 vector/array of the same shape as \code{x}

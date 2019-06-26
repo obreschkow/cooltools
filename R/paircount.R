@@ -14,6 +14,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{LandySzalay}}
+#'
 #' @export
 
 paircount = function(x, y=NULL, dr, rmax, cpp=TRUE) {
@@ -25,7 +27,11 @@ paircount = function(x, y=NULL, dr, rmax, cpp=TRUE) {
     x = as.matrix(x)
 
     if (cpp) {
-      count = paircountxx(x,dr,rmax)$count
+      if (dim(as.matrix(x))[2]==1) {
+        count = paircountxx1d(x,dr,rmax)$count
+      } else {
+        count = paircountxx(x,dr,rmax)$count
+      }
     } else {
       nx = dim(x)[1]
       count = c(nx,rep(0,nr-1))
@@ -45,8 +51,14 @@ paircount = function(x, y=NULL, dr, rmax, cpp=TRUE) {
     x = as.matrix(x)
     y = as.matrix(y)
 
+    if (dim(x)[2]!=dim(y)[2]) stop('x and y must have the same number of columns.')
+
     if (cpp) {
-      count = paircountxy(x,y,dr,rmax)$count
+      if (dim(as.matrix(x))[2]==1) {
+        count = paircountxy1d(x,y,dr,rmax)$count
+      } else {
+        count = paircountxy(x,y,dr,rmax)$count
+      }
     } else {
       nx = dim(x)[1]
       ny = dim(y)[1]

@@ -23,6 +23,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{rng}}, \code{\link{contourlevel}}
+#'
 #' @export
 
 dpqr = function(fun,min,max) {

@@ -17,6 +17,6 @@
 
 loadbin <- function(filename, dim, bytes=4, type='numeric', signed=FALSE, endian='little') {
   n = prod(dim)
-  dat = readBin(filename,numeric(),size=bytes,n=n)
+  dat = readBin(filename,what=type,size=bytes,n=n,signed=signed,endian=endian)
   return(array(dat,dim))
 }

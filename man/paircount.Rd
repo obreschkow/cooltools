@@ -25,6 +25,9 @@ Returns a list with two vectors
 \description{
 Count the number of point-pairs in equally spaced distances bins. Code works in any dimension. If only one point set is provided, the distances of this point set with itself are used (counting each pairs only once, i.e. only ij, not ji).
 }
+\seealso{
+\code{\link{LandySzalay}}
+}
 \author{
 Danail Obreschkow
 }

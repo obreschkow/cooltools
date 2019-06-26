@@ -2,10 +2,11 @@
 #'
 #' @importFrom stats fft
 #'
-#' @description Discrete Fourier Transform (DFT) with largest modes at the centre in k-space and normalized such that dft(dft(f),inverse)=f. This is the discretization scheme described in  Appendix D of Obreschkow et al. 2013, ApJ 762. Relies on \code{\link[stats]{fft}}.
+#' @description Discrete Fourier Transform (DFT) with longest modes at the center in Fourier space and normalized such that dft(dft(f),inverse)=f. This is the discretization scheme described in  Appendix D of Obreschkow et al. 2013, ApJ 762. Relies on \code{\link[stats]{fft}}.
 #'
-#' @param f real or complex array containing the values to be transformed.
+#' @param f real or complex D-dimensional array containing the values to be transformed.
 #' @param inverse logical flag; if TRUE the inverse Fourier Transfrom is performed.
+#' @param shift D-vector specifying the integer shift of the coordinates in Fourier space. Set to \code{shift=rep(0,D)} to produced a DFT with the longest mode at the corner in Fourier space.
 #'
 #' @return Returns an array of the same shape as \code{f}, containing the (inverse) Fourier Transform.
 #'
@@ -27,13 +28,14 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link[stats]{fft}}
+#'
 #' @export
 
-dft = function(f,inverse = F) {
-  d = floor(dim(as.array(f))/2)
+dft = function(f, inverse = F, shift=-floor(dim(as.array(f))/2)) {
   if (inverse) {
-    return(stats::fft(cshift(f,-d),inverse=T))
+    return(stats::fft(cshift(f,shift),inverse=T))
   } else {
-    return(cshift(stats::fft(f),d)/length(f))
+    return(cshift(stats::fft(f),-shift)/length(f))
   }
 }

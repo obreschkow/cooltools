@@ -4,18 +4,30 @@
 \alias{dftgrid}
 \title{Produce coordinates for Discrete Fourier Transform}
 \usage{
-dftgrid(N, L)
+dftgrid(N, L, x0 = 0, k0 = -floor(N/2) * 2 * pi/L)
 }
 \arguments{
 \item{N}{number of divisions along one dimension used in direct and Fourier space}
 
 \item{L}{side-length (=period) of the data long one dimension}
+
+\item{x0}{zero-point of x-coordinates (=0 in most applications)}
+
+\item{k0}{zero-point of k-coordinates (=0 or -floor(N/2)*dk in most applications)}
 }
 \value{
-Returns a list with the vectors x and k, the corresponding steps dx and dk, and the input values N and L.
+Returns a list with:
+\item{x}{vector of direct space coordinates}
+\item{f}{vector of Fourier space coordinates (frequencies)}
+\item{k}{vector of Fourier space coordinates (angular frequencies)}
+\item{dx}{spacing of x-values}
+\item{df}{spacing of f-values}
+\item{dk}{spacing of k-values}
+\item{L}{input value of L}
+\item{N}{input value of N}
 }
 \description{
-Produces the coordinates in direct space (x) and Fourier space (k), corresponding to the Discrete Fourier Transform \code{dft} of this package.
+Produces the direct space coordinates (x) and Fourier space frequencies (f) and angular frequencies (k), corresponding to the Discrete Fourier Transform \code{dft} of this package.
 }
 \author{
 Danail Obreschkow

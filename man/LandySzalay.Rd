@@ -7,9 +7,9 @@
 LandySzalay(D, R, dr = 0.1, cpp = TRUE)
 }
 \arguments{
-\item{D}{n-element vector or n-by-d matrix of d-dimensional positions of data points}
+\item{D}{n-element vector or n-by-d matrix of d-dimensional positions of the data points}
 
-\item{R}{m-element vector or m-by-d matrix of d-dimensional positions of random comparison points}
+\item{R}{m-element vector or m-by-d matrix of d-dimensional positions of the random comparison points}
 
 \item{dr}{bin size for the evaluation of the two-point correlation function}
 
@@ -22,7 +22,10 @@ Returns a list with the two-point statistics of the data points:
 \item{err}{Poisson errors of xi.}
 }
 \description{
-Evaluates the Landy-Szalay (1993) estimator of the two-point correlation function of a point set D given a random comparison set R.
+Evaluates the Landy-Szalay (1993) estimator of the two-point correlation function of a point set D given a random comparison set R. The two point sets D and R can be made of different numbers of points, as the pair-counts are automatically normalized according to the number of points. In fact, it is often preferable to make the R set larger to reduce the R-related shot noise in the two-point estimator.
+}
+\seealso{
+\code{\link{paircount}}
 }
 \author{
 Danail Obreschkow

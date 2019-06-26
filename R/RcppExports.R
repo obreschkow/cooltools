@@ -9,3 +9,11 @@ paircountxy <- function(x, y, dr, rmax) {
     .Call('_cooltools_paircountxy', PACKAGE = 'cooltools', x, y, dr, rmax)
 }
 
+paircountxx1d <- function(x, dr, rmax) {
+    .Call('_cooltools_paircountxx1d', PACKAGE = 'cooltools', x, dr, rmax)
+}
+
+paircountxy1d <- function(x, y, dr, rmax) {
+    .Call('_cooltools_paircountxy1d', PACKAGE = 'cooltools', x, y, dr, rmax)
+}
+

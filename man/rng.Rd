@@ -7,13 +7,13 @@
 rng(f, n, min, max, fmax = NULL)
 }
 \arguments{
-\item{f}{function of an d-vector represending an d-dimensional distribution function. This function must be non-negative on the whole domain.}
+\item{f}{function of a d-vector represending an d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized.}
 
-\item{n}{number of random number to be generated}
+\item{n}{number of random numbers to be generated}
 
 \item{min, max}{are d-vectors specifying the domain of distribution function; the domain must be finite and should be as restrictive as possible to keep the number of random trials as low as possible.}
 
-\item{fmax}{maximum value of $f$ on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should only be set, if the automatically determined value (see out put list) is incorret.}
+\item{fmax}{maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.}
 }
 \value{
 Returns list of items:
@@ -23,7 +23,7 @@ Returns list of items:
 \item{ntrials}{number of trials.}
 }
 \description{
-Brute-force algorithm for generating a series of random number drawn from an $N$-dimensional distribution.
+Brute-force algorithm for drawing random numbers from an d-dimensional distribution.
 }
 \examples{
 
@@ -39,6 +39,9 @@ out = rng(f,1e4,rep(-1,5),rep(1,5))
 cat(sprintf('Number of successes over number of trials : \%.4f\\n',out$n/out$ntrials))
 cat(sprintf('Expected ratio for n=\\u221E : \%.4f\\n',pi^(5/2)/gamma(1+5/2)/2^5))
 
+}
+\seealso{
+\code{\link{dpqr}}
 }
 \author{
 Danail Obreschkow

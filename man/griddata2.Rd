@@ -26,6 +26,8 @@ Returns a list of items
 \item{y}{n-element vector of cell-center y-coordinates}
 \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates}
 \item{ybreak}{(n+1)-element vector of cell-edge y-coordinates}
+\item{xlim}{range of xbreak, same as input argument xlim, if given}
+\item{ylim}{range of ybreak, same as input argument ylim, if given}
 \item{n}{2D array of point counts.}
 \item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
 }

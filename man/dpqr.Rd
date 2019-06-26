@@ -30,6 +30,9 @@ hist(x,freq=FALSE)
 curve(sin(x)/2,0,pi,add=TRUE)
 
 }
+\seealso{
+\code{\link{rng}}, \code{\link{contourlevel}}
+}
 \author{
 Danail Obreschkow
 }

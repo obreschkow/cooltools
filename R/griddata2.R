@@ -14,6 +14,8 @@
 #' \item{y}{n-element vector of cell-center y-coordinates}
 #' \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates}
 #' \item{ybreak}{(n+1)-element vector of cell-edge y-coordinates}
+#' \item{xlim}{range of xbreak, same as input argument xlim, if given}
+#' \item{ylim}{range of ybreak, same as input argument ylim, if given}
 #' \item{n}{2D array of point counts.}
 #' \item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
 #'
@@ -52,11 +54,13 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   g = list(x = (seq(n[1])-0.5)/n[1]*(xlim[2]-xlim[1])+xlim[1], # vector of mid-cell x-coordinates
            y = (seq(n[2])-0.5)/n[2]*(ylim[2]-ylim[1])+ylim[1], # vector of mid-cell y-coordinates
            xbreak = seq(xlim[1], xlim[2], length = n[1]+1), # vector of cell-edge x-coordinates
-           ybreak = seq(ylim[1], ylim[2], length = n[2]+1)) # vector of cell-edge y-coordinates
+           ybreak = seq(ylim[1], ylim[2], length = n[2]+1), # vector of cell-edge y-coordinates
+           xlim = xlim, ylim = ylim)
 
   # grid data
-  ix = ceiling((x-xlim[1])/(xlim[2]-xlim[1])*n[1])
-  iy = ceiling((y-ylim[1])/(ylim[2]-ylim[1])*n[2])
+  eps = 1e-14
+  ix = ceiling((x-xlim[1])/(xlim[2]-xlim[1])*n[1]*(1-eps)+eps)
+  iy = ceiling((y-ylim[1])/(ylim[2]-ylim[1])*n[2]*(1-eps)+eps)
   selection = ix>=1 & ix<=n[1] & iy>=1 & iy<=n[2]
   ix = ix[selection]
   iy = iy[selection]

@@ -2,12 +2,12 @@
 #'
 #' @importFrom stats runif optim optimize
 #'
-#' @description Brute-force algorithm for generating a series of random number drawn from an $N$-dimensional distribution.
+#' @description Brute-force algorithm for drawing random numbers from an d-dimensional distribution.
 #'
-#' @param f function of an d-vector represending an d-dimensional distribution function. This function must be non-negative on the whole domain.
-#' @param n number of random number to be generated
+#' @param f function of a d-vector represending an d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized.
+#' @param n number of random numbers to be generated
 #' @param min,max are d-vectors specifying the domain of distribution function; the domain must be finite and should be as restrictive as possible to keep the number of random trials as low as possible.
-#' @param fmax maximum value of $f$ on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should only be set, if the automatically determined value (see out put list) is incorret.
+#' @param fmax maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.
 #'
 #' @return Returns list of items:
 #' \item{x}{n-by-d matrix of n random d-vectors.}
@@ -30,6 +30,8 @@
 #' cat(sprintf('Expected ratio for n=\u221E : %.4f\n',pi^(5/2)/gamma(1+5/2)/2^5))
 #'
 #' @author Danail Obreschkow
+#'
+#' @seealso \code{\link{dpqr}}
 #'
 #' @export
 
@@ -64,3 +66,4 @@ rng = function(f,n,min,max,fmax=NULL) {
   return(list(x=x, fmax=fmax, n=n, ntrials=ntrials))
 
 }
+

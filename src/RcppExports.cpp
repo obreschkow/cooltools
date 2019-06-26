@@ -32,10 +32,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// paircountxx1d
+List paircountxx1d(NumericVector x, double dr, double rmax);
+RcppExport SEXP _cooltools_paircountxx1d(SEXP xSEXP, SEXP drSEXP, SEXP rmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type dr(drSEXP);
+    Rcpp::traits::input_parameter< double >::type rmax(rmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(paircountxx1d(x, dr, rmax));
+    return rcpp_result_gen;
+END_RCPP
+}
+// paircountxy1d
+List paircountxy1d(NumericVector x, NumericVector y, double dr, double rmax);
+RcppExport SEXP _cooltools_paircountxy1d(SEXP xSEXP, SEXP ySEXP, SEXP drSEXP, SEXP rmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type dr(drSEXP);
+    Rcpp::traits::input_parameter< double >::type rmax(rmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(paircountxy1d(x, y, dr, rmax));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cooltools_paircountxx", (DL_FUNC) &_cooltools_paircountxx, 3},
     {"_cooltools_paircountxy", (DL_FUNC) &_cooltools_paircountxy, 4},
+    {"_cooltools_paircountxx1d", (DL_FUNC) &_cooltools_paircountxx1d, 3},
+    {"_cooltools_paircountxy1d", (DL_FUNC) &_cooltools_paircountxy1d, 4},
     {NULL, NULL, 0}
 };
 

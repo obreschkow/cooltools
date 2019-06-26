@@ -4,12 +4,17 @@
 \name{cst}
 \alias{cst}
 \title{Scientific constants}
-\format{An object of class \code{list} of length 15.}
+\format{An object of class \code{list} of length 20.}
 \usage{
 cst
 }
 \description{
-The list \code{cst} contains a lot of useful scientific constants in SI units, mainly for astrophysics.
+The list \code{cst} contains useful scientific constants in SI units, mainly for astrophysics.
+}
+\examples{
+# print all the constants to console
+for (i in seq(length(cst))) cat(sprintf('\%6s = \%.12e\\n',names(cst)[i],cst[i]))
+
 }
 \author{
 Danail Obreschkow

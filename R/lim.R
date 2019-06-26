@@ -5,6 +5,8 @@
 #' @param x vector or array
 #' @param min minimum value
 #' @param max maximum value
+#' @param clip optional value specifying the value assigned to clipped data, e.g. \code{clip=NA}
+#' @param na optional value specifying the value assigned to non-numbers (NA and NaN)
 #'
 #' @return vector/array of the same shape as \code{x}
 #'
@@ -12,8 +14,11 @@
 #'
 #' @export
 
-lim = function(x,min=0,max=1) {
+lim = function(x, min=0, max=1, clip=NULL, na=NULL) {
+  if (!is.null(clip)) s = x<min | x>max
   x[x<min] = min
   x[x>max] = max
+  if (!is.null(clip)) x[s]=clip
+  if (!is.null(na)) x[is.na(x)]=na
   return(x)
 }

@@ -2,7 +2,7 @@
 #'
 #' @importFrom pracma meshgrid
 #'
-#' @description Produces a 2D kernel density estimation on a 2D grid from a 2D point set
+#' @description Produces a 2D kernel density estimation on a 2D grid from a 2D point set, using adaptive smoothing and allowing for the data points to have weights.
 #'
 #' @param x N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
 #' @param y N-element vector of y-coordinates (only used if x is a vector)
@@ -11,6 +11,8 @@
 #' @param n scalar or 2-element vector specifying the number of equally space grid cells
 #' @param xlim 2-element vector specifying the x-range
 #' @param ylim 2-element vector specifying the y-range
+#' @param sd.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels
+#' @param sd.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param reflect vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected
 #'
 #' @return Returns a list of items
@@ -28,7 +30,7 @@
 #'
 #' @export
 #'
-kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y),  reflect='') {
+kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL, reflect='') {
 
   # handle inputs
   if (length(n)==1) n=c(n,n)
@@ -38,21 +40,25 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y),  re
     x = x[,1]
   }
 
-  # initialize kernel
-  n.sd = 3 # integer number of standard deviations considered
+  # make smoothing kernels
+  d = 0.01 # step between standard deviations in pixels
+  n.sd = 3 # number of standard deviations considered
   n.pix = prod(n)
-  n.kernels = round(sqrt(n.pix)/4)
+  sd.max = round(sqrt(n.pix)/4) # maximum standard deviation in pixel
+  sd = seq(0,sd.max,by=d) # list of standard deviations
+  n.kernels = length(sd)
   kernel = {}
-  for (sd in seq(n.kernels)) {
-    h = sd*n.sd
+  kernel[[1]] = matrix(c(0,0,0,0,1,0,0,0,0),3,3)
+  for (i in seq(2,n.kernels)) {
+    h = ceiling(sd[i]*n.sd)
     n.side = 2*h+1 # number of pixels per side
-    mesh = pracma::meshgrid(seq(-n.sd,n.sd,len=n.side))
-    kernel[[sd]] = exp(-(mesh$X^2+mesh$Y^2)/2)
-    kernel[[sd]] = kernel[[sd]]/sum(kernel[[sd]])
+    mesh = pracma::meshgrid(seq(-h,h))
+    kernel[[i]] = exp(-(mesh$X^2+mesh$Y^2)/2/sd[i]^2)
+    kernel[[i]] = kernel[[i]]/sum(kernel[[i]])
   }
 
   # grid data onto oversized grid
-  h.max = n.kernels*n.sd
+  h.max = (dim(kernel[[n.kernels]])[1]-1)/2
   xlim = c(xlim[1]-(xlim[2]-xlim[1])/n[1]*h.max,xlim[2]+(xlim[2]-xlim[1])/n[1]*h.max)
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
   g = griddata2(x,y,w,n+2*h.max,xlim=xlim,ylim=ylim)
@@ -63,13 +69,12 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y),  re
   for (ix in seq(2*h.max+n[1])) {
     for (iy in seq(2*h.max+n[2])) {
       if (g$n[ix,iy]>0) {
-        sd.max = min(floor(sqrt(n.pix/g$n[ix,iy])*s)+1,n.kernels)
-        for (sd in seq(sd.max)) {
-          h = sd*n.sd
-          rx = (ix-h+h.max):(ix+h+h.max)
-          ry = (iy-h+h.max):(iy+h+h.max)
-          g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kernel[[sd]]/sd.max
-        }
+        sd.pixel = min(sd.max,max(sd.min,15*s/sqrt(g$n[ix,iy])))
+        i = min(n.kernels,round(sd.pixel/d)+1)
+        h = (dim(kernel[[i]])[1]-1)/2
+        rx = (ix-h+h.max):(ix+h+h.max)
+        ry = (iy-h+h.max):(iy+h+h.max)
+        g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kernel[[i]]
       }
     }
   }

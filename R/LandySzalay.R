@@ -1,9 +1,9 @@
 #' Two-point correlation estimation
 #'
-#' @description Evaluates the Landy-Szalay (1993) estimator of the two-point correlation function of a point set D given a random comparison set R.
+#' @description Evaluates the Landy-Szalay (1993) estimator of the two-point correlation function of a point set D given a random comparison set R. The two point sets D and R can be made of different numbers of points, as the pair-counts are automatically normalized according to the number of points. In fact, it is often preferable to make the R set larger to reduce the R-related shot noise in the two-point estimator.
 #'
-#' @param D n-element vector or n-by-d matrix of d-dimensional positions of data points
-#' @param R m-element vector or m-by-d matrix of d-dimensional positions of random comparison points
+#' @param D n-element vector or n-by-d matrix of d-dimensional positions of the data points
+#' @param R m-element vector or m-by-d matrix of d-dimensional positions of the random comparison points
 #' @param dr bin size for the evaluation of the two-point correlation function
 #' @param cpp logical flag; if set to TRUE (default) a fast implementation in C++ is used to count the point-pairs in distance bins, otherwise the counting is performed less efficiently in R.
 #'
@@ -14,6 +14,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{paircount}}
+#'
 #' @export
 
 LandySzalay = function(D,R,dr=0.1,cpp=TRUE) {
@@ -21,6 +23,7 @@ LandySzalay = function(D,R,dr=0.1,cpp=TRUE) {
   # convert vectors (1D) and data frames into matrices
   D = as.matrix(D)
   R = as.matrix(R)
+  if (dim(D)[2]!=dim(R)[2]) stop('D and R must have the same number of columns.')
 
   # determine size of data
   nD = dim(D)[1]

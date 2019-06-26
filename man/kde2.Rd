@@ -5,7 +5,7 @@
 \title{2D kernel density estimation}
 \usage{
 kde2(x, y, w = NULL, s = 1, n = c(20, 20), xlim = range(x),
-  ylim = range(y), reflect = "")
+  ylim = range(y), sd.min = NULL, sd.max = NULL, reflect = "")
 }
 \arguments{
 \item{x}{N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates}
@@ -22,6 +22,10 @@ kde2(x, y, w = NULL, s = 1, n = c(20, 20), xlim = range(x),
 
 \item{ylim}{2-element vector specifying the y-range}
 
+\item{sd.min}{optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels}
+
+\item{sd.max}{optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels}
+
 \item{reflect}{vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected}
 }
 \value{
@@ -35,7 +39,7 @@ Returns a list of items
 \item{d}{2D array of smoothed density field.}
 }
 \description{
-Produces a 2D kernel density estimation on a 2D grid from a 2D point set
+Produces a 2D kernel density estimation on a 2D grid from a 2D point set, using adaptive smoothing and allowing for the data points to have weights.
 }
 \seealso{
 \code{\link{griddata2}}
