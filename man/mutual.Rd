@@ -4,7 +4,8 @@
 \alias{mutual}
 \title{Mutual information of two random variables}
 \usage{
-mutual(x, y = NULL, b = exp(1), ...)
+mutual(x, y = NULL, b = exp(1), n = NULL, xlim = NULL,
+  ylim = NULL)
 }
 \arguments{
 \item{x}{either of the following: (1) an m-by-n matrix representing the 2D probability mass function of two random variables X and Y; all elements must be non-negative; the normalization is irrelevant. (2) an n-vector of sampled x-values; in this case y must be specified.}
@@ -13,13 +14,16 @@ mutual(x, y = NULL, b = exp(1), ...)
 
 \item{b}{base of the logarithm in mutual information I(X,Y). Default is e.}
 
-\item{...}{additional optional arguments (n, xlim, ylim) for the gridding routine \code{\link{griddata2}}, if x and y vectors are given.}
+\item{n}{scalar or 2-element vector specifying the number of equally space grid cells. Only used if x and y are vectors. If not provided, the default is n=0.2*sqrt(length(x)), bound between 2 and 1000. Note that n~sqrt(length(x)) keeps the mutual information constant for random data sets of different size.}
+
+\item{xlim}{2-element vector specifying the x-range (data cropped if necessary). Only used if x and y are vectors. If not given, xlim is set to the range of x.}
+
+\item{ylim}{2-element vector specifying the y-range (data cropped if necessary). Only used if x and y are vectors. If not given, ylim is set to the range of y.}
 }
 \value{
 Returns a list of items:
 \item{I}{standard mutual information I(X,Y).}
 \item{N}{normalized mutual information I(X,Y)/sqrt(H(X)*H(Y)), where H is the Shannon information entropy.}
-\item{pmf}{normalized, gridded probability mass function.}
 }
 \description{
 Computes the mutual information of two random variables X and Y, given their 2D represented in a matrix.

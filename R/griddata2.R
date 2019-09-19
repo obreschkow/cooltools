@@ -5,9 +5,9 @@
 #' @param x N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
 #' @param y N-element vector of y-coordinates (only used if x is a vector)
 #' @param w optional N-element vector with weights
-#' @param n scalar or 2-element vector specifying the number of equally space grid cells
-#' @param xlim 2-element vector specifying the x-range (data cropped if necessary)
-#' @param ylim 2-element vector specifying the y-range (data cropped if necessary)
+#' @param n scalar or 2-element vector specifying the number of equally space grid cells along each direction.
+#' @param xlim 2-element vector specifying the x-range (data cropped if necessary). If not given, xlim is set to the range of x.
+#' @param ylim 2-element vector specifying the y-range (data cropped if necessary). If not given, ylim is set to the range of y.
 #'
 #' @return Returns a list of items
 #' \item{x}{n-element vector of cell-center x-coordinates}
@@ -28,6 +28,8 @@
 #' nplot(pty='s',xlim=c(-1,1),ylim=c(-1,1))
 #' rasterImage(rasterflip(lim(counts,0,3)/3),-1,-1,1,1,interpolate=FALSE)
 #' points(x,col='red',pch=20,cex=0.5)
+#'
+#' @seealso \code{\link{griddata}}
 #'
 #' @export
 
@@ -58,9 +60,9 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
            xlim = xlim, ylim = ylim)
 
   # grid data
-  eps = 1e-14
-  ix = ceiling((x-xlim[1])/(xlim[2]-xlim[1])*n[1]*(1-eps)+eps)
-  iy = ceiling((y-ylim[1])/(ylim[2]-ylim[1])*n[2]*(1-eps)+eps)
+  eps = 1e-12
+  ix = ceiling(((x-xlim[1])/(xlim[2]-xlim[1])*(1-eps)+eps)*n[1])
+  iy = ceiling(((y-ylim[1])/(ylim[2]-ylim[1])*(1-eps)+eps)*n[2])
   selection = ix>=1 & ix<=n[1] & iy>=1 & iy<=n[2]
   ix = ix[selection]
   iy = iy[selection]

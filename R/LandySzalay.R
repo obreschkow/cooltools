@@ -18,7 +18,7 @@
 #'
 #' @export
 
-LandySzalay = function(D,R,dr=0.1,cpp=TRUE) {
+landyszalay = function(D,R,dr=0.1,cpp=TRUE) {
 
   # convert vectors (1D) and data frames into matrices
   D = as.matrix(D)

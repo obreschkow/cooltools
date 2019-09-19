@@ -1,7 +1,7 @@
 Package: cooltools
 Type: Package
 Title: Routines for scientific research
-Version: 0.5
+Version: 0.7
 Author: Danail Obreschkow
 Maintainer: The package maintainer <danail.obreschkow@gmail.com>
 Description: Collection of routines for scientific research.
@@ -10,6 +10,9 @@ Depends:
 Imports:
     magicaxis,
     pracma,
+    plotrix,
+    bit64,
+    data.table,
     cubature,
     MASS,
     EBImage,

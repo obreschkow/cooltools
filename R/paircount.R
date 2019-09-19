@@ -14,7 +14,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @seealso \code{\link{LandySzalay}}
+#' @seealso \code{\link{landyszalay}}
 #'
 #' @export
 

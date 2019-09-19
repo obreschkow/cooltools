@@ -14,11 +14,11 @@ griddata2(x, y = NULL, w = NULL, n = c(20, 20), xlim = NULL,
 
 \item{w}{optional N-element vector with weights}
 
-\item{n}{scalar or 2-element vector specifying the number of equally space grid cells}
+\item{n}{scalar or 2-element vector specifying the number of equally space grid cells along each direction.}
 
-\item{xlim}{2-element vector specifying the x-range (data cropped if necessary)}
+\item{xlim}{2-element vector specifying the x-range (data cropped if necessary). If not given, xlim is set to the range of x.}
 
-\item{ylim}{2-element vector specifying the y-range (data cropped if necessary)}
+\item{ylim}{2-element vector specifying the y-range (data cropped if necessary). If not given, ylim is set to the range of y.}
 }
 \value{
 Returns a list of items
@@ -42,6 +42,9 @@ nplot(pty='s',xlim=c(-1,1),ylim=c(-1,1))
 rasterImage(rasterflip(lim(counts,0,3)/3),-1,-1,1,1,interpolate=FALSE)
 points(x,col='red',pch=20,cex=0.5)
 
+}
+\seealso{
+\code{\link{griddata}}
 }
 \author{
 Danail Obreschkow

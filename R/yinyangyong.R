@@ -6,5 +6,9 @@
 #'
 #' @keywords datasets
 #'
+#' @examples
+#' nplot(pty='s')
+#' rasterImage(yinyangyong,0,0,1,1)
+#'
 #' @author Danail Obreschkow
 "yinyangyong"
