@@ -31,6 +31,8 @@ subplot = function(xleft=0.1, ybottom=0.1, xright=0.3, ytop=0.3) {
     if ((xright<0)|(xright>1)) stop('xright must be in the range 0...1')
     if ((ybottom<0)|(ybottom>1)) stop('ybottom must be in the range 0...1')
     if ((ytop<0)|(ytop>1)) stop('ytop must be in the range 0...1')
+    if (xleft>=xright) stop('xleft must be smaller than xright')
+    if (ybottom>=ytop) stop('ybottom must be smaller than ytop')
 
     # define new subplot
     par(omd=c(0,1,0,1))
