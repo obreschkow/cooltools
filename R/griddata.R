@@ -10,9 +10,12 @@
 #' @return Returns a list of items
 #' \item{x}{n-element vector of cell-center x-coordinates}
 #' \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates}
+#' \item{dx}{spacing between x-coordinates}
 #' \item{xlim}{range of xbreak, same as input argument xlim, if given}
 #' \item{n}{vector of point counts.}
-#' \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified.}
+#' \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified}
+#' \item{d}{normalized number densities corresponding to n}
+#' \item{c}{normalized mass densities corresponding to m; only available if \code{w} is specified}
 #'
 #' @author Danail Obreschkow
 #'
@@ -29,6 +32,7 @@
 griddata = function(x, w=NULL, n=20, xlim=NULL) {
 
   # handle inputs
+  if (n<1) stop('n must be a positive integer.')
   if (!is.null(w)) {
     if (!is.vector(w)) stop('If given, w must be a vector.')
     if (length(x)!=length(w)) stop('If given, w must be of the same length as x.')
@@ -40,6 +44,7 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
   # make grid coordinates
   g = list(x = (seq(n)-0.5)/n*(xlim[2]-xlim[1])+xlim[1], # vector of mid-cell x-coordinates
            xbreak = seq(xlim[1], xlim[2], length = n+1), # vector of cell-edge x-coordinates
+           dx = (xlim[2]-xlim[1])/n, # cell-spacing
            xlim = xlim)
 
   # grid data
@@ -51,13 +56,17 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
   # non-weighted counts
   g$n = array(0,n) # number of points in each pixel
   for (i in seq(length(ix))) g$n[ix[i]] = g$n[ix[i]]+1
+  g$d = g$n/g$dx
 
   # weighted counts
   if (!is.null(w)) {
     g$m = array(0,n) # number of points in each pixel
     w = w[selection]
     for (i in seq(length(ix))) g$m[ix[i]] = g$m[ix[i]]+w[i]
+    g$c = g$m/g$dx
   }
+
+  # normalize
 
   # return data
   return(g)
