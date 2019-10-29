@@ -14,8 +14,8 @@
 #' \item{xlim}{range of xbreak, same as input argument xlim, if given}
 #' \item{n}{vector of point counts.}
 #' \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified}
-#' \item{d}{normalized number densities corresponding to n}
-#' \item{c}{normalized mass densities corresponding to m; only available if \code{w} is specified}
+#' \item{d}{normalized number densities corresponding to n, such that sum(d)*dx=1}
+#' \item{c}{normalized mass densities corresponding to m, such that sum(c)*dx=1; only available if \code{w} is specified}
 #'
 #' @author Danail Obreschkow
 #'
@@ -56,14 +56,14 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
   # non-weighted counts
   g$n = array(0,n) # number of points in each pixel
   for (i in seq(length(ix))) g$n[ix[i]] = g$n[ix[i]]+1
-  g$d = g$n/g$dx
+  g$d = g$n/sum(g$n)/g$dx
 
   # weighted counts
   if (!is.null(w)) {
     g$m = array(0,n) # number of points in each pixel
     w = w[selection]
     for (i in seq(length(ix))) g$m[ix[i]] = g$m[ix[i]]+w[i]
-    g$c = g$m/g$dx
+    g$c = g$m/sum(g$m)/g$dx
   }
 
   # normalize

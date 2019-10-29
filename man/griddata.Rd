@@ -23,8 +23,8 @@ Returns a list of items
 \item{xlim}{range of xbreak, same as input argument xlim, if given}
 \item{n}{vector of point counts.}
 \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified}
-\item{d}{normalized number densities corresponding to n}
-\item{c}{normalized mass densities corresponding to m; only available if \code{w} is specified}
+\item{d}{normalized number densities corresponding to n, such that sum(d)*dx=1}
+\item{c}{normalized mass densities corresponding to m, such that sum(c)*dx=1; only available if \code{w} is specified}
 }
 \description{
 Generates a 1D grid from a 1D point set, optionally with weights; similar to hist.
