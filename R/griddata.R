@@ -49,7 +49,7 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
 
   # grid data
   eps = 1e-12
-  ix = ceiling(((x-xlim[1])/(xlim[2]-xlim[1])*(1-eps)+eps)*n)
+  ix = ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n)
   selection = ix>=1 & ix<=n
   ix = ix[selection]
 

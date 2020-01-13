@@ -19,9 +19,10 @@
 
 nplot = function(xlim=c(0,1),ylim=c(0,1),xlab='',ylab='',
                  xaxs='i',yaxs='i',xaxt='n',yaxt='n',bty='n',
-                 mar=c(3,3,3,3),pty='m',...) {
+                 mar=NULL,pty='m',...) {
 
-  par(mar=mar,pty=pty)
+  if (!is.null(mar)) par(mar=mar)
+  par(pty=pty)
   plot(x=NA,xlim=xlim,ylim=ylim,xlab=xlab,ylab=ylab,
        xaxs=xaxs,yaxs=yaxs,xaxt=xaxt,yaxt=yaxt,bty=bty,...)
 }

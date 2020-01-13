@@ -13,7 +13,7 @@ pdf2jpg(pdf.filename, jpg.filename, quality = 100,
 
 \item{jpg.filename}{filename of jpeg output file}
 
-\item{quality}{quality of jpeg compression}
+\item{quality}{quality of jpeg compression from 1 (worst) to 100 (best)}
 
 \item{background}{color of background}
 

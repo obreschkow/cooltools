@@ -6,7 +6,7 @@
 \usage{
 nplot(xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "",
   xaxs = "i", yaxs = "i", xaxt = "n", yaxt = "n", bty = "n",
-  mar = c(3, 3, 3, 3), pty = "m", ...)
+  mar = NULL, pty = "m", ...)
 }
 \arguments{
 \item{xlim, ylim}{vectors with plotting limits.}

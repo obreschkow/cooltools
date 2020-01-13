@@ -1,6 +1,6 @@
 #' Build self-similar merger tree
 #'
-#' @description Builds a self-similar rooted directional tree (e.g. a halo merger tree) to be displayed with \code{\link{showtree}}.
+#' @description Builds a self-similar rooted directional tree (e.g. a halo merger tree) to be displayed with \code{\link{plottree}}.
 #'
 #' @param m vector of relative masses (normalization is irrelevant)
 #' @param nlevels number of progenitor levels
@@ -9,11 +9,11 @@
 #'
 #' ## build and show a self-similar binary tree with mass ratio 2:1
 #' tree = buildtree(m=c(2,1), nlevels=4)
-#' showtree(tree)
+#' plottree(tree)
 #'
 #' @author Danail Obreschkow
 #'
-#' @seealso \code{\link{showtree}}
+#' @seealso \code{\link{plottree}}
 #'
 #' @export
 

@@ -12,17 +12,17 @@ buildtree(m = c(1, 1), nlevels = 2)
 \item{nlevels}{number of progenitor levels}
 }
 \description{
-Builds a self-similar rooted directional tree (e.g. a halo merger tree) to be displayed with \code{\link{showtree}}.
+Builds a self-similar rooted directional tree (e.g. a halo merger tree) to be displayed with \code{\link{plottree}}.
 }
 \examples{
 
 ## build and show a self-similar binary tree with mass ratio 2:1
 tree = buildtree(m=c(2,1), nlevels=4)
-showtree(tree)
+plottree(tree)
 
 }
 \seealso{
-\code{\link{showtree}}
+\code{\link{plottree}}
 }
 \author{
 Danail Obreschkow
