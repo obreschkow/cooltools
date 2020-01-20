@@ -10,7 +10,8 @@ plottree(tree = NULL, normalize.mass = TRUE, sort = TRUE,
   col = rainbow(100, start = 0, end = 5/6), draw.edges = TRUE,
   draw.vertices = FALSE, draw.box = TRUE, add = FALSE, xlim = c(0,
   1), ylim = c(0, 1), scale = 1, gamma = 1, min = 0,
-  vertex.size = 1, pdf.filename = NULL, pdf.size = 5)
+  vertex.size = 1, pdf.filename = NULL, pdf.size = 5,
+  forced.x = NULL, forced.y = NULL)
 }
 \arguments{
 \item{tree}{list of vectors of equal lengths (\code{n}), specifying the \code{n} vertices (halos) a tree. These vectors are:
@@ -66,6 +67,10 @@ plottree(tree = NULL, normalize.mass = TRUE, sort = TRUE,
 \item{pdf.filename}{optional filename of a PDF file to be saved}
 
 \item{pdf.size}{optional size of the PDF image}
+
+\item{forced.x}{optional vector allowing the user to enforce the x-positions of individual nodes. Use NAs for automatic values.}
+
+\item{forced.y}{optional vector allowing the user to enforce the y-positions of individual nodes. Use NAs for automatic values.}
 }
 \description{
 Visualise rooted directional trees, such as the merger trees of halos and galaxies.

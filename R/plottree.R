@@ -40,6 +40,8 @@
 #' @param vertex.size scaling factor of the vertex size
 #' @param pdf.filename optional filename of a PDF file to be saved
 #' @param pdf.size optional size of the PDF image
+#' @param forced.x optional vector allowing the user to enforce the x-positions of individual nodes. Use NAs for automatic values.
+#' @param forced.y optional vector allowing the user to enforce the y-positions of individual nodes. Use NAs for automatic values.
 #'
 #' @examples
 #'
@@ -79,7 +81,9 @@ plottree = function(
   min = 0.0,
   vertex.size = 1,
   pdf.filename = NULL,
-  pdf.size = 5) {
+  pdf.size = 5,
+  forced.x = NULL,
+  forced.y = NULL) {
 
   # make default tree, if not given
   if (is.null(tree)) {
@@ -132,6 +136,16 @@ plottree = function(
   } else {
     if (length(tree$mass)!=n) stop("The 'mass' vector must have the same length as the 'descendant' vector.")
     if (min(tree$mass)<=0) stop("All values of the 'mass' vector must be positive.")
+  }
+
+  # forced.x
+  if (!is.null(forced.x)) {
+    tree$forced.x = forced.x
+  }
+
+  # forced.y
+  if (!is.null(forced.y)) {
+    tree$forced.y = forced.y
   }
 
   # check values & assign colors
@@ -224,6 +238,14 @@ plottree = function(
   # rescale to xlim and ylim
   tree$x = tree$x*(xlim[2]-xlim[1])+xlim[1]
   tree$y = tree$y*(ylim[2]-ylim[1])+ylim[1]
+
+  # enforce positions
+  if (!is.null(tree$forced.x)) {
+    tree$x[!is.na(tree$forced.x)] = tree$forced.x[!is.na(tree$forced.x)]
+  }
+  if (!is.null(tree$forced.y)) {
+    tree$y[!is.na(tree$forced.y)] = tree$forced.y[!is.na(tree$forced.y)]
+  }
 
   # plot tree
   if (style<3) tree$lwd = tree$lwd*1300
