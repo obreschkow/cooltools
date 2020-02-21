@@ -18,7 +18,7 @@ vectornorm = function(x) {
 
   } else {
 
-    return(sqrt(rowSums(x)))
+    return(sqrt(rowSums(x^2)))
 
   }
 
