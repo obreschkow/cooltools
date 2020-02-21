@@ -12,9 +12,9 @@ runif3(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi),
 
 \item{r}{2-vector specifying the range of radii}
 
-\item{azimuth}{2-vector specifying the range of azimuth angles}
+\item{azimuth}{2-vector specifying the range of azimuth angles (maximum range 0..2*pi)}
 
-\item{polarangle}{2-vector specifying the range of polar angles}
+\item{polarangle}{2-vector specifying the range of polar angles (maximum range 0..pi)}
 }
 \value{
 Returns an n-by-3 array of n vectors.
