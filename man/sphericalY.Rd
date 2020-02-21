@@ -7,7 +7,7 @@
 sphericalY(l, m, x = NULL, theta = NULL, phi = NULL)
 }
 \arguments{
-\item{l}{degree of the spherical harmonic (0,1,2,3)}
+\item{l}{degree of the spherical harmonic (0,1,2,3,4) = (monopole, dipole, quadrupole, octupole, hexadecapole)}
 
 \item{m}{sub-order of the spherical harmonic (-l,-l+1,...,+l)}
 
@@ -22,6 +22,34 @@ Returns an n vectors of the spherical harmonics.
 }
 \description{
 Evaluates complex-valued spherical harmonics in the Condon-Shortley phase convention.
+}
+\examples{
+## Check orthonormalization of all spherical harmonics up to 4th order
+
+# make indices l and m up to 4th order
+l = c(0,rep(1,3),rep(2,5),rep(3,7),rep(4,9))
+m = c(0,seq(-1,1),seq(-2,2),seq(-3,3),seq(-4,4))
+
+# check orthonormalization for all pairs
+for (i in seq(25)) {
+  for (j in seq(25)) {
+
+    # compute scalar product
+    f = function(theta,phi) {
+      Yi = sphericalY(l[i],m[i],theta=theta,phi=phi)
+      Yj = sphericalY(l[j],m[j],theta=theta,phi=phi)
+      return(Re(Yi*Conj(Yj))*sin(theta))
+    }
+    g = Vectorize(function(phi) integrate(f,0,pi,phi)$value)
+    scalar.product = integrate(g,0,2*pi)$value
+
+    # compare scalar product to expected value
+    ok = abs(scalar.product-(i==j))<1e-6
+    cat(sprintf('(l=\%1d,m=\%+1d|=\%1d,m=\%+1d)=\%5.3f  \%s\\n',l[i],m[i],l[j],m[j],
+                scalar.product+1e-10,ifelse(ok,'ok','wrong')))
+  }
+}
+
 }
 \author{
 Danail Obreschkow
