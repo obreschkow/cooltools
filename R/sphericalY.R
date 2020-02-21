@@ -4,11 +4,11 @@
 #'
 #' @param l degree of the spherical harmonic (0,1,2,3,4) = (monopole, dipole, quadrupole, octupole, hexadecapole)
 #' @param m sub-order of the spherical harmonic (-l,-l+1,...,+l)
-#' @param x n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; if x is given, theta and phi cannot be specified.
+#' @param x n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; the value of the spherical harmonic is scaled by |x|; if x is given, theta and phi cannot be specified.
 #' @param theta n-vector of azimuth angles from 0 to pi; if theta is given, phi must also be given, but x must not be given.
 #' @param phi n-vector of longitude angles from 0 to 2*pi; if phi is given, theta must also be given, but x must not be given.
 #'
-#' @return Returns an n vectors of the spherical harmonics.
+#' @return Returns an n vectors of the spherical harmonics, scaled by the norm of the point-vectors (unscalined if theta and phi are given instead of x)
 #'
 #' @author Danail Obreschkow
 #'
@@ -52,14 +52,15 @@ sphericalY = function(l,m,x=NULL,theta=NULL,phi=NULL) {
     phi = atan2(x[,2],x[,1])
     theta = acos(x[,3]/r)
     n = length(r)
-    bad = r==0
+    zeros = r==0
 
   } else {
 
     # check spherical coordinates
     if (is.null(theta) | is.null(phi)) stop('specify either x or (theta,phi).')
     n = length(theta)
-    bad = NULL
+    r = rep(1,n)
+    zeros = NULL
 
   }
 
@@ -146,8 +147,8 @@ sphericalY = function(l,m,x=NULL,theta=NULL,phi=NULL) {
 
   }
 
-  Y[bad] = 0
+  Y[zeros] = 0
 
-  return(Y)
+  return(Y*r)
 
 }
