@@ -8,7 +8,7 @@
 #' @param theta n-vector of azimuth angles from 0 to pi; if theta is given, phi must also be given, but x must not be given.
 #' @param phi n-vector of longitude angles from 0 to 2*pi; if phi is given, theta must also be given, but x must not be given.
 #'
-#' @return Returns an n vectors of the spherical harmonics; for vectors x=c(0,0,0), a value of 0 is returned
+#' @return Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value of 0 is returned
 #'
 #' @author Danail Obreschkow
 #'
