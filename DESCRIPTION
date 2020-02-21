@@ -1,7 +1,7 @@
 Package: cooltools
 Type: Package
 Title: Routines for scientific research
-Version: 1.02
+Version: 1.03
 Author: Danail Obreschkow
 Maintainer: The package maintainer <danail.obreschkow@gmail.com>
 Description: Collection of routines for scientific research with a focus on astrophysics.

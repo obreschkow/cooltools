@@ -22,6 +22,10 @@
 
 runif2 = function(n=1, r=c(0,1), azimuth=c(0,2*pi)) {
 
+  # handle input
+  if (length(r)==1) r=rep(r,2)
+  if (length(azimuth)==1) azimuth=rep(azimuth,2)
+
   # make random vectors
   r = runif(n,r[1]^2,r[2]^2)^(1/2)
   phi = runif(n,azimuth[1],azimuth[2])

@@ -4,8 +4,8 @@
 #'
 #' @param n number of random vectors to be generated
 #' @param r 2-vector specifying the range of radii
-#' @param azimuth 2-vector specifying the range of azimuth angles
-#' @param polarangle 2-vector specifying the range of polar angles
+#' @param azimuth 2-vector specifying the range of azimuth angles (maximum range 0..2*pi)
+#' @param polarangle 2-vector specifying the range of polar angles (maximum range 0..pi)
 #'
 #' @return Returns an n-by-3 array of n vectors.
 #'
@@ -21,6 +21,11 @@
 #' @export
 
 runif3 = function(n=1,r=c(0,1), azimuth=c(0,2*pi), polarangle=c(0,pi)) {
+
+  # handle input
+  if (length(r)==1) r=rep(r,2)
+  if (length(azimuth)==1) azimuth=rep(azimuth,2)
+  if (length(polarangle)==1) polarangle=rep(polarangle,2)
 
   # make random vectors
   r = runif(n,r[1]^3,r[2]^3)^(1/3)
