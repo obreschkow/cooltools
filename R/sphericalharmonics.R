@@ -1,6 +1,6 @@
 #' Spherical Harmonics
 #'
-#' @description Evaluates complex-valued spherical harmonics in the Condon-Shortley phase convention.
+#' @description Evaluates complex-valued spherical harmonics Y in the Condon-Shortley phase convention.
 #'
 #' @param l degree of the spherical harmonic (0,1,2,3,4) = (monopole, dipole, quadrupole, octupole, hexadecapole)
 #' @param m sub-order of the spherical harmonic (-l,-l+1,...,+l)
@@ -25,8 +25,8 @@
 #'
 #'     # compute scalar product
 #'     f = function(theta,phi) {
-#'       Yi = sphericalY(l[i],m[i],theta=theta,phi=phi)
-#'       Yj = sphericalY(l[j],m[j],theta=theta,phi=phi)
+#'       Yi = sphericalharmonics(l[i],m[i],theta=theta,phi=phi)
+#'       Yj = sphericalharmonics(l[j],m[j],theta=theta,phi=phi)
 #'       return(Re(Yi*Conj(Yj))*sin(theta))
 #'     }
 #'     g = Vectorize(function(phi) integrate(f,0,pi,phi)$value)
@@ -41,7 +41,7 @@
 #'
 #' @export
 
-sphericalY = function(l,m,x=NULL,theta=NULL,phi=NULL) {
+sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
 
   if (!is.null(x)) {
 
