@@ -4,9 +4,20 @@
 \alias{nplot}
 \title{Make empty plot area}
 \usage{
-nplot(xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "",
-  xaxs = "i", yaxs = "i", xaxt = "n", yaxt = "n", bty = "n",
-  mar = NULL, pty = "m", ...)
+nplot(
+  xlim = c(0, 1),
+  ylim = c(0, 1),
+  xlab = "",
+  ylab = "",
+  xaxs = "i",
+  yaxs = "i",
+  xaxt = "n",
+  yaxt = "n",
+  bty = "n",
+  mar = NULL,
+  pty = "m",
+  ...
+)
 }
 \arguments{
 \item{xlim, ylim}{vectors with plotting limits.}

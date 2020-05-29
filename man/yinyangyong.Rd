@@ -4,7 +4,9 @@
 \name{yinyangyong}
 \alias{yinyangyong}
 \title{Yin-Yang-Yong image}
-\format{An object of class \code{array} of dimension 500 x 500 x 4.}
+\format{
+An object of class \code{array} of dimension 500 x 500 x 4.
+}
 \usage{
 yinyangyong
 }

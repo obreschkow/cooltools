@@ -4,8 +4,7 @@
 \alias{runif3}
 \title{Generate randomly oriented vectors in 3D}
 \usage{
-runif3(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi),
-  polarangle = c(0, pi))
+runif3(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi), polarangle = c(0, pi))
 }
 \arguments{
 \item{n}{number of random vectors to be generated}

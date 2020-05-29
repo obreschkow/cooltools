@@ -45,7 +45,7 @@ for (i in seq(25)) {
 
     # compare scalar product to expected value
     ok = abs(scalar.product-(i==j))<1e-6
-    cat(sprintf('(l=\%1d,m=\%+1d|=\%1d,m=\%+1d)=\%5.3f  \%s\\n',l[i],m[i],l[j],m[j],
+    cat(sprintf('(l=\%1d,m=\%+1d|=\%1d,m=\%+1d)=\%5.3f  \%s\n',l[i],m[i],l[j],m[j],
                 scalar.product+1e-10,ifelse(ok,'ok','wrong')))
   }
 }

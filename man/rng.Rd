@@ -36,8 +36,8 @@ curve(sin(x)/2,0,pi,add=TRUE)
 ## 5D random number generation (5-dimensional sphere)
 f = function(x) as.numeric(sum(x^2)<=1)
 out = rng(f,1e4,rep(-1,5),rep(1,5))
-cat(sprintf('Number of successes over number of trials : \%.4f\\n',out$n/out$ntrials))
-cat(sprintf('Expected ratio for n=\\u221E : \%.4f\\n',pi^(5/2)/gamma(1+5/2)/2^5))
+cat(sprintf('Number of successes over number of trials : \%.4f\n',out$n/out$ntrials))
+cat(sprintf('Expected ratio for n=\u221E : \%.4f\n',pi^(5/2)/gamma(1+5/2)/2^5))
 
 }
 \seealso{

@@ -4,8 +4,7 @@
 \alias{griddata2}
 \title{Grid 2D point set}
 \usage{
-griddata2(x, y = NULL, w = NULL, n = c(20, 20), xlim = NULL,
-  ylim = NULL)
+griddata2(x, y = NULL, w = NULL, n = c(20, 20), xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{x}{N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates}

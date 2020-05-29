@@ -40,7 +40,7 @@ subplot = function(xleft=0.1, ybottom=0.1, xright=0.3, ytop=0.3) {
     xplot = par()$pin[1]
     ymarg = sum(par()$mai[c(1,3)])
     yplot = par()$pin[2]
-    par(new=T,omd=c(xleft*xplot/(xplot+xmarg),(xright*xplot+xmarg)/(xplot+xmarg),ybottom*yplot/(yplot+ymarg),(ytop*yplot+ymarg)/(yplot+ymarg)))
+    par(new=TRUE,omd=c(xleft*xplot/(xplot+xmarg),(xright*xplot+xmarg)/(xplot+xmarg),ybottom*yplot/(yplot+ymarg),(ytop*yplot+ymarg)/(yplot+ymarg)))
 
   } else {
 

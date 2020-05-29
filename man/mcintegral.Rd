@@ -32,15 +32,15 @@ Numerical integration using a Monte Carlo (MC) or Quasi-Monte Carlo (QMC) algori
 ## Numerically integrate sin(x)
 f = function(x) sin(x)
 m = mcintegral(f,0,pi)
-cat(sprintf('Integral = \%.3f\\u00B1\%.3f (true value = 2)\\n',m$value,m$sigma))
+cat(sprintf('Integral = \%.3f\u00B1\%.3f (true value = 2)\n',m$value,m$sigma))
 
 ## Numerically compute the volume of a unit sphere
 sphere = function(x) as.numeric(sum(x^2)<=1)
 vmc = mcintegral(sphere,rep(-1,3),rep(1,3),seed=1)
 vqmc = mcintegral(sphere,rep(-1,3),rep(1,3),qmc=TRUE)
-cat(sprintf('Volume of unit sphere = \%.3f\\u00B1\%.3f (MC)\\n',vmc$value,vmc$sigma))
-cat(sprintf('Volume of unit sphere = \%.3f\\u00B1\%.3f (QMC)\\n',vqmc$value,vqmc$sigma))
-cat(sprintf('Volume of unit sphere = \%.3f (exact)\\n',4*pi/3))
+cat(sprintf('Volume of unit sphere = \%.3f\u00B1\%.3f (MC)\n',vmc$value,vmc$sigma))
+cat(sprintf('Volume of unit sphere = \%.3f\u00B1\%.3f (QMC)\n',vqmc$value,vqmc$sigma))
+cat(sprintf('Volume of unit sphere = \%.3f (exact)\n',4*pi/3))
 
 }
 \author{

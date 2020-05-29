@@ -4,8 +4,15 @@
 \alias{contourlevel}
 \title{Find contour levels of a d-dimensional density field}
 \usage{
-contourlevel(f, p = c(0.6826895, 0.9544997), xmin = NULL,
-  xmax = NULL, neval = 10000, napprox = 10, ...)
+contourlevel(
+  f,
+  p = c(0.6826895, 0.9544997),
+  xmin = NULL,
+  xmax = NULL,
+  neval = 10000,
+  napprox = 10,
+  ...
+)
 }
 \arguments{
 \item{f}{either a d-dimensional vector/array or a function \code{f(x)} of a d-element vector \code{x}. There is no need for \code{f} to be normalized.}

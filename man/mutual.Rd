@@ -4,8 +4,7 @@
 \alias{mutual}
 \title{Mutual information of two random variables}
 \usage{
-mutual(x, y = NULL, b = exp(1), n = NULL, xlim = NULL,
-  ylim = NULL)
+mutual(x, y = NULL, b = exp(1), n = NULL, xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{x}{either of the following: (1) an m-by-n matrix representing the 2D probability mass function of two random variables X and Y; all elements must be non-negative; the normalization is irrelevant. (2) an n-vector of sampled x-values; in this case y must be specified.}

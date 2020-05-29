@@ -4,8 +4,18 @@
 \alias{kde2}
 \title{2D kernel density estimation}
 \usage{
-kde2(x, y, w = NULL, s = 1, n = c(20, 20), xlim = range(x),
-  ylim = range(y), sd.min = NULL, sd.max = NULL, reflect = "")
+kde2(
+  x,
+  y,
+  w = NULL,
+  s = 1,
+  n = c(20, 20),
+  xlim = range(x),
+  ylim = range(y),
+  sd.min = NULL,
+  sd.max = NULL,
+  reflect = ""
+)
 }
 \arguments{
 \item{x}{N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates}

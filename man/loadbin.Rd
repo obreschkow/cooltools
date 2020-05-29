@@ -4,8 +4,14 @@
 \alias{loadbin}
 \title{Read binary data into array}
 \usage{
-loadbin(filename, dim, bytes = 4, type = "numeric", signed = FALSE,
-  endian = "little")
+loadbin(
+  filename,
+  dim,
+  bytes = 4,
+  type = "numeric",
+  signed = FALSE,
+  endian = "little"
+)
 }
 \arguments{
 \item{filename}{path of the file to be loaded}

@@ -4,9 +4,18 @@
 \alias{smoothcontour}
 \title{Draw smoothed contours}
 \usage{
-smoothcontour(x = seq(0, 1, length.out = nrow(z)), y = seq(0, 1,
-  length.out = ncol(z)), z, levels, smoothing = 0.5, min.radius = 1,
-  lwd = 1, lty = 1, col = "black", ...)
+smoothcontour(
+  x = seq(0, 1, length.out = nrow(z)),
+  y = seq(0, 1, length.out = ncol(z)),
+  z,
+  levels,
+  smoothing = 0.5,
+  min.radius = 1,
+  lwd = 1,
+  lty = 1,
+  col = "black",
+  ...
+)
 }
 \arguments{
 \item{x, y}{vectors containing the locations of grid lines at which the values of z are measured. These must be in ascending order. By default, equally spaced values from 0 to 1 are used.}

@@ -4,9 +4,18 @@
 \alias{transzoom}
 \title{Zoom and translate image}
 \usage{
-transzoom(img = NULL, zoom = 1, shift = c(0, 0), size = NULL,
-  col = "black", filter = "bilinear", file.in = "", file.out = "",
-  format = "png", show.image = TRUE)
+transzoom(
+  img = NULL,
+  zoom = 1,
+  shift = c(0, 0),
+  size = NULL,
+  col = "black",
+  filter = "bilinear",
+  file.in = "",
+  file.out = "",
+  format = "png",
+  show.image = TRUE
+)
 }
 \arguments{
 \item{img}{n-by-m-by-3 array or n-by-m-by-4 array representing an rgb(+alpha) image.}

@@ -4,8 +4,17 @@
 \alias{errlines}
 \title{Draw a line with uncertainty regions}
 \usage{
-errlines(x, y, errp, errn = errp, col = "black", alpha = 0.5,
-  smooth = FALSE, df = NULL, ...)
+errlines(
+  x,
+  y,
+  errp,
+  errn = errp,
+  col = "black",
+  alpha = 0.5,
+  smooth = FALSE,
+  df = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{vector of x-coordinates}

@@ -4,8 +4,16 @@
 \alias{invert}
 \title{Invert and shift colors of an image}
 \usage{
-invert(img = NULL, invert = T, colshift = 0, blur = 0,
-  file.in = "", file.out = "", format = "png", show.image = TRUE)
+invert(
+  img = NULL,
+  invert = T,
+  colshift = 0,
+  blur = 0,
+  file.in = "",
+  file.out = "",
+  format = "png",
+  show.image = TRUE
+)
 }
 \arguments{
 \item{img}{n-by-m-by-3 array or n-by-m-by-4 array representing an rgb(+alpha) image}

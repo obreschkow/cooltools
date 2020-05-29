@@ -4,9 +4,15 @@
 \alias{pdf2jpg}
 \title{Convert pdf to jpg}
 \usage{
-pdf2jpg(pdf.filename, jpg.filename, quality = 100,
-  background = "white", dim = c(1600, 1200), remove.pdf = FALSE,
-  verbose = TRUE)
+pdf2jpg(
+  pdf.filename,
+  jpg.filename,
+  quality = 100,
+  background = "white",
+  dim = c(1600, 1200),
+  remove.pdf = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{pdf.filename}{filename of pdf input file}
