@@ -14,9 +14,12 @@
 #' \item{y}{n-element vector of cell-center y-coordinates}
 #' \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates}
 #' \item{ybreak}{(n+1)-element vector of cell-edge y-coordinates}
+#' \item{dx}{spacing between x-coordinates}
+#' \item{dy}{spacing between y-coordinates}
 #' \item{xlim}{range of xbreak, same as input argument xlim, if given}
 #' \item{ylim}{range of ybreak, same as input argument ylim, if given}
 #' \item{n}{2D array of point counts.}
+#' \item{d}{normalized number densities corresponding to n, such that \code{sum(d)*dx*dy=1}.}
 #' \item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
 #'
 #' @author Danail Obreschkow
@@ -58,6 +61,8 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
            xbreak = seq(xlim[1], xlim[2], length = n[1]+1), # vector of cell-edge x-coordinates
            ybreak = seq(ylim[1], ylim[2], length = n[2]+1), # vector of cell-edge y-coordinates
            xlim = xlim, ylim = ylim)
+  g$dx = g$xbreak[2]-g$xbreak[1]
+  g$dy = g$ybreak[2]-g$ybreak[1]
 
   # grid data
   eps = 1e-12
@@ -70,6 +75,9 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   # non-weighted counts
   g$n = array(0,n) # number of points in each pixel
   for (i in seq(length(ix))) g$n[ix[i],iy[i]] = g$n[ix[i],iy[i]]+1
+
+  # density
+  g$d = g$n/g$dx/g$dy
 
   # weighted counts
   if (!is.null(w)) {
