@@ -42,7 +42,7 @@ smoothcontour = function(x=seq(0,1,length.out=nrow(z)), y=seq(0,1,length.out=nco
   if (length(lty)<nlevels) lty=rep(lty,length(levels))
   if (length(col)<nlevels) col=rep(col,length(levels))
 
-  # determine whether x-values are on a linearly distributed (otherwise exponential is assumed)
+  # determine whether x-values are linearly distributed (otherwise exponential is assumed)
   nx = length(x)
   if (nx>2) {
     dx = x[2:nx]-x[1:(nx-1)]
@@ -51,11 +51,11 @@ smoothcontour = function(x=seq(0,1,length.out=nrow(z)), y=seq(0,1,length.out=nco
     expx = FALSE
   }
 
-  # determine whether y-values are on a linearly distributed (otherwise exponential is assumed)
+  # determine whether y-values are linearly distributed (otherwise exponential is assumed)
   ny = length(y)
   if (ny>2) {
     dy = y[2:ny]-y[1:(ny-1)]
-    expy = all(dy[2:(ny-1)]-dy[1:(nx-2)]>0)
+    expy = all(dy[2:(ny-1)]-dy[1:(ny-2)]>0)
   } else {
     expy = FALSE
   }
