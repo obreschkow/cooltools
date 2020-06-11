@@ -44,7 +44,7 @@ rng = function(f,n,min,max,fmax=NULL) {
   # find maximum of distribution function
   if (is.null(fmax)) {
     if (d==1) {
-      fmax = optimize(f,c(min,max),maximum=TRUE)$maximum
+      fmax = optimize(f,c(min,max),maximum=TRUE)$objective
     } else {
       xinit = (min+max)/2
       fmax = optim(xinit,f,control=list(fnscale=-1))$value
