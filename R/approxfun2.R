@@ -43,7 +43,7 @@ approxfun2 = function(x,y,z,outside=NA) {
   interval = (max(x)-xmin)*2
 
   xvect = rep(c(-1e-5,x-xmin,max(x)-xmin+1e-5),ny+2)+rep(seq(ny+2)*interval,each=nx+2)
-  zvect = as.vector(cbind(rep(outside,nx+2),rbind(rep(outside,ny),z,rep(outside,ny)),rep(outside,nx+2)))
+  zvect = as.vector(cbind(rep(Inf,nx+2),rbind(rep(Inf,ny),z,rep(Inf,ny)),rep(Inf,nx+2)))
 
   fun = approxfun(xvect,zvect,yleft=outside,yright=outside)
 
@@ -56,7 +56,9 @@ approxfun2 = function(x,y,z,outside=NA) {
     w = f-i
     x1 = (x-xmin)+i*interval
     x2 = (x-xmin)+j*interval
-    (1-w)*fun(x1)+w*fun(x2)
+    out = (1-w)*fun(x1)+w*fun(x2)
+    out[is.infinite(out)] = outside
+    return(out)
   }
 
   return(fout)
