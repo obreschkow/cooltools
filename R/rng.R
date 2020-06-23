@@ -46,7 +46,7 @@ rng = function(f,n,min,max,fmax=NULL,seed=NULL,warn=TRUE) {
 
   # check if f is vectorized
   if (length(f(rbind(min,min)))==1 & length(f(rbind(min,min,min)))==1) {
-    if (warn) cat('WARNING: use mcintegral with vectorized function for faster performance.\n')
+    if (warn) cat('WARNING: use rgn with vectorized function for faster performance.\n')
     if (d==1) {
       fvect = Vectorize(f)
     } else {
