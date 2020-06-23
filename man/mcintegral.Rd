@@ -17,7 +17,7 @@ mcintegral(f, a, b, n = 1e+05, qmc = FALSE, seed = NULL, warn = TRUE)
 
 \item{qmc}{logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers, generated from an additive recurrence algorithm are used.}
 
-\item{seed}{seed for random number generator. Only used of \code{qmc} is false.}
+\item{seed}{optional seed for random number generator. Only used if \code{qmc} is false.}
 
 \item{warn}{logical flag. If true (default), a warning is produced if the function f is not vectorized.}
 }

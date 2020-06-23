@@ -4,16 +4,20 @@
 \alias{rng}
 \title{Random number generator for a custom d-dimensional distribution}
 \usage{
-rng(f, n, min, max, fmax = NULL)
+rng(f, n, min, max, fmax = NULL, seed = NULL, warn = TRUE)
 }
 \arguments{
-\item{f}{function of a d-vector represending an d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized.}
+\item{f}{function of a d-vector representing a d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized. For fast performance, this function should be vectorized, such that it returns an N-element vector if it is given an N-by-D matrix as argument. An automatic warning is produced if the function is not vectorized in this manner.}
 
 \item{n}{number of random numbers to be generated}
 
 \item{min, max}{are d-vectors specifying the domain of distribution function; the domain must be finite and should be as restrictive as possible to keep the number of random trials as low as possible.}
 
 \item{fmax}{maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.}
+
+\item{seed}{optional seed for random number generator.}
+
+\item{warn}{logical flag. If true (default), a warning is produced if the function f is not vectorized.}
 }
 \value{
 Returns list of items:

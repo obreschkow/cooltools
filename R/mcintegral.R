@@ -10,7 +10,7 @@
 #' @param b D-vector with upper limit(s) of the integration
 #' @param n approximate number of random evaluations. (The exact number is max(1,round(sqrt(n)))^2.)
 #' @param qmc logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers, generated from an additive recurrence algorithm are used.
-#' @param seed seed for random number generator. Only used of \code{qmc} is false.
+#' @param seed optional seed for random number generator. Only used if \code{qmc} is false.
 #' @param warn logical flag. If true (default), a warning is produced if the function f is not vectorized.
 #'
 #' @return Returns a list of items:
