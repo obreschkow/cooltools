@@ -27,7 +27,7 @@ Returns list of items:
 \item{ntrials}{number of trials.}
 }
 \description{
-Brute-force algorithm for drawing random numbers from an d-dimensional distribution.
+Brute-force algorithm for drawing random numbers from a d-dimensional distribution.
 }
 \examples{
 

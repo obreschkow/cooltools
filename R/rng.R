@@ -2,7 +2,7 @@
 #'
 #' @importFrom stats runif optim optimize
 #'
-#' @description Brute-force algorithm for drawing random numbers from an d-dimensional distribution.
+#' @description Brute-force algorithm for drawing random numbers from a d-dimensional distribution.
 #'
 #' @param f function of a d-vector representing a d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized. For fast performance, this function should be vectorized, such that it returns an N-element vector if it is given an N-by-D matrix as argument. An automatic warning is produced if the function is not vectorized in this manner.
 #' @param n number of random numbers to be generated
@@ -46,7 +46,7 @@ rng = function(f,n,min,max,fmax=NULL,seed=NULL,warn=TRUE) {
 
   # check if f is vectorized
   if (length(f(rbind(min,min)))==1 & length(f(rbind(min,min,min)))==1) {
-    if (warn) cat('WARNING: use rgn with vectorized function for faster performance.\n')
+    if (warn) cat('WARNING: use rng with vectorized function for faster performance.\n')
     if (d==1) {
       fvect = Vectorize(f)
     } else {
