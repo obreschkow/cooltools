@@ -1,12 +1,13 @@
 Package: cooltools
 Type: Package
 Title: Routines for scientific research
-Version: 1.10
+Version: 1.11
 Author: Danail Obreschkow
 Maintainer: The package maintainer <danail.obreschkow@gmail.com>
 Description: Collection of routines for scientific research with a focus on astrophysics.
 Depends:
     R (>= 3.1.1)
+biocViews:
 Imports:
     magicaxis,
     pracma,
