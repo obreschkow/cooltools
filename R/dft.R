@@ -5,8 +5,9 @@
 #' @description Discrete Fourier Transform (DFT) with longest modes at the center in Fourier space and normalized such that dft(dft(f),inverse)=f. This is the discretization scheme described in  Appendix D of Obreschkow et al. 2013, ApJ 762. Relies on \code{\link[stats]{fft}}.
 #'
 #' @param f real or complex D-dimensional array containing the values to be transformed.
-#' @param inverse logical flag; if TRUE the inverse Fourier Transfrom is performed.
+#' @param inverse logical flag; if TRUE the inverse Fourier transform is performed.
 #' @param shift D-vector specifying the integer shift of the coordinates in Fourier space. Set to \code{shift=rep(0,D)} to produced a DFT with the longest mode at the corner in Fourier space.
+#' @param simplify logical flag; if TRUE the complex output array will be simplified to a real array, if it is real within the floating point accuracy
 #'
 #' @return Returns an array of the same shape as \code{f}, containing the (inverse) Fourier Transform.
 #'
@@ -32,10 +33,14 @@
 #'
 #' @export
 
-dft = function(f, inverse = F, shift=-floor(dim(as.array(f))/2)) {
+dft = function(f, inverse = F, shift=-floor(dim(as.array(f))/2), simplify=TRUE) {
   if (inverse) {
-    return(stats::fft(cshift(f,shift),inverse=T))
+    g = stats::fft(cshift(f,shift),inverse=T)
   } else {
-    return(cshift(stats::fft(f),-shift)/length(f))
+    g = cshift(stats::fft(f),-shift)/length(f)
   }
+  if (simplify) {
+    if (mean(abs(Im(g)))/(mean(abs(g))+.Machine$double.xmin)<1e-13) g = Re(g)
+  }
+  return(g)
 }

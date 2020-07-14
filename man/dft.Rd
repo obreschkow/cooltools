@@ -4,14 +4,16 @@
 \alias{dft}
 \title{Discrete Fourier Transform}
 \usage{
-dft(f, inverse = F, shift = -floor(dim(as.array(f))/2))
+dft(f, inverse = F, shift = -floor(dim(as.array(f))/2), simplify = TRUE)
 }
 \arguments{
 \item{f}{real or complex D-dimensional array containing the values to be transformed.}
 
-\item{inverse}{logical flag; if TRUE the inverse Fourier Transfrom is performed.}
+\item{inverse}{logical flag; if TRUE the inverse Fourier transform is performed.}
 
 \item{shift}{D-vector specifying the integer shift of the coordinates in Fourier space. Set to \code{shift=rep(0,D)} to produced a DFT with the longest mode at the corner in Fourier space.}
+
+\item{simplify}{logical flag; if TRUE the complex output array will be simplified to a real array, if it is real within the floating point accuracy}
 }
 \value{
 Returns an array of the same shape as \code{f}, containing the (inverse) Fourier Transform.
