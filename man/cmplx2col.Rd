@@ -4,12 +4,12 @@
 \alias{cmplx2col}
 \title{Convert complex numbers to color}
 \usage{
-cmplx2col(z, max = 1, hue = 0, saturation = 1)
+cmplx2col(z, max = NULL, hue = 0, saturation = 1)
 }
 \arguments{
 \item{z}{complex number or vector/array of complex numbers}
 
-\item{max}{maximum}
+\item{max}{value of the complex module that corresponds to full brightness; if not given, this is set equal to the maximum complex amplitude in z.}
 
 \item{hue}{hue value of positive reals}
 
