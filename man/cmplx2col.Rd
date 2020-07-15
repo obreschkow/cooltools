@@ -4,7 +4,7 @@
 \alias{cmplx2col}
 \title{Convert complex numbers to color}
 \usage{
-cmplx2col(z, max = NULL, hue = 0, saturation = 1)
+cmplx2col(z, max = NULL, hue = 0, saturation = 1, gamma = 1)
 }
 \arguments{
 \item{z}{complex number or vector/array of complex numbers}
@@ -14,6 +14,8 @@ cmplx2col(z, max = NULL, hue = 0, saturation = 1)
 \item{hue}{hue value of positive reals}
 
 \item{saturation}{saturation value of colors}
+
+\item{gamma}{positive number to adjust the non-linearity of the color scale (1=linear)}
 }
 \value{
 Returns a single color or vector/array of colors
