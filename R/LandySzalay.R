@@ -46,8 +46,8 @@ landyszalay = function(D,R,dr=0.1,cpp=TRUE) {
   DR = paircount(D,R,dr=dr,rmax=rmax,cpp=cpp)$n
 
   # compute L-S estimator
-  nDD = nD^2/2
-  nRR = nR^2/2
+  nDD = nD*(nD-1)/2
+  nRR = nR*(nR-1)/2
   nDR = nD*nR
   xi = (DD/nDD-2*DR/nDR)/RR*nRR+1
   err = sqrt(DD*(nRR/nDD/RR)^2+4*DR*(nRR/nDR/RR)^2+RR*((DD/nDD-2*DR/nDR)/RR^2*nRR)^2)
