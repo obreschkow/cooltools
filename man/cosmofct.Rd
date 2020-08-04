@@ -4,19 +4,19 @@
 \alias{cosmofct}
 \title{Fast cosmology conversion functions}
 \usage{
-cosmofct(zmin = 0, zmax = 1, dz = 0.01, ...)
+cosmofct(zmin = 0, zmax = 1, dz = 0.02, ...)
 }
 \arguments{
 \item{zmin}{minimum redshift for which the conversion functions are used}
 
 \item{zmax}{maximum redshift for which the conversion functions are used}
 
-\item{dz}{redshift interval on which the conversion functions are interpolated}
+\item{dz}{redshift interval on which the conversion functions are interpolated (default of 0.02 is normally largely sufficient)}
 
 \item{...}{cosmological parameters accepted by \code{cosdist} of the *celestial* package. Defaults are H0=100, OmegaM=0.3, OmegaL=1-OmegaM-OmegaR, OmegaR=0, w0=-1, wprime=0.}
 }
 \value{
-Returns a list of 20 vectorized functions; e.g. dc2z to convert from comoving distance to redshift. Also lists the \code{age} of the universe at z=0.
+Returns a list of 20 vectorized functions; e.g. dc2z to convert from comoving distance to redshift. Also lists the \code{age} of the universe at z=0. All distances are in units of Mpc and times are in units of Gyr.
 }
 \description{
 Generates all 20 conversion functions between redshift (z), luminosity distance (dl), comoving distance (dc) and angular diameter distance (da), and lookback time (t = light travel time from specified redshift); based on the *celestial* package.
