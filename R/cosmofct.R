@@ -3,14 +3,14 @@
 #' @importFrom celestial cosdist
 #' @importFrom stats splinefun
 #'
-#' @description Generates all 16 conversion functions between redshift (z), luminosity distance (dl), comoving distance (dc) and angular diameter distance (da), based on the *celestial* package.
+#' @description Generates all 20 conversion functions between redshift (z), luminosity distance (dl), comoving distance (dc) and angular diameter distance (da), and lookback time (t = light travel time from specified redshift); based on the *celestial* package.
 #'
 #' @param zmin minimum redshift for which the conversion functions are used
 #' @param zmax maximum redshift for which the conversion functions are used
 #' @param dz redshift interval on which the conversion functions are interpolated
 #' @param ... cosmological parameters accepted by \code{cosdist} of the *celestial* package. Defaults are H0=100, OmegaM=0.3, OmegaL=1-OmegaM-OmegaR, OmegaR=0, w0=-1, wprime=0.
 #'
-#' @return Returns a list of 16 vectorized functions; e.g. dc2z to convert from comoving distance to redshift.
+#' @return Returns a list of 20 vectorized functions; e.g. dc2z to convert from comoving distance to redshift. Also lists the \code{age} of the universe at z=0.
 #'
 #' @author Danail Obreschkow (based on *celestial* package by Aaron Robotham)
 #'
@@ -30,12 +30,17 @@
 cosmofct = function(zmin=0,zmax=1,dz=0.01,...) {
 
   z = seq(zmin,zmax,length.out=ceiling((zmax-zmin)/dz)+1)
-  dl = cosdist(z,...)$LumDist
-  dc = dl/(1+z)
-  da = dl/(1+z)^2
-  return(list(z2dl = splinefun(z,dl), z2dc = splinefun(z,dc), z2da = splinefun(z,da),
-              dl2z = splinefun(dl,z), dl2dc = splinefun(dl,dc), dl2da = splinefun(dl,da),
-              dc2z = splinefun(dc,z), dc2dl = splinefun(dc,dl), dc2da = splinefun(dc,da),
-              da2z = splinefun(da,z), da2dl = splinefun(da,dl), da2dc = splinefun(da,dc)))
+  out = cosdist(z,age=TRUE,...)
+  dl = out$LumDist
+  dc = out$CoDist
+  da = out$AngDist
+  t = out$TravelTime
+
+  return(list(z2dl = splinefun(z,dl), z2dc = splinefun(z,dc), z2da = splinefun(z,da), z2t = splinefun(z,t),
+              dl2z = splinefun(dl,z), dl2dc = splinefun(dl,dc), dl2da = splinefun(dl,da), dl2t = splinefun(dl,t),
+              dc2z = splinefun(dc,z), dc2dl = splinefun(dc,dl), dc2da = splinefun(dc,da), dc2t = splinefun(dc,t),
+              da2z = splinefun(da,z), da2dl = splinefun(da,dl), da2dc = splinefun(da,dc), da2t = splinefun(da,t),
+              t2z = splinefun(t,z), t2dl = splinefun(t,dl), t2dc = splinefun(t,dc), t2da = splinefun(t,da),
+              age = out$UniAgeNow))
 
 }
