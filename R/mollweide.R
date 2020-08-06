@@ -77,6 +77,6 @@ mollweide = function (lon, lat, lon0=0, radius=1, deg=FALSE) {
   y = radius*sqrt(2)*sin(theta)
 
   # return Cartesian coordinates
-  return(list(x=x,y=y))
+  return(data.frame(x=x,y=y))
 
 }
