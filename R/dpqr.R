@@ -2,7 +2,7 @@
 #'
 #' @importFrom stats integrate uniroot
 #'
-#' @description Produces the family of d/p/q/r functions associated with a custom distribution function; similarly to the standard families dnorm/pnorm/qnorm/rnorm, dunif/punif/...
+#' @description Produces the family of d/p/q/r functions associated with a custom one-dimensional distribution function; similarly to the standard families dnorm/pnorm/qnorm/rnorm, dunif/punif/...
 #'
 #' @param fun distribution function of a single variable; does not have to be normalized
 #' @param min,max domain of distribution function; outside this domain \code{fun} will be considered equal to 0. In practice, this should be the most restrictive domain containing (almost) all the mass of \code{fun}.
@@ -28,12 +28,13 @@
 #' @export
 
 dpqr = function(fun,min,max) {
-  # fun = function of one variable, represending an arbitrary non-normalised PDF
+  # fun = function of one variable, representing an arbitrary non-normalised PDF
   # min, max = truncation values of the PDF
   e = (max-min)*1e-12
   norm = integrate(fun,min,max)$value
-  d = function(x) fun(x)/norm # PDF
-  p = function(x) integrate(d,min,x)$value # CDF
+  f = function(x) fun(x)/norm
+  d = function(x) f(x)*as.numeric(x>=min & x<=max) # PDF
+  p = function(x) integrate(f,min,x)$value # CDF
   q = function(p) uniroot(function(x) p(x)-p,c(min-e,max+e))$root # QF
   r = function(n) Vectorize(q)(runif(n)) # RNG
   return(list(d = d, p = Vectorize(p), q = Vectorize(q), r = r))

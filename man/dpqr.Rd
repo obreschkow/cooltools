@@ -19,7 +19,7 @@ Returns a list of items:
 \item{r(n)}{A vector of \code{n} random numbers drawn from the PDF.}
 }
 \description{
-Produces the family of d/p/q/r functions associated with a custom distribution function; similarly to the standard families dnorm/pnorm/qnorm/rnorm, dunif/punif/...
+Produces the family of d/p/q/r functions associated with a custom one-dimensional distribution function; similarly to the standard families dnorm/pnorm/qnorm/rnorm, dunif/punif/...
 }
 \examples{
 
