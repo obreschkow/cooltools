@@ -15,7 +15,7 @@
 #'
 #'#' @examples
 #' nplot()
-#' rasterImage(rbind(spectrum(1e3)),0,0,1,0.5)
+#' rasterImage(rbind(spectrumcolors(1e3)),0,0,1,0.5)
 #' rasterImage(rbind(rainbow(1e3,end=5/6)),0,0.5,1,1)
 #' text(0.5,0.25,'spectrum')
 #' text(0.5,0.75,'rainbow')
