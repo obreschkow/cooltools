@@ -23,7 +23,7 @@
 #'
 #' @export
 
-spectrum = function(n, alpha=1) {
+spectrumcolors = function(n, alpha=1) {
 
   xin  = c(0,1.3,1.4,1.7,2.5,3,3.5,3.8,4.5,5)
   xout = c(0,1,1.1,1.4,2.9,3,3.4,3.65,4.7,5)
