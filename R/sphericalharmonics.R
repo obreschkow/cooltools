@@ -1,32 +1,34 @@
 #' Spherical Harmonics
 #'
+#' @importFrom stats integrate
+#'
 #' @description Evaluates complex-valued spherical harmonics Y in the Condon-Shortley phase convention.
 #'
-#' @param l degree of the spherical harmonic (0,1,2,3,4) = (monopole, dipole, quadrupole, octupole, hexadecapole)
-#' @param m sub-order of the spherical harmonic (-l,-l+1,...,+l)
-#' @param x n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; if x is given, theta and phi cannot be specified.
+#' @param l degree of the spherical harmonic (0,1,2,3,4,...) = (monopole, dipole, quadrupole, octupole, hexadecapole,...)
+#' @param m order of the spherical harmonic (-l,-l+1,...,+l)
 #' @param theta n-vector of azimuth angles from 0 to pi; if theta is given, phi must also be given, but x must not be given.
 #' @param phi n-vector of longitude angles from 0 to 2*pi; if phi is given, theta must also be given, but x must not be given.
+#' @param x n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; if x is given, theta and phi cannot be specified.
 #'
 #' @return Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value of 0 is returned
 #'
 #' @author Danail Obreschkow
 #'
 #' @examples
-#' ## Check orthonormalization of all spherical harmonics up to 4th order
+#' ## Check orthonormalization of all spherical harmonics up to 3rd degree
 #'
-#' # make indices l and m up to 4th order
-#' l = c(0,rep(1,3),rep(2,5),rep(3,7),rep(4,9))
-#' m = c(0,seq(-1,1),seq(-2,2),seq(-3,3),seq(-4,4))
+#' # make indices l and m up to 3rd degree
+#' l = c(0,rep(1,3),rep(2,5),rep(3,7))
+#' m = c(0,seq(-1,1),seq(-2,2),seq(-3,3))
 #'
 #' # check orthonormalization for all pairs
-#' for (i in seq(25)) {
-#'   for (j in seq(25)) {
+#' for (i in seq(16)) {
+#'   for (j in seq(16)) {
 #'
 #'     # compute scalar product
 #'     f = function(theta,phi) {
-#'       Yi = sphericalharmonics(l[i],m[i],theta=theta,phi=phi)
-#'       Yj = sphericalharmonics(l[j],m[j],theta=theta,phi=phi)
+#'       Yi = sphericalharmonics(l[i],m[i],theta,phi)
+#'       Yj = sphericalharmonics(l[j],m[j],theta,phi)
 #'       return(Re(Yi*Conj(Yj))*sin(theta))
 #'     }
 #'     g = Vectorize(function(phi) integrate(f,0,pi,phi)$value)
@@ -34,14 +36,18 @@
 #'
 #'     # compare scalar product to expected value
 #'     ok = abs(scalar.product-(i==j))<1e-6
-#'     cat(sprintf('(l=%1d,m=%+1d|=%1d,m=%+1d)=%5.3f  %s\n',l[i],m[i],l[j],m[j],
+#'     cat(sprintf('(l=%1d,m=%+1d|l=%1d,m=%+1d)=%5.3f  %s\n',l[i],m[i],l[j],m[j],
 #'                 scalar.product+1e-10,ifelse(ok,'ok','wrong')))
 #'   }
 #' }
 #'
 #' @export
 
-sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
+sphericalharmonics = function(l,m,theta=NULL,phi=NULL,x=NULL) {
+
+  if (round(l)!=l) stop('m must be an integer')
+  if (round(m)!=m) stop('m must be an integer')
+  if (abs(m)>l) stop("m must be equal to -l,-l+1,...,+l")
 
   if (!is.null(x)) {
 
@@ -63,9 +69,10 @@ sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
 
   }
 
+  Y = sqrt((2*l+1)*factorial(l-m)/4/pi/factorial(l+m))*alp(cos(theta),l,m)*exp(1i*m*phi)
+
   if (l==0) { # monopole
 
-    if (m!=0) stop("m must be equal to -l,-l+1,...,+l")
     Y = rep(1/2/sqrt(pi),n)
 
   } else if (l==1) { # dipole
@@ -77,7 +84,6 @@ sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
     } else if (m==1) {
       Y = -0.5*sqrt(3/2/pi)*sin(theta)*exp(1i*phi)
     } else {
-      stop("m must be equal to -l,-l+1,...,+l")
     }
 
   } else if (l==2) { # quadrupole
@@ -92,8 +98,6 @@ sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
       Y = -0.5*sqrt(15/2/pi)*sin(theta)*cos(theta)*exp(1i*phi)
     } else if (m==2) {
       Y = 0.25*sqrt(15/2/pi)*sin(theta)^2*exp(2i*phi)
-    } else {
-      stop("m must be equal to -l,-l+1,...,+l")
     }
 
   } else if (l==3) { # octupole
@@ -112,8 +116,6 @@ sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
       Y = 0.25*sqrt(105/2/pi)*exp(2i*phi)*sin(theta)^2*cos(theta)
     } else if (m==3) {
       Y = -0.125*sqrt(35/pi)*exp(3i*phi)*sin(theta)^3
-    } else {
-      stop("m must be equal to -l,-l+1,...,+l")
     }
 
   } else if (l==4) { # hexadecapole}
@@ -136,13 +138,11 @@ sphericalharmonics = function(l,m,x=NULL,theta=NULL,phi=NULL) {
       Y = -(3/8)*sqrt(35/pi)*exp(3i*phi)*sin(theta)^3*cos(theta)
     } else if (m==4) {
       Y = (3/16)*sqrt(35/2/pi)*exp(4i*phi)*sin(theta)^4
-    } else {
-      stop("m must be equal to -l,-l+1,...,+l")
     }
 
   } else {
 
-    stop('l must be equal to 0,1,2,3,4 in this implementation')
+    Y = sqrt((2*l+1)*factorial(l-m)/4/pi/factorial(l+m))*alp(cos(theta),l,m)*exp(1i*m*phi)
 
   }
 

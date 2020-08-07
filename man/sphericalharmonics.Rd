@@ -4,18 +4,18 @@
 \alias{sphericalharmonics}
 \title{Spherical Harmonics}
 \usage{
-sphericalharmonics(l, m, x = NULL, theta = NULL, phi = NULL)
+sphericalharmonics(l, m, theta = NULL, phi = NULL, x = NULL)
 }
 \arguments{
-\item{l}{degree of the spherical harmonic (0,1,2,3,4) = (monopole, dipole, quadrupole, octupole, hexadecapole)}
+\item{l}{degree of the spherical harmonic (0,1,2,3,4,...) = (monopole, dipole, quadrupole, octupole, hexadecapole,...)}
 
-\item{m}{sub-order of the spherical harmonic (-l,-l+1,...,+l)}
-
-\item{x}{n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; if x is given, theta and phi cannot be specified.}
+\item{m}{order of the spherical harmonic (-l,-l+1,...,+l)}
 
 \item{theta}{n-vector of azimuth angles from 0 to pi; if theta is given, phi must also be given, but x must not be given.}
 
 \item{phi}{n-vector of longitude angles from 0 to 2*pi; if phi is given, theta must also be given, but x must not be given.}
+
+\item{x}{n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; if x is given, theta and phi cannot be specified.}
 }
 \value{
 Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value of 0 is returned
@@ -24,20 +24,20 @@ Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value o
 Evaluates complex-valued spherical harmonics Y in the Condon-Shortley phase convention.
 }
 \examples{
-## Check orthonormalization of all spherical harmonics up to 4th order
+## Check orthonormalization of all spherical harmonics up to 3rd degree
 
-# make indices l and m up to 4th order
-l = c(0,rep(1,3),rep(2,5),rep(3,7),rep(4,9))
-m = c(0,seq(-1,1),seq(-2,2),seq(-3,3),seq(-4,4))
+# make indices l and m up to 3rd degree
+l = c(0,rep(1,3),rep(2,5),rep(3,7))
+m = c(0,seq(-1,1),seq(-2,2),seq(-3,3))
 
 # check orthonormalization for all pairs
-for (i in seq(25)) {
-  for (j in seq(25)) {
+for (i in seq(16)) {
+  for (j in seq(16)) {
 
     # compute scalar product
     f = function(theta,phi) {
-      Yi = sphericalharmonics(l[i],m[i],theta=theta,phi=phi)
-      Yj = sphericalharmonics(l[j],m[j],theta=theta,phi=phi)
+      Yi = sphericalharmonics(l[i],m[i],theta,phi)
+      Yj = sphericalharmonics(l[j],m[j],theta,phi)
       return(Re(Yi*Conj(Yj))*sin(theta))
     }
     g = Vectorize(function(phi) integrate(f,0,pi,phi)$value)
@@ -45,7 +45,7 @@ for (i in seq(25)) {
 
     # compare scalar product to expected value
     ok = abs(scalar.product-(i==j))<1e-6
-    cat(sprintf('(l=\%1d,m=\%+1d|=\%1d,m=\%+1d)=\%5.3f  \%s\n',l[i],m[i],l[j],m[j],
+    cat(sprintf('(l=\%1d,m=\%+1d|l=\%1d,m=\%+1d)=\%5.3f  \%s\n',l[i],m[i],l[j],m[j],
                 scalar.product+1e-10,ifelse(ok,'ok','wrong')))
   }
 }
