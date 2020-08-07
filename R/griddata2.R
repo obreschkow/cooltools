@@ -57,11 +57,6 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   if (is.null(xlim)) xlim=range(x)
   if (is.null(ylim)) ylim=range(y)
 
-  # preselect (x,y)-coordinates within the range
-  s = x>=xlim[1] & x<=xlim[2] & y>=ylim[1] & y<=ylim[2]
-  x = x[s]
-  y = y[s]
-
   # make grid coordinates
   g = list(x = (seq(n[1])-0.5)/n[1]*(xlim[2]-xlim[1])+xlim[1], # vector of mid-cell x-coordinates
            y = (seq(n[2])-0.5)/n[2]*(ylim[2]-ylim[1])+ylim[1], # vector of mid-cell y-coordinates
@@ -71,10 +66,15 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   g$dx = g$xbreak[2]-g$xbreak[1]
   g$dy = g$ybreak[2]-g$ybreak[1]
 
+  # preselect (x,y)-coordinates within the range
+  s = x>=xlim[1] & x<=xlim[2] & y>=ylim[1] & y<=ylim[2]
+  x = x[s]
+  y = y[s]
+
   # convert continuous (x,y)-coordinates to discrete grid indices
   ix = pmax(1,pmin(n[1],ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n[1])))
-  iy = pmax(1,pmin(n[1],ceiling(((y-ylim[1])/(ylim[2]-ylim[1]))*n[1])))
-  index=(iy-1)*n[1]+ix # 1D index
+  iy = pmax(1,pmin(n[2],ceiling(((y-ylim[1])/(ylim[2]-ylim[1]))*n[2])))
+  index = (iy-1)*n[1]+ix # 1D index
 
   # efficiently count number of duplicates and, optionally, total mass for cell index
   if (is.null(w)) {

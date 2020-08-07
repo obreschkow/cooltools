@@ -1,5 +1,7 @@
 #' Grid 1D point set
 #'
+#' @importFrom data.table data.table .N .SD
+#'
 #' @description Generates a 1D grid from a 1D point set, optionally with weights; similar to hist.
 #'
 #' @param x N-element vector of points
@@ -47,28 +49,37 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
            dx = (xlim[2]-xlim[1])/n, # cell-spacing
            xlim = xlim)
 
-  # grid data
-  eps = 1e-12
-  ix = ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n)
-  selection = ix>=1 & ix<=n
-  ix = ix[selection]
+  # preselect x-coordinates within the range
+  x = x[x>=xlim[1] & x<=xlim[2]]
 
-  # non-weighted counts
-  g$n = array(0,n) # number of points in each pixel
-  for (i in seq(length(ix))) g$n[ix[i]] = g$n[ix[i]]+1
-  g$d = g$n/sum(g$n)/g$dx
+  # convert continuous x-coordinates to discrete grid indices
+  index = pmax(1,pmin(n,ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n)))
 
-  # weighted counts
-  if (!is.null(w)) {
-    g$m = array(0,n) # number of points in each pixel
-    w = w[selection]
-    for (i in seq(length(ix))) g$m[ix[i]] = g$m[ix[i]]+w[i]
-    g$c = g$m/sum(g$m)/g$dx
+  # efficiently count number of duplicates and, optionally, total mass for cell index
+  if (is.null(w)) {
+    DT = data.table(index=index)
+    q = DT[,.N,by=index]
+  } else {
+    DT = data.table(index=index, w=w)
+    q = DT[, c(.N, lapply(.SD, sum)), by=index]
   }
 
-  # normalize
+  # count points per cell
+  g$n = rep(0,prod(n))
+  g$n[q$index] = q$N
+
+  # density
+  g$d = g$n/g$dx
+
+  # count mass per cell
+  if (!is.null(w)) {
+    g$m = rep(0,prod(n))
+    g$m[q$index] = q$w
+    g$c = g$m/sum(g$m)/g$dx
+  }
 
   # return data
   return(g)
 
 }
+
