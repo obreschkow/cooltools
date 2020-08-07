@@ -11,15 +11,15 @@
 #' @param radius radius of spherical projection, such that the surface area of the projection equals 4piR^2
 #' @param deg logical flag; if set to TRUE, the input arguments \code{lon}, \code{lat}, \code{lon0} are assumed to be in degrees (otherwise in radians)
 #'
-#' @return Returns a list of 2D Cartesian coordinates \code{x} and \code{y}, which are vectors if \code{lon} and/or \code{lat} are vectors.
+#' @return Returns a data frame of 2D Cartesian coordinates \code{x} and \code{y}.
 #'
 #' @author Danail Obreschkow
 #'
-#'#' @examples
+#' @examples
 #' lon = runif(1e4,0,2*pi)
 #' lat = asin(runif(1e4,-1,1)) # = uniform sampling of the sphere
 #' plot(mollweide(lon,lat),xlim=c(-3,3),ylim=c(-1.5,1.5),pch=16,cex=0.5)
-#' draw.ellipse(0,0,2*sqrt(2),sqrt(2),border='orange',lwd=2)
+#' plotrix::draw.ellipse(0,0,2*sqrt(2),sqrt(2),border='orange',lwd=2)
 #'
 #' @export
 

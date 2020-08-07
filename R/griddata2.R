@@ -1,5 +1,7 @@
 #' Grid 2D point set
 #'
+#' @importFrom data.table data.table .N .SD
+#'
 #' @description Generates a 2D grid from a 2D point set, optionally with weights
 #'
 #' @param x N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
@@ -55,6 +57,11 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   if (is.null(xlim)) xlim=range(x)
   if (is.null(ylim)) ylim=range(y)
 
+  # preselect (x,y)-coordinates within the range
+  s = x>=xlim[1] & x<=xlim[2] & y>=ylim[1] & y<=ylim[2]
+  x = x[s]
+  y = y[s]
+
   # make grid coordinates
   g = list(x = (seq(n[1])-0.5)/n[1]*(xlim[2]-xlim[1])+xlim[1], # vector of mid-cell x-coordinates
            y = (seq(n[2])-0.5)/n[2]*(ylim[2]-ylim[1])+ylim[1], # vector of mid-cell y-coordinates
@@ -64,29 +71,35 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   g$dx = g$xbreak[2]-g$xbreak[1]
   g$dy = g$ybreak[2]-g$ybreak[1]
 
-  # grid data
-  eps = 1e-12
-  ix = ceiling(((x-xlim[1])/(xlim[2]-xlim[1])*(1-eps)+eps)*n[1])
-  iy = ceiling(((y-ylim[1])/(ylim[2]-ylim[1])*(1-eps)+eps)*n[2])
-  selection = ix>=1 & ix<=n[1] & iy>=1 & iy<=n[2]
-  ix = ix[selection]
-  iy = iy[selection]
+  # convert continuous (x,y)-coordinates to discrete grid indices
+  ix = pmax(1,pmin(n[1],ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n[1])))
+  iy = pmax(1,pmin(n[1],ceiling(((y-ylim[1])/(ylim[2]-ylim[1]))*n[1])))
+  index=(iy-1)*n[1]+ix # 1D index
 
-  # non-weighted counts
-  g$n = array(0,n) # number of points in each pixel
-  for (i in seq(length(ix))) g$n[ix[i],iy[i]] = g$n[ix[i],iy[i]]+1
+  # efficiently count number of duplicates and, optionally, total mass for cell index
+  if (is.null(w)) {
+    DT = data.table(index=index)
+    q = DT[,.N,by=index]
+  } else {
+    DT = data.table(index=index, w=w)
+    q = DT[, c(.N, lapply(.SD, sum)), by=index]
+  }
+
+  # count points per cell
+  g$n = rep(0,prod(n))
+  g$n[q$index] = q$N
+  g$n = array(g$n,n)
 
   # density
   g$d = g$n/g$dx/g$dy
 
-  # weighted counts
+  # count mass per cell
   if (!is.null(w)) {
-    g$m = array(0,n) # number of points in each pixel
-    w = w[selection]
-    for (i in seq(length(ix))) g$m[ix[i],iy[i]] = g$m[ix[i],iy[i]]+w[i]
+    g$m = rep(0,prod(n))
+    g$m[q$index] = q$w
+    g$m = array(g$m,n)
   }
 
   # return data
   return(g)
-
 }
