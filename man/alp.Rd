@@ -9,7 +9,7 @@ alp(x, l = 0, m = 0)
 \arguments{
 \item{x}{real argument between -1 and +1, can be a vector}
 
-\item{l}{degree of the polynomial (0,1,2,3,4,...)}
+\item{l}{degree of the polynomial (0,1,2,...); accurate to about 25}
 
 \item{m}{order of the polynomial (-l,-l+1,...,l); for negative values the standard convention is used: if m>0, then P(x,l,-m) = P(x,l,m) (-1)^m*factorial(l-m)/factorial(l+m).}
 }

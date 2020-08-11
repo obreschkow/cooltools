@@ -9,6 +9,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{vectornorm}} and \code{\link{unitvector}}
+#'
 #' @export
 
 vectorproduct = function(x,y,normalize=FALSE) {
@@ -27,10 +29,7 @@ vectorproduct = function(x,y,normalize=FALSE) {
     z[i,] = c(x[i,2]*y[i,3]-x[i,3]*y[i,2], x[i,3]*y[i,1]-x[i,1]*y[i,3], x[i,1]*y[i,2]-x[i,2]*y[i,1])
   }
 
-  if (normalize) {
-    norm = sqrt(z[,1]^2+z[,2]^2+z[,3]^2)
-    z[norm>0,] = z[norm>0,]/norm[norm>0]
-  }
+  if (normalize) z = unitvector(z)
 
   return(z)
 

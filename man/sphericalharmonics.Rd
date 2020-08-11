@@ -4,24 +4,22 @@
 \alias{sphericalharmonics}
 \title{Spherical Harmonics}
 \usage{
-sphericalharmonics(l, m, theta = NULL, phi = NULL, x = NULL)
+sphericalharmonics(l, m, x, basis = "complex")
 }
 \arguments{
-\item{l}{degree of the spherical harmonic (0,1,2,3,4,...) = (monopole, dipole, quadrupole, octupole, hexadecapole,...)}
+\item{l}{degree of the spherical harmonic, accurate to about l=500; (0=monopole, 1=dipole, 2=quadrupole, 3=octupole, 4=hexadecapole,...)}
 
 \item{m}{order of the spherical harmonic (-l,-l+1,...,+l)}
 
-\item{theta}{n-vector of azimuth angles from 0 to pi; if theta is given, phi must also be given, but x must not be given.}
+\item{x}{either an n-by-2 matrix specifying the polar angle \code{theta} (0...pi) and azimuthal angle \code{phi} (0...2*pi); or an n-by-3 matrix specifying the 3D coordinates of n vectors (whose normalization is irrelevant).}
 
-\item{phi}{n-vector of longitude angles from 0 to 2*pi; if phi is given, theta must also be given, but x must not be given.}
-
-\item{x}{n-by-3 matrix [1:n,1:3] specifying the 3D coordinates of n points; if x is given, theta and phi cannot be specified.}
+\item{basis}{a string specifying the type of spherical harmonics; this has to be either "complex" (default) for the standard complex-valued harmonics with Condon-Shortley phase convention, or "real" for the standard real-valued harmonics.}
 }
 \value{
 Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value of 0 is returned
 }
 \description{
-Evaluates complex-valued spherical harmonics Y in the Condon-Shortley phase convention.
+Evaluates spherical harmonics Y, either in the real-valued or complex-valued basis.
 }
 \examples{
 ## Check orthonormalization of all spherical harmonics up to 3rd degree
@@ -36,8 +34,8 @@ for (i in seq(16)) {
 
     # compute scalar product
     f = function(theta,phi) {
-      Yi = sphericalharmonics(l[i],m[i],theta,phi)
-      Yj = sphericalharmonics(l[j],m[j],theta,phi)
+      Yi = sphericalharmonics(l[i],m[i],cbind(theta,phi))
+      Yj = sphericalharmonics(l[j],m[j],cbind(theta,phi))
       return(Re(Yi*Conj(Yj))*sin(theta))
     }
     g = Vectorize(function(phi) integrate(f,0,pi,phi)$value)
@@ -50,6 +48,9 @@ for (i in seq(16)) {
   }
 }
 
+}
+\seealso{
+The function \code{sphericalHarmonics} (with capital H) of the \code{rcosmo} package can be used to evaluate the real spherical harmonics, which are frequently used in physics.
 }
 \author{
 Danail Obreschkow

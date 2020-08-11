@@ -17,6 +17,9 @@ Returns a 3-element vector or a n-by-3 element matrix with the cross products
 \description{
 Compute cross product of two 3-element vectors
 }
+\seealso{
+\code{\link{vectornorm}} and \code{\link{unitvector}}
+}
 \author{
 Danail Obreschkow
 }

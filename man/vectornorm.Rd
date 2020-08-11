@@ -15,6 +15,9 @@ Returns a scalar or an n-element vector with the vector norms
 \description{
 Compute the norm of a vector or a matrix of vectors
 }
+\seealso{
+\code{\link{vectornorm}}
+}
 \author{
 Danail Obreschkow
 }

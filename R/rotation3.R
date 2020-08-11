@@ -9,6 +9,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{rotation2}}
+#'
 #' @export
 
 rotation3 = function(u, angle=NULL) {

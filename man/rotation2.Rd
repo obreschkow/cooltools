@@ -15,6 +15,9 @@ Returns a 2-by-2 anti-symmetric rotation matrix
 \description{
 Compute a 2D rotation matrix given a rotation angle
 }
+\seealso{
+\code{\link{rotation3}}
+}
 \author{
 Danail Obreschkow
 }

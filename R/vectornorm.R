@@ -8,6 +8,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{vectornorm}}
+#'
 #' @export
 
 vectornorm = function(x) {

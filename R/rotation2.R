@@ -8,6 +8,8 @@
 #'
 #' @author Danail Obreschkow
 #'
+#' @seealso \code{\link{rotation3}}
+#'
 #' @export
 
 rotation2 = function(angle) {

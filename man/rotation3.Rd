@@ -17,6 +17,9 @@ Returns a 3-by-3 rotation matrix
 \description{
 Compute a 3D rotation matrix given an axis and an angle
 }
+\seealso{
+\code{\link{rotation2}}
+}
 \author{
 Danail Obreschkow
 }
