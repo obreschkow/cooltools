@@ -19,15 +19,15 @@ Turns a 64-bit integers into unique doubles for faster comparison. The output do
 
 # The comparison of in-built types is very fast:
 int32 = as.integer(0) # (same as int32 = 0)
-system.time(for(i in seq(1e5)) comparison=int32==int32)
+system.time(for(i in seq(1e4)) comparison=int32==int32)
 
 # The comparison of 64-bit integers is very slow:
 int64 = bit64::as.integer64(0)
-system.time(for(i in seq(1e5)) comparison=int64==int64)
+system.time(for(i in seq(1e4)) comparison=int64==int64)
 
 # The comparison of converted 64-bit integers is again fast:
 int64d = uniquedouble(int64)
-system.time(for(i in seq(1e5)) comparison=int64d==int64d)
+system.time(for(i in seq(1e4)) comparison=int64d==int64d)
 
 }
 \author{

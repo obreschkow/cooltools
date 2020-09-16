@@ -75,6 +75,6 @@ paircount = function(x, y=NULL, dr, rmax, cpp=TRUE) {
     }
   }
 
-  return(list(r=seq(0,nr-1)*dr, n=count))
+  return(data.frame(r=seq(0,nr-1)*dr, n=count))
 
 }

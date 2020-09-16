@@ -6,13 +6,13 @@
 #'
 #' @description Plots a spherical function in a 2D projection using only standard R graphics. This avoids compatibility issues of rgl, e.g. knitting markdown documents.
 #'
-#' @param f vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2*pi]
+#' @param f vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]
 #' @param n number of grid cells in each dimension used in the plot
 #' @param theta0 polar angle in radians at the center of the projection
 #' @param phi0 azimuth angle in radians at the center of the projection
 #' @param angle angle in radians between vertical axis and central longitudinal great circle
 #' @param col color map
-#' @param clim 2-element vector specifying the values of `f` corresponding to the first and last color in `col`
+#' @param clim 2-element vector specifying the values of f corresponding to the first and last color in col
 #' @param add logical flag specifying whether the sphere is to be added to an existing plot
 #' @param center center of the sphere on the plot
 #' @param radius radius of the sphere on the plot
@@ -25,6 +25,7 @@
 #' @param lty line type of grid lines and border
 #' @param line.col color of grid lines and border
 #' @param background background color
+#' @param ... additional arguments to be passed to the function f
 #'
 #' @author Danail Obreschkow
 #'
@@ -36,7 +37,7 @@
 #' nplot(xlim=c(-4,3.5),ylim=c(0,4),asp=1,mar=c(0,0,0,0))
 #'
 #' for (l in seq(0,3)) { # degree of spherical harmonic
-#'   for (m in seq(-l,l)) { # order of sphercal harmonic
+#'   for (m in seq(-l,l)) { # order of spherical harmonic
 #'
 #'     # make spherical harmonic function in real-valued convention
 #'     f = function(theta,phi) sphericalharmonics(l,m,cbind(theta,phi),basis='real')
@@ -58,7 +59,7 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0,
                       add = FALSE, center = c(0,0), radius = 1, nv = 500,
                       show.border = FALSE,
                       show.grid = FALSE, grid.phi = seq(0,330,30)/180*pi, grid.theta = seq(30,150,30)/180*pi,
-                      lwd = 0.5, lty = 1, line.col = 'black', background = 'white') {
+                      lwd = 0.5, lty = 1, line.col = 'black', background = 'white', ...) {
 
   # make rotation matrix
   R = rotation3(c(0,0,1),angle)%*%rotation3(c(-1,0,0),theta0-pi/2)%*%rotation3(c(0,-1,0),phi0)
@@ -83,8 +84,8 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0,
   # evaluate function
   d = 2/n
   p$out = pmax(0,abs(p$x)-d/2)^2+pmax(0,abs(p$y)-d/2)^2>1
-  p$f1 = f(p$theta1,p$phi1)
-  p$f2 = f(p$theta2,p$phi2)
+  p$f1 = f(p$theta1,p$phi1,...)
+  p$f2 = f(p$theta2,p$phi2,...)
 
   # determine color range
   if (is.null(clim)) clim = range(c(p$f1,p$f2))

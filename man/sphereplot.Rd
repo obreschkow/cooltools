@@ -23,11 +23,12 @@ sphereplot(
   lwd = 0.5,
   lty = 1,
   line.col = "black",
-  background = "white"
+  background = "white",
+  ...
 )
 }
 \arguments{
-\item{f}{vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2*pi]}
+\item{f}{vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]}
 
 \item{n}{number of grid cells in each dimension used in the plot}
 
@@ -39,7 +40,7 @@ sphereplot(
 
 \item{col}{color map}
 
-\item{clim}{2-element vector specifying the values of `f` corresponding to the first and last color in `col`}
+\item{clim}{2-element vector specifying the values of f corresponding to the first and last color in col}
 
 \item{add}{logical flag specifying whether the sphere is to be added to an existing plot}
 
@@ -64,6 +65,8 @@ sphereplot(
 \item{line.col}{color of grid lines and border}
 
 \item{background}{background color}
+
+\item{...}{additional arguments to be passed to the function f}
 }
 \description{
 Plots a spherical function in a 2D projection using only standard R graphics. This avoids compatibility issues of rgl, e.g. knitting markdown documents.
@@ -74,7 +77,7 @@ Plots a spherical function in a 2D projection using only standard R graphics. Th
 nplot(xlim=c(-4,3.5),ylim=c(0,4),asp=1,mar=c(0,0,0,0))
 
 for (l in seq(0,3)) { # degree of spherical harmonic
-  for (m in seq(-l,l)) { # order of sphercal harmonic
+  for (m in seq(-l,l)) { # order of spherical harmonic
 
     # make spherical harmonic function in real-valued convention
     f = function(theta,phi) sphericalharmonics(l,m,cbind(theta,phi),basis='real')

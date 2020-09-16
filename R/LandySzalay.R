@@ -45,6 +45,12 @@ landyszalay = function(D,R,dr=0.1,cpp=TRUE) {
   RR = paircount(R,dr=dr,rmax=rmax,cpp=cpp)$n
   DR = paircount(D,R,dr=dr,rmax=rmax,cpp=cpp)$n
 
+  # crop tailing zeros
+  n = max(which(DD!=0))
+  DD = DD[1:n]
+  RR = RR[1:n]
+  DR = DR[1:n]
+
   # compute L-S estimator
   nDD = nD*(nD-1)/2
   nRR = nR*(nR-1)/2
@@ -54,7 +60,7 @@ landyszalay = function(D,R,dr=0.1,cpp=TRUE) {
   xi[RR==0 | DD==0] = err[RR==0 | DD==0] = NA
 
   # return results
-  return(list(r=seq(0,length(DD)-1)*dr, xi=xi, err=err))
+  return(data.frame(r=seq(0,n-1)*dr, xi=xi, err=err))
 
 }
 

@@ -28,7 +28,7 @@ fibonaccisphere = function(n=1000, r=1, out.xyz=TRUE, out.sph=FALSE) {
   i = seq(n)-0.5
   z = 1-2*i/n # z-coordinate for unit sphere
   theta = acos(pmax(-1,pmin(1,z))) # polar angle
-  phi = 2*pi*i/goldenratio
+  phi = (2*pi*i/goldenratio)%%(2*pi)
 
   if (out.xyz) {
     x = r*sin(theta)*cos(phi)
