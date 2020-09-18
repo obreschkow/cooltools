@@ -14,6 +14,8 @@ colorbar(
   crange = c(0, 1),
   clim = NULL,
   show.border = TRUE,
+  text = "",
+  line = 2,
   show.axis = TRUE,
   side = "right",
   lwd = 1,
@@ -40,6 +42,10 @@ colorbar(
 \item{clim}{optional 2-vector specifying a sub-interval of crange to which the color scale is cropped}
 
 \item{show.border}{logical flag specifying whether to draw a rectangular border around the bar}
+
+\item{text}{axis label}
+
+\item{line}{distance between label and color bar}
 
 \item{show.axis}{logical flag specifying whether to draw an axis}
 
