@@ -24,7 +24,7 @@ sphereplot(
   pch = 16,
   pt.col = "black",
   pt.cex = 0.5,
-  lwd = 1,
+  lwd = 0.5,
   lty = 1,
   line.col = "black",
   background = "white",

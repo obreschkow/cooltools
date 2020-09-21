@@ -70,7 +70,7 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
                       add = FALSE, center = c(0,0), radius = 1, nv = 500,
                       show.border = TRUE,
                       show.grid = FALSE, grid.phi = seq(0,330,30)/180*pi, grid.theta = seq(30,150,30)/180*pi,
-                      pch = 16, pt.col='black', pt.cex=0.5, lwd = 1, lty = 1, line.col = 'black', background = 'white', ...) {
+                      pch = 16, pt.col='black', pt.cex=0.5, lwd = 0.5, lty = 1, line.col = 'black', background = 'white', ...) {
 
   # each projection is characterised by:
   # + limits xlim, ylim specifying the ranges if radius=1
@@ -179,7 +179,10 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
     p$f = f(p$theta,p$phi,...)
 
     # determine color range
-    if (is.null(clim)) clim = range(p$f)
+    if (is.null(clim)) {
+      pt = fibonaccisphere(100,out.sph = TRUE,out.xyz = FALSE)
+      clim = range(p$f, f(pt$theta,pt$phi))
+    }
     if (clim[2]==clim[1]) clim=clim+c(-1,1)
 
     # make color array
