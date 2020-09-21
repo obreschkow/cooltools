@@ -51,7 +51,7 @@
 #'   for (m in seq(-l,l)) { # order of spherical harmonic
 #'
 #'     # make spherical harmonic function in real-valued convention
-#'     f = function(theta,phi) sphericalharmonics(l,m,cbind(theta,phi),basis='real')
+#'     f = function(theta,phi) sphericalharmonics(l,m,cbind(theta,phi))
 #'
 #'     # plot spherical harmonic
 #'     sphereplot(f, 50, col=planckcolors(100), phi0=0.1, theta0=pi/3, add=TRUE, clim=c(-0.7,0.7),

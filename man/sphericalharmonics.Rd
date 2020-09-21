@@ -4,7 +4,7 @@
 \alias{sphericalharmonics}
 \title{Spherical Harmonics}
 \usage{
-sphericalharmonics(l, m, x, basis = "complex")
+sphericalharmonics(l, m, x, basis = "real")
 }
 \arguments{
 \item{l}{degree of the spherical harmonic, accurate to about l=500; (0=monopole, 1=dipole, 2=quadrupole, 3=octupole, 4=hexadecapole,...)}
@@ -13,7 +13,7 @@ sphericalharmonics(l, m, x, basis = "complex")
 
 \item{x}{either an n-by-2 matrix specifying the polar angle \code{theta} (0...pi) and azimuthal angle \code{phi} (0...2*pi); or an n-by-3 matrix specifying the 3D coordinates of n vectors (whose normalization is irrelevant).}
 
-\item{basis}{a string specifying the type of spherical harmonics; this has to be either "complex" (default) for the standard complex-valued harmonics with Condon-Shortley phase convention, or "real" for the standard real-valued harmonics.}
+\item{basis}{a string specifying the type of spherical harmonics; this has to be either "complex" for the standard complex-valued harmonics with Condon-Shortley phase convention, or "real" (default) for the standard real-valued harmonics.}
 }
 \value{
 Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value of 0 is returned
