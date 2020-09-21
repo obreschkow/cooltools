@@ -7,7 +7,14 @@
 #'
 #' @description Plots a spherical function or a point set in a 2D projection using only standard R graphics. This avoids compatibility issues of rgl, e.g. knitting markdown documents.
 #'
-#' @param f must be either (1) a vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]; (2) an n-by-2 array of values theta and phi
+#' @param f must be either of:
+#'
+#' (1) NULL to plot just grid without spherical function
+#'
+#' (2) a vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]
+#'
+#' (3) an n-by-2 array of values theta and phi
+#'
 #' @param n number of grid cells in each dimension used in the plot
 #' @param theta0 polar angle in radians at the center of the projection
 #' @param phi0 azimuth angle in radians at the center of the projection
@@ -160,88 +167,94 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
 
   # plot projection
 
-  if (is.function(f)) {
+  if (!is.null(f)) {
 
-    # make xy-coordinates of plot
-    wx = diff(xlim)
-    wy = diff(ylim)
-    nx = round(n*sqrt(wx/wy))
-    ny = round(n*sqrt(wy/wx))
-    p = expand.grid(x=midseq(xlim[1],xlim[2],nx), y=midseq(ylim[1],ylim[2],ny))
+    if (is.function(f)) {
 
-    # compute inverse projection
-    p = xy2sph(p)
+      # make xy-coordinates of plot
+      wx = diff(xlim)
+      wy = diff(ylim)
+      nx = round(n*sqrt(wx/wy))
+      ny = round(n*sqrt(wy/wx))
+      p = expand.grid(x=midseq(xlim[1],xlim[2],nx), y=midseq(ylim[1],ylim[2],ny))
 
-    # rotate spherical coordinates
-    p = rotate(p)
+      # compute inverse projection
+      p = xy2sph(p)
 
-    # evaluate function
-    p$f = f(p$theta,p$phi,...)
+      # rotate spherical coordinates
+      p = rotate(p)
 
-    # determine color range
-    if (is.null(clim)) {
-      pt = fibonaccisphere(100,out.sph = TRUE,out.xyz = FALSE)
-      clim = range(p$f, f(pt$theta,pt$phi))
+      # evaluate function
+      p$f = f(p$theta,p$phi,...)
+
+      # determine color range
+      if (is.null(clim)) {
+        pt = fibonaccisphere(100,out.sph = TRUE,out.xyz = FALSE)
+        clim = range(p$f, f(pt$theta,pt$phi,...))
+      }
+      if (clim[2]==clim[1]) clim=clim+c(-1,1)
+
+      # make color array
+      ncol = length(col)
+      p$img = col[pmax(1,pmin(ncol,round(0.5+ncol*(p$f-clim[1])/(clim[2]-clim[1]))))]
+      p$img[p$out] = background
+
+      # plot raster
+      rasterImage(rasterflip(array(p$img,c(nx,ny))), interpolate = T,
+                    center[1]+radius*xlim[1], center[2]+radius*ylim[1], center[1]+radius*xlim[2], center[2]+radius*ylim[2])
+
+    } else if (is.array(f) && dim(f)[2]==2) {
+
+      p = data.frame(theta=f[,1], phi=f[,2])
+      p = rotate(p)
+      p = sph2xy(p)
+      p = t(t(p)*radius+center)
+      points(p, pch=pch, cex=pt.cex, col=pt.col)
+
+      need.frame = FALSE
+
+    } else {
+
+      stop('unknown type of f')
+
     }
-    if (clim[2]==clim[1]) clim=clim+c(-1,1)
-
-    # make color array
-    ncol = length(col)
-    p$img = col[pmax(1,pmin(ncol,round(0.5+ncol*(p$f-clim[1])/(clim[2]-clim[1]))))]
-    p$img[p$out] = background
-
-    # plot raster
-    rasterImage(rasterflip(array(p$img,c(nx,ny))), interpolate = T,
-                  center[1]+radius*xlim[1], center[2]+radius*ylim[1], center[1]+radius*xlim[2], center[2]+radius*ylim[2])
-
-  } else if (is.array(f) && dim(f)[2]==2) {
-
-    p = data.frame(theta=f[,1], phi=f[,2])
-    p = rotate(p)
-    p = sph2xy(p)
-    p = t(t(p)*radius+center)
-    points(p, pch=pch, cex=pt.cex, col=pt.col)
-
-    need.frame = FALSE
-
-  } else {
-
-    stop('unknown type of f')
-
   }
 
   # grid lines
-  for (i in seq(length(grid.phi)+length(grid.theta))) {
+  if (show.grid) {
 
-    if (i<=length(grid.phi)) {
-      theta = seq(0,pi,length=nv)
-      phi = grid.phi[i]
-    } else {
-      theta = grid.theta[i-length(grid.phi)]
-      phi = seq(0,2*pi,length=nv)
-    }
+    for (i in seq(length(grid.phi)+length(grid.theta))) {
 
-    # rotate spherical coordinates
-    xyz = t(R%*%rbind(sin(theta)*sin(phi),cos(theta),sin(theta)*cos(phi)))
-    g = data.frame(theta=acos(pmin(1,pmax(-1,xyz[,2]))), phi=atan2(xyz[,1],xyz[,3])%%(2*pi))
-
-    # convert to projected xy-coordinates
-    xy = sph2xy(g)
-    xy = t(t(xy)*radius+center)
-
-    # cut wrapped lines
-    dp = (xy[,1]-cshift(xy[,1],1))^2+(xy[,2]-cshift(xy[,2],1))^2 # square distance to previous
-    dp[1] = 0
-    dn = cshift(dp,-1)
-    k = which(dn>dp*10+mean(dp))
-    if (length(k)>0) {
-      for (j in rev(k)) {
-        xy = rbind(xy[1:j,],c(NA,NA),xy[(j+1):nv,])
+      if (i<=length(grid.phi)) {
+        theta = seq(0,pi,length=nv)
+        phi = grid.phi[i]
+      } else {
+        theta = grid.theta[i-length(grid.phi)]
+        phi = seq(0,2*pi,length=nv)
       }
-    }
 
-    # plot lines
-    lines(xy,lwd=lwd,lty=lty,col=line.col)
+      # rotate spherical coordinates
+      xyz = t(R%*%rbind(sin(theta)*sin(phi),cos(theta),sin(theta)*cos(phi)))
+      g = data.frame(theta=acos(pmin(1,pmax(-1,xyz[,2]))), phi=atan2(xyz[,1],xyz[,3])%%(2*pi))
+
+      # convert to projected xy-coordinates
+      xy = sph2xy(g)
+      xy = t(t(xy)*radius+center)
+
+      # cut wrapped lines
+      dp = (xy[,1]-cshift(xy[,1],1))^2+(xy[,2]-cshift(xy[,2],1))^2 # square distance to previous
+      dp[1] = 0
+      dn = cshift(dp,-1)
+      k = which(dn>dp*10+mean(dp))
+      if (length(k)>0) {
+        for (j in rev(k)) {
+          xy = rbind(xy[1:j,],c(NA,NA),xy[(j+1):nv,])
+        }
+      }
+
+      # plot lines
+      lines(xy,lwd=lwd,lty=lty,col=line.col)
+    }
   }
 
   # overplot frame to truncated pixels outside projection

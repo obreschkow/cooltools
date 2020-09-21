@@ -32,7 +32,13 @@ sphereplot(
 )
 }
 \arguments{
-\item{f}{must be either (1) a vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]; (2) an n-by-2 array of values theta and phi}
+\item{f}{must be either of:
+
+(1) NULL to plot just grid without spherical function
+
+(2) a vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]
+
+(3) an n-by-2 array of values theta and phi}
 
 \item{n}{number of grid cells in each dimension used in the plot}
 
