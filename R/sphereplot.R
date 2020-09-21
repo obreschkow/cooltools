@@ -76,7 +76,7 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
                       col = gray.colors(256,0,1), clim=NULL,
                       add = FALSE, center = c(0,0), radius = 1, nv = 500,
                       show.border = TRUE,
-                      show.grid = FALSE, grid.phi = seq(0,330,30)/180*pi, grid.theta = seq(30,150,30)/180*pi,
+                      show.grid = TRUE, grid.phi = seq(0,330,30)/180*pi, grid.theta = seq(30,150,30)/180*pi,
                       pch = 16, pt.col='black', pt.cex=0.5, lwd = 0.5, lty = 1, line.col = 'black', background = 'white', ...) {
 
   # each projection is characterised by:

@@ -18,7 +18,7 @@ sphereplot(
   radius = 1,
   nv = 500,
   show.border = TRUE,
-  show.grid = FALSE,
+  show.grid = TRUE,
   grid.phi = seq(0, 330, 30)/180 * pi,
   grid.theta = seq(30, 150, 30)/180 * pi,
   pch = 16,
