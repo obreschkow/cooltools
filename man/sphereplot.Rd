@@ -2,7 +2,7 @@
 % Please edit documentation in R/sphereplot.R
 \name{sphereplot}
 \alias{sphereplot}
-\title{Plot a spherical function}
+\title{Plot a spherical function or point set}
 \usage{
 sphereplot(
   f,
@@ -10,17 +10,21 @@ sphereplot(
   theta0 = pi/2,
   phi0 = 0,
   angle = 0,
+  projection = "globe",
   col = gray.colors(256, 0, 1),
   clim = NULL,
   add = FALSE,
   center = c(0, 0),
   radius = 1,
   nv = 500,
-  show.border = FALSE,
+  show.border = TRUE,
   show.grid = FALSE,
   grid.phi = seq(0, 330, 30)/180 * pi,
   grid.theta = seq(30, 150, 30)/180 * pi,
-  lwd = 0.5,
+  pch = 16,
+  pt.col = "black",
+  pt.cex = 0.5,
+  lwd = 1,
   lty = 1,
   line.col = "black",
   background = "white",
@@ -28,7 +32,7 @@ sphereplot(
 )
 }
 \arguments{
-\item{f}{vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]}
+\item{f}{must be either (1) a vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]; (2) an n-by-2 array of values theta and phi}
 
 \item{n}{number of grid cells in each dimension used in the plot}
 
@@ -37,6 +41,8 @@ sphereplot(
 \item{phi0}{azimuth angle in radians at the center of the projection}
 
 \item{angle}{angle in radians between vertical axis and central longitudinal great circle}
+
+\item{projection}{type of projection: "globe" (default), "cylincrical", "mollweide"}
 
 \item{col}{color map}
 
@@ -58,6 +64,12 @@ sphereplot(
 
 \item{grid.theta}{vector of theta-values of the latitudinal grid lines}
 
+\item{pch}{point type}
+
+\item{pt.col}{point color}
+
+\item{pt.cex}{point size}
+
 \item{lwd}{line width of grid lines and border}
 
 \item{lty}{line type of grid lines and border}
@@ -69,9 +81,15 @@ sphereplot(
 \item{...}{additional arguments to be passed to the function f}
 }
 \description{
-Plots a spherical function in a 2D projection using only standard R graphics. This avoids compatibility issues of rgl, e.g. knitting markdown documents.
+Plots a spherical function or a point set in a 2D projection using only standard R graphics. This avoids compatibility issues of rgl, e.g. knitting markdown documents.
 }
 \examples{
+
+## Plot random points on the unit sphere in Mollweide projection
+set.seed(1)
+f = cbind(acos(runif(5000,-1,1)),runif(5000,0,2*pi))
+sphereplot(f,theta0=pi/3,projection='mollweide',pt.col='red')
+
 ## Plot real spherical harmonics up to third degree
 
 nplot(xlim=c(-4,3.5),ylim=c(0,4),asp=1,mar=c(0,0,0,0))
@@ -84,7 +102,7 @@ for (l in seq(0,3)) { # degree of spherical harmonic
 
     # plot spherical harmonic
     sphereplot(f, 50, col=planckcolors(100), phi0=0.1, theta0=pi/3, add=TRUE, clim=c(-0.7,0.7),
-               center=c(m,3.5-l), radius=0.47, show.grid=TRUE)
+               center=c(m,3.5-l), radius=0.47)
 
     if (l==3) text(m,-0.15,sprintf('m=\%+d',m))
   }

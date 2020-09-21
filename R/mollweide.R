@@ -50,31 +50,31 @@ mollweide = function (lon, lat, lon0=0, radius=1, deg=FALSE) {
   # recast longitude onto interval [-pi,pi]
   lon = (lon-lon0+pi)%%(2*pi)-pi
 
-  # iteratively evaluate theta
+  # iteratively evaluate alpha
   ncrit = 200
   if (length(lon)<=ncrit) {
-    theta = lat
+    alpha = lat
   } else {
     lat.grid = seq(0,pi/2,length=ncrit)
-    theta = lat.grid
+    alpha = lat.grid
   }
 
-  s = seq_along(theta)
-  f = pi*sin(theta)
+  s = seq_along(alpha)
+  f = pi*sin(alpha)
   for (i in seq(1e4)) {
-    t = theta[s]
-    dtheta = -(2*t+sin(2*t)-f[s])/(2+2*cos(t))
-    theta[s] = t+dtheta
-    s = s[abs(dtheta)>1e-6]
+    t = alpha[s]
+    dalpha = -(2*t+sin(2*t)-f[s])/4/(2+2*cos(t))
+    alpha[s] = t+dalpha
+    s = s[abs(dalpha)>1e-6]
   }
 
   if (length(lon)>ncrit) {
-    theta = spline(lat.grid,theta,xout=abs(lat))$y*sign(lat)
+    alpha = spline(lat.grid,alpha,xout=abs(lat))$y*sign(lat)
   }
 
   # compute projection
-  x = radius*2*sqrt(2)/pi*lon*cos(theta)
-  y = radius*sqrt(2)*sin(theta)
+  x = radius*2*sqrt(2)/pi*lon*cos(alpha)
+  y = radius*sqrt(2)*sin(alpha)
 
   # return Cartesian coordinates
   return(data.frame(x=x,y=y))

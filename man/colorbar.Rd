@@ -68,7 +68,7 @@ Adds a vertical color bar to a plot with a custom axis.
 nplot(xlim=c(0,1.2), bty='o', asp=1)
 f = function(theta,phi) sphericalharmonics(10,10,cbind(theta,phi),basis='real')
 sphereplot(f, col=planckcolors(200), phi0=0.1, theta0=pi/3, add=TRUE, clim=c(-0.7,0.7),
-           center=c(0.5,0.5), radius=0.4, show.grid=TRUE, show.border=TRUE)
+           center=c(0.5,0.5), radius=0.4)
 colorbar(1,0.1,1.1,0.9,planckcolors(200),crange=c(-0.7,0.7))
 
 }
