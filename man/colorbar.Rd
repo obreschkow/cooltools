@@ -65,7 +65,7 @@ Adds a vertical color bar to a plot with a custom axis.
 \examples{
 ## Plot a spherical harmonic function with a color bar
 
-nplot(xlim=c(0,1.2), bty='o', asp=1)
+nplot(xlim=c(0,1.2), asp=1)
 f = function(theta,phi) sphericalharmonics(10,10,cbind(theta,phi))
 sphereplot(f, col=planckcolors(200), phi0=0.1, theta0=pi/3, add=TRUE, clim=c(-0.7,0.7),
            center=c(0.5,0.5), radius=0.4)

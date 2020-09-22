@@ -270,7 +270,7 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
     yl = ylim*radius+center[2]
     rect = cbind(c(xl[1]-d,xl[2]+d,xl[2]+d,xl[1]-d),c(yl[1]-d,yl[1]-d,yl[2]+d,yl[2]+d))
     frame = spPolygons(list(rect,bd))
-    sp::plot(frame,col=background,border=background,add=T)
+    sp::plot(frame,col=background,border=NA,add=T)
   }
 
   # plot border

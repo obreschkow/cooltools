@@ -1,6 +1,6 @@
 #' Vertical color bar
 #'
-#' @importFrom graphics rect axis
+#' @importFrom graphics rect axis rasterImage
 #' @importFrom grDevices gray.colors
 #'
 #' @description Adds a vertical color bar to a plot with a custom axis.
@@ -28,7 +28,7 @@
 #' @examples
 #' ## Plot a spherical harmonic function with a color bar
 #'
-#' nplot(xlim=c(0,1.2), bty='o', asp=1)
+#' nplot(xlim=c(0,1.2), asp=1)
 #' f = function(theta,phi) sphericalharmonics(10,10,cbind(theta,phi))
 #' sphereplot(f, col=planckcolors(200), phi0=0.1, theta0=pi/3, add=TRUE, clim=c(-0.7,0.7),
 #'            center=c(0.5,0.5), radius=0.4)
@@ -54,14 +54,19 @@ colorbar = function(xleft, ybottom, xright, ytop,
   }
 
   # plot gradient
-  dy = (ytop-ybottom)/n
-  y0 = seq(ybottom,ytop-dy,length=n)
-  y1 = y0+dy
-  yval = (seq(n)-0.5)/n*diff(clim)+clim[1]
-  ycol = col[pmax(1,pmin(length(col),ceiling((yval-crange[1])/diff(crange)*length(col))))]
-  for (i in seq(n)) {
-    rect(xleft, y0[i], xright, y1[i], col=ycol[i], border = NA)
-  }
+  rgb = array(NA,c(n,1,3))
+  rgb[,1,] =  t(col2rgb(col)/255)
+  rasterImage(rgb, xleft, ybottom, xright, ytop)
+
+  # previous version of plot gradient
+  # dy = (ytop-ybottom)/n
+  # y0 = seq(ybottom,ytop-dy,length=n)
+  # y1 = y0+dy
+  # yval = (seq(n)-0.5)/n*diff(clim)+clim[1]
+  # ycol = col[pmax(1,pmin(length(col),ceiling((yval-crange[1])/diff(crange)*length(col))))]
+  # for (i in seq(n)) {
+  #   rect(xleft, y0[i], xright, y1[i], col=ycol[i], border = NA)
+  # }
 
   # plot axis
   if (show.axis) {
