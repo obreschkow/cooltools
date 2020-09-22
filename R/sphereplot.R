@@ -101,11 +101,10 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
     }
     xy2sph = function(p) {
       z = sqrt(1-pmin(1,p$x^2+p$y^2))
-      return(data.frame(theta = acos(pmin(1,pmax(-1,p$y))),
-                        phi = atan2(p$x,z)%%(2*pi)))
       d = 2/n
-      p$out = pmax(0,abs(p$x)-d/2)^2+pmax(0,abs(p$y)-d/2)^2>1
-      return(p)
+      return(data.frame(theta = acos(pmin(1,pmax(-1,p$y))),
+                        phi = atan2(p$x,z)%%(2*pi),
+                        out = pmax(0,abs(p$x)-d/2)^2+pmax(0,abs(p$y)-d/2)^2>1))
     }
     boundary = function(nv) {
       a = midseq(0,2*pi,nv)
@@ -139,8 +138,10 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
     }
     xy2sph = function(p) {
       alpha = asin(p$y/sqrt(2))
+      d = 2/n
       return(data.frame(theta = acos((2*alpha+sin(2*alpha))/pi),
-                        phi = (pi*p$x/(2*sqrt(2)*cos(alpha)))%%(2*pi)))
+                        phi = (pi*p$x/(2*sqrt(2)*cos(alpha)))%%(2*pi),
+                        out = pmax(0,abs(p$x)/2/sqrt(2)-d/2)^2+pmax(0,abs(p$y)/sqrt(2)-d/2)^2>1))
     }
     boundary = function(nv) {
       a = midseq(0,2*pi,nv)
@@ -158,8 +159,9 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
   R = rotation3(c(0,0,1),angle)%*%rotation3(c(-1,0,0),theta0-pi/2)%*%rotation3(c(0,-1,0),phi0)
   rotate = function(p) {
     xyz = cbind(sin(p$theta)*sin(p$phi),cos(p$theta),sin(p$theta)*cos(p$phi))%*%R
-    return(data.frame(theta = acos(pmin(1,pmax(-1,xyz[,2]))),
-                      phi = atan2(xyz[,1],xyz[,3])%%(2*pi)))
+    p$theta = acos(pmin(1,pmax(-1,xyz[,2])))
+    p$phi = atan2(xyz[,1],xyz[,3])%%(2*pi)
+    return(p)
   }
 
   # initialize plot
@@ -263,7 +265,10 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
   par(xpd=TRUE)
 
   if (need.frame) {
-    rect = cbind(c(xlim,rev(xlim))*radius+center[1],c(rep(ylim,each=2))*radius+center[2])
+    d = sqrt(diff(xlim)*diff(ylim))*radius*0.01
+    xl = xlim*radius+center[1]
+    yl = ylim*radius+center[2]
+    rect = cbind(c(xl[1]-d,xl[2]+d,xl[2]+d,xl[1]-d),c(yl[1]-d,yl[1]-d,yl[2]+d,yl[2]+d))
     frame = spPolygons(list(rect,bd))
     sp::plot(frame,col=background,border=background,add=T)
   }
