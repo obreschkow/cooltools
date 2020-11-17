@@ -70,6 +70,7 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   s = x>=xlim[1] & x<=xlim[2] & y>=ylim[1] & y<=ylim[2]
   x = x[s]
   y = y[s]
+  w = w[s]
 
   # convert continuous (x,y)-coordinates to discrete grid indices
   ix = pmax(1,pmin(n[1],ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n[1])))
