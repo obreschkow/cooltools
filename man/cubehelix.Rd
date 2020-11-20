@@ -4,7 +4,7 @@
 \alias{cubehelix}
 \title{Cube Helix colour palette}
 \usage{
-cubehelix(n, r = 1.5, hue = 1, gamma = 1)
+cubehelix(n, r = 1.5, hue = 1, gamma = 1, rev = FALSE)
 }
 \arguments{
 \item{n}{integer number of colours in the scale}
@@ -14,6 +14,8 @@ cubehelix(n, r = 1.5, hue = 1, gamma = 1)
 \item{hue}{non-negative number specifying the colour intensity from grey (0) to normal (1) and over-saturated (>1)}
 
 \item{gamma}{positive number specifying the relative importance of low vs high values}
+
+\item{rev}{logical flag indicating whether the ordering of the colors should be reversed}
 }
 \value{
 Returns an n-vector of RGB colour strings.

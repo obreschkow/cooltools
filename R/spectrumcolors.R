@@ -8,6 +8,7 @@
 #'
 #' @param n integer number of colors in the scale
 #' @param alpha alpha transparency value (0=fully transparent, 1=fully opaque)
+#' @param rev logical flag indicating whether the ordering of the colors should be reversed
 #'
 #' @return Returns an n-vector of RGB colour strings.
 #'
@@ -23,11 +24,14 @@
 #'
 #' @export
 
-spectrumcolors = function(n, alpha=1) {
+spectrumcolors = function(n, alpha=1, rev=FALSE) {
 
   xin  = c(0,1.3,1.4,1.7,2.5,3,3.5,3.8,4.5,5)
   xout = c(0,1,1.1,1.4,2.9,3,3.4,3.65,4.7,5)
-  x = approx(xin,xout,seq(0.2,4.8,length=n))$y
+
+  i = seq(0.2,4.8,length=n)
+  if (rev) i = rev(i)
+  x = approx(xin,xout,i)$y
 
   r = pmin(0.9,2-x)*as.numeric(x<=2)+pmax(0,pmin(0.9,(0.65*x-2.3)))*as.numeric(x>=3)
   g = pmin(1,x)*as.numeric(x<2)+pmax(0,pmin(1,2.95-0.65*x))^2*as.numeric(x>=2)

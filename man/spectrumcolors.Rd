@@ -4,12 +4,14 @@
 \alias{spectrumcolors}
 \title{Spectrum colour palette}
 \usage{
-spectrumcolors(n, alpha = 1)
+spectrumcolors(n, alpha = 1, rev = FALSE)
 }
 \arguments{
 \item{n}{integer number of colors in the scale}
 
 \item{alpha}{alpha transparency value (0=fully transparent, 1=fully opaque)}
+
+\item{rev}{logical flag indicating whether the ordering of the colors should be reversed}
 }
 \value{
 Returns an n-vector of RGB colour strings.

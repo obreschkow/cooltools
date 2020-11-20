@@ -4,25 +4,25 @@
 \alias{subplot}
 \title{Insert a sub-panel into plot}
 \usage{
-subplot(xleft = 0.1, ybottom = 0.1, xright = 0.3, ytop = 0.3)
+subplot(xleft = NA, ybottom, xright, ytop)
 }
 \arguments{
-\item{xleft}{lower x-coordinate of the sub-panel relative to the range 0...1. Use xleft='off' to return to the main plot.}
+\item{xleft}{lower x-coordinate of the sub-panel relative to the current plot.}
 
-\item{ybottom}{lower y-coordinate of the sub-panel relative to the range 0...1.}
+\item{ybottom}{lower y-coordinate of the sub-panel relative to the current plot.}
 
-\item{xright}{upper x-coordinate of the sub-panel relative to the range 0...1.}
+\item{xright}{upper x-coordinate of the sub-panel relative to the current plot.}
 
-\item{ytop}{upper y-coordinate of the sub-panel relative to the range 0...1.}
+\item{ytop}{upper y-coordinate of the sub-panel relative to the current plot.}
 }
 \description{
-Insert a sub-panel into an existing plotting area. Terminate the sub-panel using by calling \code{subplot('off')}
+Insert a sub-panel into an existing plotting area. Terminate each sub-panel by calling \code{subplot('off')}.
 }
 \examples{
 nplot(bty='o', xlim=c(0,1), ylim=c(-1,1), xaxt ='t',yaxt='t')
 curve(x*sin(1/x), 1e-10, 1, n=1000, lwd=1.5, add=TRUE)
 rect(0.02,-0.1,0.1,0.1,border='blue',col=transparent('blue',0.2))
-subplot(0.55,0.15,0.93,0.55)
+subplot(0.55,-0.8,0.93,0)
 nplot(bty='o', xlim=c(0.02,0.1), ylim=c(-0.1,0.1), xaxt ='t',yaxt='t')
 rect(0.02,-0.1,0.1,0.1,border = NA,col= transparent('blue',0.2))
 curve(x*sin(1/x), 0.02, 0.1, n=500, lwd=1.5, add=TRUE)

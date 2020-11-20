@@ -2,12 +2,12 @@
 #'
 #' @importFrom graphics par plot curve rect
 #'
-#' @description Insert a sub-panel into an existing plotting area. Terminate the sub-panel using by calling \code{subplot('off')}
+#' @description Insert a sub-panel into an existing plotting area. Terminate each sub-panel by calling \code{subplot('off')}.
 #'
-#' @param xleft lower x-coordinate of the sub-panel relative to the range 0...1. Use xleft='off' to return to the main plot.
-#' @param ybottom lower y-coordinate of the sub-panel relative to the range 0...1.
-#' @param xright upper x-coordinate of the sub-panel relative to the range 0...1.
-#' @param ytop upper y-coordinate of the sub-panel relative to the range 0...1.
+#' @param xleft lower x-coordinate of the sub-panel relative to the current plot.
+#' @param ybottom lower y-coordinate of the sub-panel relative to the current plot.
+#' @param xright upper x-coordinate of the sub-panel relative to the current plot.
+#' @param ytop upper y-coordinate of the sub-panel relative to the current plot.
 #'
 #' @author Danail Obreschkow
 #'
@@ -15,7 +15,7 @@
 #' nplot(bty='o', xlim=c(0,1), ylim=c(-1,1), xaxt ='t',yaxt='t')
 #' curve(x*sin(1/x), 1e-10, 1, n=1000, lwd=1.5, add=TRUE)
 #' rect(0.02,-0.1,0.1,0.1,border='blue',col=transparent('blue',0.2))
-#' subplot(0.55,0.15,0.93,0.55)
+#' subplot(0.55,-0.8,0.93,0)
 #' nplot(bty='o', xlim=c(0.02,0.1), ylim=c(-0.1,0.1), xaxt ='t',yaxt='t')
 #' rect(0.02,-0.1,0.1,0.1,border = NA,col= transparent('blue',0.2))
 #' curve(x*sin(1/x), 0.02, 0.1, n=500, lwd=1.5, add=TRUE)
@@ -23,16 +23,27 @@
 #'
 #' @export
 
-subplot = function(xleft=0.1, ybottom=0.1, xright=0.3, ytop=0.3) {
+subplot = function(xleft=NA, ybottom, xright, ytop) {
 
   if (is.numeric(xleft)) {
 
-    if ((xleft<0)|(xleft>1)) stop('xleft must be in the range 0...1')
-    if ((xright<0)|(xright>1)) stop('xright must be in the range 0...1')
-    if ((ybottom<0)|(ybottom>1)) stop('ybottom must be in the range 0...1')
-    if ((ytop<0)|(ytop>1)) stop('ytop must be in the range 0...1')
+    limit = par()$usr
+
+    if ((xleft<limit[1])|(xleft>limit[2])) stop('xleft out of its allowed range')
+    if ((xright<limit[1])|(xright>limit[2])) stop('xright out of its allowed range')
+    if ((ybottom<limit[3])|(ybottom>limit[4])) stop('ybottom out of its allowed range')
+    if ((ytop<limit[3])|(ytop>limit[4])) stop('ytop out of its allowed range')
     if (xleft>=xright) stop('xleft must be smaller than xright')
     if (ybottom>=ytop) stop('ybottom must be smaller than ytop')
+
+    # store previous subplot
+    .cooltools.env$master.par = par(no.readonly = TRUE)
+
+    # recast ranges to [0,1]
+    xleft = (xleft-limit[1])/(limit[2]-limit[1])
+    xright = (xright-limit[1])/(limit[2]-limit[1])
+    ybottom = (ybottom-limit[3])/(limit[4]-limit[3])
+    ytop = (ytop-limit[3])/(limit[4]-limit[3])
 
     # define new subplot
     par(omd=c(0,1,0,1))
@@ -47,10 +58,8 @@ subplot = function(xleft=0.1, ybottom=0.1, xright=0.3, ytop=0.3) {
     if (xleft=='off') {
 
       # close subplot
-      par(oma=c(0,0,0,0))
-      par(omi=c(0,0,0,0))
-      par(omd=c(0,1,0,1))
-      par(new=F)
+      if (is.null(.cooltools.env$master.par)) stop('subplot("off") called without an open subplot')
+      par(.cooltools.env$master.par)
 
     } else {
 

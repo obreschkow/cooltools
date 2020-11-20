@@ -55,18 +55,8 @@ colorbar = function(xleft, ybottom, xright, ytop,
 
   # plot gradient
   rgb = array(NA,c(n,1,3))
-  rgb[,1,] =  t(col2rgb(col)/255)
+  rgb[,1,] =  t(col2rgb(rev(col))/255)
   rasterImage(rgb, xleft, ybottom, xright, ytop)
-
-  # previous version of plot gradient
-  # dy = (ytop-ybottom)/n
-  # y0 = seq(ybottom,ytop-dy,length=n)
-  # y1 = y0+dy
-  # yval = (seq(n)-0.5)/n*diff(clim)+clim[1]
-  # ycol = col[pmax(1,pmin(length(col),ceiling((yval-crange[1])/diff(crange)*length(col))))]
-  # for (i in seq(n)) {
-  #   rect(xleft, y0[i], xright, y1[i], col=ycol[i], border = NA)
-  # }
 
   # plot axis
   if (show.axis) {
