@@ -10,14 +10,14 @@
 #' @param xlim 2-element vector specifying the data range (data cropped if necessary). If not given, xlim is set to the range of x
 #'
 #' @return Returns a list of items
-#' \item{x}{n-element vector of cell-center x-coordinates}
+#' \item{x}{N-element vector of cell-center x-coordinates}
 #' \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates}
 #' \item{dx}{spacing between x-coordinates}
 #' \item{xlim}{range of xbreak, same as input argument xlim, if given}
-#' \item{n}{vector of point counts.}
-#' \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified}
-#' \item{d}{normalized number densities corresponding to n, such that sum(d)*dx=1}
-#' \item{c}{normalized mass densities corresponding to m, such that sum(c)*dx=1; only available if \code{w} is specified}
+#' \item{n}{vector of point counts, such that sum(n)=N.}
+#' \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified.}
+#' \item{d}{normalized number densities corresponding to n, such that sum(d)*dx=1.}
+#' \item{c}{normalized mass densities corresponding to m, such that sum(c)*dx=1; only available if \code{w} is specified.}
 #'
 #' @author Danail Obreschkow
 #'
@@ -69,7 +69,7 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
   g$n[q$index] = q$N
 
   # density
-  g$d = g$n/g$dx
+  g$d = g$n/sum(g$n)/g$dx
 
   # count mass per cell
   if (!is.null(w)) {

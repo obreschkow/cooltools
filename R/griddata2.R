@@ -23,6 +23,7 @@
 #' \item{n}{2D array of point counts.}
 #' \item{d}{normalized number densities corresponding to n, such that \code{sum(d)*dx*dy=1}.}
 #' \item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
+#' \item{c}{2D array of normalized mass densities corresponding to m, such that sum(c)*dx*dy=1; only available if \code{w} is specified.}
 #'
 #' @author Danail Obreschkow
 #'
@@ -92,13 +93,14 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
   g$n = array(g$n,n)
 
   # density
-  g$d = g$n/g$dx/g$dy
+  g$d = g$n/sum(g$n)/g$dx/g$dy
 
   # count mass per cell
   if (!is.null(w)) {
     g$m = rep(0,prod(n))
     g$m[q$index] = q$w
     g$m = array(g$m,n)
+    g$c = g$m/sum(g$m)/g$dx/g$dy
   }
 
   # return data

@@ -32,6 +32,7 @@ Returns a list of items
 \item{n}{2D array of point counts.}
 \item{d}{normalized number densities corresponding to n, such that \code{sum(d)*dx*dy=1}.}
 \item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
+\item{c}{2D array of normalized mass densities corresponding to m, such that sum(c)*dx*dy=1; only available if \code{w} is specified.}
 }
 \description{
 Generates a 2D grid from a 2D point set, optionally with weights
