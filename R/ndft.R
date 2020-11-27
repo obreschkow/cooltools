@@ -15,6 +15,8 @@
 #'
 #' @return Returns a vector of the same length as \code{x} (if \code{inverse=FALSE}) or \code{nu} (if \code{inverse=TRUE}).
 #'
+#' @details The one-dimensional NDFT of a vector \eqn{f=(f_1,...,f_N)} is defined as \deqn{F_j=\sum_i w_i f_i exp(-2\pi i*x_i*\nu_j)} where \eqn{w_i} are optional weights, proportional to the interval around \eqn{x_i}, only used if \code{weighing=TRUE}. Likewise, the inverse NDFT is defined as \deqn{f_i=\sum_j w_j F_j exp(+2\pi i*x_i*nu_j)} where \eqn{w_j} are optional weights, proportional to the interval around \eqn{\nu_j}.
+#'
 #' @examples
 #'
 #' # Define an example signal
