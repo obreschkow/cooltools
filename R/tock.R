@@ -4,6 +4,8 @@
 #'
 #' @description Stop timer and write the computation in seconds since the last call of tick().
 #'
+#' @param txt optional custom text to be displayed
+#'
 #' @examples
 #'
 #' tick('Sum 10 million random numbers')
@@ -16,6 +18,6 @@
 #'
 #' @export
 
-tock = function() {
-  cat(sprintf(' (%.2fs).\n',as.double(pracma::toc(echo=F))))
+tock = function(txt='') {
+  cat(sprintf(' (%.2fs). %s\n',as.double(pracma::toc(echo=F)),txt))
 }

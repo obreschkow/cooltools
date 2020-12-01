@@ -4,7 +4,10 @@
 \alias{tock}
 \title{Stop timer}
 \usage{
-tock()
+tock(txt = "")
+}
+\arguments{
+\item{txt}{optional custom text to be displayed}
 }
 \description{
 Stop timer and write the computation in seconds since the last call of tick().
