@@ -155,7 +155,7 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
 
   }
 
-  # preare rotation
+  # prepare rotation
   R = rotation3(c(0,0,1),angle)%*%rotation3(c(-1,0,0),theta0-pi/2)%*%rotation3(c(0,-1,0),phi0)
   rotate = function(p) {
     xyz = cbind(sin(p$theta)*sin(p$phi),cos(p$theta),sin(p$theta)*cos(p$phi))%*%R

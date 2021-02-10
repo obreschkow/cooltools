@@ -15,20 +15,14 @@
 
 vectorproduct = function(x,y,normalize=FALSE) {
 
-  x = as.matrix(x)
-  y = as.matrix(y)
-
   if (length(x)!=length(y)) stop('x and y must have the same length')
 
   if (length(x)==3) {
-    x = array(x,c(1,3))
-    y = array(y,c(1,3))
+    x = matrix(x,1,3)
+    y = matrix(y,1,3)
   }
 
-  z = array(NA,c(dim(x)[1],3))
-  z[,1] = x[,2]*y[,3]-x[,3]*y[,2]
-  z[,2] = x[,3]*y[,1]-x[,1]*y[,3]
-  z[,3] = x[,1]*y[,2]-x[,2]*y[,1]
+  z = cbind(x[,2]*y[,3]-x[,3]*y[,2], x[,3]*y[,1]-x[,1]*y[,3], x[,1]*y[,2]-x[,2]*y[,1])
 
   if (normalize) z = unitvector(z)
 
