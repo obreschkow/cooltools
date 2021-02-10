@@ -16,8 +16,8 @@ sph2car = function(x) {
 
   if (length(x)==3) x = matrix(x,1,3)
 
-  return(cbind(x=x[,1]*sin(x[,2])*cos(x[,3]),
-               y=x[,1]*sin(x[,2])*sin(x[,3]),
-               z=x[,1]*cos(x[,2])))
+  return(data.frame(cbind(x=x[,1]*sin(x[,2])*cos(x[,3]),
+                          y=x[,1]*sin(x[,2])*sin(x[,3]),
+                          z=x[,1]*cos(x[,2]))))
 
 }

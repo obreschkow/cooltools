@@ -29,9 +29,9 @@ car2pol = function(x) {
   phi = (atan2(x[,2],x[,1])+2*pi)%%(2*pi)
 
   if (d==2) {
-    return(cbind(r,phi))
+    return(data.frame(cbind(r,phi)))
   } else {
-    return(cbind(r,phi,z=x[,3]))
+    return(data.frame(cbind(r,phi,z=x[,3])))
   }
 
 }
