@@ -10,9 +10,9 @@
 #' @param frame.index list of frame indices 'x' to be included in the movie
 #' @param output.path character specifying the directory, where the movie and temporary frames are saved
 #' @param output.filename movie filename without path. This filename should end on the extension '.mp4'.
-#' @param mov.width number of pixels along the horizontal axis
-#' @param mov.height number of pixels along the vertical axis
-#' @param mov.fps number of frames per second
+#' @param width number of pixels along the horizontal axis
+#' @param height number of pixels along the vertical axis
+#' @param fps number of frames per second
 #' @param keep.frames logical flag specifying whether the temporary directory with the individual frame files should be kept
 #' @param quiet logical flag; if true, all console outputs produced by 'ffmpeg' are suppressed
 #' @param separator filename separate of the system ('/' for Mac, Linux, Unix; '\' for Windows)
@@ -20,6 +20,8 @@
 #' @param ffmpeg.opt compression and formatting options used with ffmpeg
 #'
 #' @author Danail Obreschkow
+#'
+#' @seealso \code{\link{makeframe}}
 #'
 #' @examples
 #'
@@ -45,7 +47,7 @@
 
 makemovie = function(frame.draw,frame.index,
                      output.path,output.filename,
-                     mov.width=1080,mov.height=720,mov.fps=60,
+                     width=1080,height=720,fps=60,
                      keep.frames=F, quiet=T, separator='/',
                      ffmpeg.cmd='ffmpeg',
                      ffmpeg.opt='-vcodec libx264 -crf 18 -pix_fmt yuv420p') {
@@ -67,7 +69,7 @@ makemovie = function(frame.draw,frame.index,
   for (i in seq_along(frame.index)) {
     cat(sprintf('Write frame %0.6d.\n',i))
     fn = file.path(frame.path,sprintf('frame_%0.8d.png',i))
-    grDevices::png(fn,width=mov.width,height=mov.height)
+    grDevices::png(fn,width=width,height=height)
     frame.draw(frame.index[i])
     grDevices::dev.off()
   }
@@ -75,7 +77,7 @@ makemovie = function(frame.draw,frame.index,
   # convert into movie
   cat(sprintf('Write movie file %s\n',output.filename))
   call = sprintf('%s -y -r %d -f image2 -s %dx%d -i %sframe_%%08d.png %s %s%s %s',
-                 ffmpeg.cmd,mov.fps,mov.width,mov.height,linuxspaces(frame.path),ffmpeg.opt,
+                 ffmpeg.cmd,fps,width,height,linuxspaces(frame.path),ffmpeg.opt,
                  linuxspaces(output.path),linuxspaces(output.filename),
                  ifelse(quiet,'-loglevel quiet',''))
   system(call)

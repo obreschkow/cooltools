@@ -9,9 +9,9 @@ makemovie(
   frame.index,
   output.path,
   output.filename,
-  mov.width = 1080,
-  mov.height = 720,
-  mov.fps = 60,
+  width = 1080,
+  height = 720,
+  fps = 60,
   keep.frames = F,
   quiet = T,
   separator = "/",
@@ -28,11 +28,11 @@ makemovie(
 
 \item{output.filename}{movie filename without path. This filename should end on the extension '.mp4'.}
 
-\item{mov.width}{number of pixels along the horizontal axis}
+\item{width}{number of pixels along the horizontal axis}
 
-\item{mov.height}{number of pixels along the vertical axis}
+\item{height}{number of pixels along the vertical axis}
 
-\item{mov.fps}{number of frames per second}
+\item{fps}{number of frames per second}
 
 \item{keep.frames}{logical flag specifying whether the temporary directory with the individual frame files should be kept}
 
@@ -67,6 +67,9 @@ frame = function(time) {
 makemovie(frame,seq(0,60,0.5),'~/testmovie','movie.mp4',200,200)
 }
 
+}
+\seealso{
+\code{\link{makeframe}}
 }
 \author{
 Danail Obreschkow
