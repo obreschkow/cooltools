@@ -41,9 +41,12 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   }
 
   # make smoothing kernels
-  d = 0.01 # step between standard deviations in pixels
+  d = 0.1 # step between standard deviations in pixels
   n.sd = 3 # number of standard deviations considered
   n.pix = prod(n)
+  if (is.null(sd.min)) {
+    sd.min = 0
+  }
   if (is.null(sd.max)) {
     sd.max = round(sqrt(n.pix)/4) # maximum standard deviation in pixel
   }
@@ -51,13 +54,18 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   n.kernels = length(sd)
   kernel = {}
   kernel[[1]] = matrix(c(0,0,0,0,1,0,0,0,0),3,3)
+  kern.index = rep(1,n.kernels)
+  kern.length = rep(9,n.kernels)
   for (i in seq(2,n.kernels)) {
+    kern.index[i] = kern.index[i-1]+kern.length[i-1]
     h = ceiling(sd[i]*n.sd)
     n.side = 2*h+1 # number of pixels per side
     mesh = pracma::meshgrid(seq(-h,h))
     kernel[[i]] = exp(-(mesh$X^2+mesh$Y^2)/2/sd[i]^2)
     kernel[[i]] = kernel[[i]]/sum(kernel[[i]])
+    kern.length[i] = n.side^2
   }
+  kern = unlist(kernel)
 
   # grid data onto oversized grid
   h.max = (dim(kernel[[n.kernels]])[1]-1)/2
@@ -66,21 +74,32 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   g = griddata2(x,y,w,n+2*h.max,xlim=xlim,ylim=ylim)
 
   # smooth map onto g$d
+  #ikernel = array(pmin(n.kernels,round(pmin(sd.max,pmax(sd.min,15*s/sqrt(g$n)))/d)+1),dim(g$n))
+  #print(c(length(unique(as.vector(ikernel))),length(kernel),n.kernels))
+
   if (is.null(g$m)) {map=g$n} else {map=g$m}
-  g$d = array(0,n+4*h.max)
-  for (ix in seq(2*h.max+n[1])) {
-    for (iy in seq(2*h.max+n[2])) {
-      if (g$n[ix,iy]>0) {
-        sd.pixel = min(sd.max,max(sd.min,15*s/sqrt(g$n[ix,iy])))
-        i = min(n.kernels,round(sd.pixel/d)+1)
-        h = (dim(kernel[[i]])[1]-1)/2
-        rx = (ix-h+h.max):(ix+h+h.max)
-        ry = (iy-h+h.max):(iy+h+h.max)
-        g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kernel[[i]]
-      }
-    }
-  }
-  g$d = g$d[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+  g$d = kde2stampxx(map, g$n, h.max, s, sd.min, sd.max, d, n.kernels, kern, kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+
+  # this is now doen by the Rcpp routine "stamp"
+  # g$d = array(0,n+4*h.max)
+  # for (ix in seq(2*h.max+n[1])) {
+  #   for (iy in seq(2*h.max+n[2])) {
+  #     if (g$n[ix,iy]>0) {
+  #       sd.pixel = min(sd.max,max(sd.min,15*s/sqrt(g$n[ix,iy])))
+  #       i = min(n.kernels,round(sd.pixel/d)+1)
+  #       #i = ikernel[ix,iy]
+  #       h = (sqrt(kern.length[i])-1)/2 #(dim(kernel[[i]])[1]-1)/2
+  #       rx = (ix-h+h.max):(ix+h+h.max)
+  #       ry = (iy-h+h.max):(iy+h+h.max)
+  #       #g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kernel[[i]]
+  #       g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kern[kern.index[i]:(kern.index[i]+kern.length[i]-1)]
+  #     }
+  #   }
+  # }
+
+
+  #stop()
+  #g$d = g$d[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   # make boundaries
   if (any(reflect=='left')) g$d[(h.max+1):(2*h.max),] = g$d[(h.max+1):(2*h.max),]+g$d[h.max:1,]

@@ -17,3 +17,7 @@ paircountxy1d <- function(x, y, dr, rmax) {
     .Call('_cooltools_paircountxy1d', PACKAGE = 'cooltools', x, y, dr, rmax)
 }
 
+kde2stampxx <- function(map, counts, hmax, s, sdmin, sdmax, d, nkernels, kern, kernindex, kernlength) {
+    .Call('_cooltools_kde2stampxx', PACKAGE = 'cooltools', map, counts, hmax, s, sdmin, sdmax, d, nkernels, kern, kernindex, kernlength)
+}
+

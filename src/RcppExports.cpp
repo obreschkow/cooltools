@@ -59,12 +59,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// kde2stampxx
+NumericMatrix kde2stampxx(NumericMatrix map, NumericMatrix counts, int hmax, double s, double sdmin, double sdmax, double d, int nkernels, NumericVector kern, NumericVector kernindex, NumericVector kernlength);
+RcppExport SEXP _cooltools_kde2stampxx(SEXP mapSEXP, SEXP countsSEXP, SEXP hmaxSEXP, SEXP sSEXP, SEXP sdminSEXP, SEXP sdmaxSEXP, SEXP dSEXP, SEXP nkernelsSEXP, SEXP kernSEXP, SEXP kernindexSEXP, SEXP kernlengthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type map(mapSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type counts(countsSEXP);
+    Rcpp::traits::input_parameter< int >::type hmax(hmaxSEXP);
+    Rcpp::traits::input_parameter< double >::type s(sSEXP);
+    Rcpp::traits::input_parameter< double >::type sdmin(sdminSEXP);
+    Rcpp::traits::input_parameter< double >::type sdmax(sdmaxSEXP);
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type nkernels(nkernelsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type kern(kernSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type kernindex(kernindexSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type kernlength(kernlengthSEXP);
+    rcpp_result_gen = Rcpp::wrap(kde2stampxx(map, counts, hmax, s, sdmin, sdmax, d, nkernels, kern, kernindex, kernlength));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cooltools_paircountxx", (DL_FUNC) &_cooltools_paircountxx, 3},
     {"_cooltools_paircountxy", (DL_FUNC) &_cooltools_paircountxy, 4},
     {"_cooltools_paircountxx1d", (DL_FUNC) &_cooltools_paircountxx1d, 3},
     {"_cooltools_paircountxy1d", (DL_FUNC) &_cooltools_paircountxy1d, 4},
+    {"_cooltools_kde2stampxx", (DL_FUNC) &_cooltools_kde2stampxx, 11},
     {NULL, NULL, 0}
 };
 
