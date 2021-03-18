@@ -1,5 +1,4 @@
 #include <Rcpp.h>
-#include <algorithm>    // std::max
 using namespace Rcpp;
 
 // [[Rcpp::export]]

@@ -14,6 +14,7 @@
 #' @param sd.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param sd.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param reflect vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected
+#' @param cpp logical flag; if set to TRUE (default) a fast implementation in C++ is used.
 #'
 #' @return Returns a list of items
 #' \item{x}{n-element vector of cell-center x-coordinates.}
@@ -30,7 +31,7 @@
 #'
 #' @export
 #'
-kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL, reflect='') {
+kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL, reflect='', cpp=TRUE) {
 
   # handle inputs
   if (length(n)==1) n=c(n,n)
@@ -65,7 +66,6 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
     kernel[[i]] = kernel[[i]]/sum(kernel[[i]])
     kern.length[i] = n.side^2
   }
-  kern = unlist(kernel)
 
   # grid data onto oversized grid
   h.max = (dim(kernel[[n.kernels]])[1]-1)/2
@@ -73,33 +73,31 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
   g = griddata2(x,y,w,n+2*h.max,xlim=xlim,ylim=ylim)
 
-  # smooth map onto g$d
-  #ikernel = array(pmin(n.kernels,round(pmin(sd.max,pmax(sd.min,15*s/sqrt(g$n)))/d)+1),dim(g$n))
-  #print(c(length(unique(as.vector(ikernel))),length(kernel),n.kernels))
-
   if (is.null(g$m)) {map=g$n} else {map=g$m}
-  g$d = kde2stampxx(map, g$n, h.max, s, sd.min, sd.max, d, n.kernels, kern, kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
-  # this is now doen by the Rcpp routine "stamp"
-  # g$d = array(0,n+4*h.max)
-  # for (ix in seq(2*h.max+n[1])) {
-  #   for (iy in seq(2*h.max+n[2])) {
-  #     if (g$n[ix,iy]>0) {
-  #       sd.pixel = min(sd.max,max(sd.min,15*s/sqrt(g$n[ix,iy])))
-  #       i = min(n.kernels,round(sd.pixel/d)+1)
-  #       #i = ikernel[ix,iy]
-  #       h = (sqrt(kern.length[i])-1)/2 #(dim(kernel[[i]])[1]-1)/2
-  #       rx = (ix-h+h.max):(ix+h+h.max)
-  #       ry = (iy-h+h.max):(iy+h+h.max)
-  #       #g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kernel[[i]]
-  #       g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kern[kern.index[i]:(kern.index[i]+kern.length[i]-1)]
-  #     }
-  #   }
-  # }
+  if (cpp) {
 
+    g$d = kde2stampxx(map, g$n, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
-  #stop()
-  #g$d = g$d[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+  } else {
+
+    # this is the old R version
+    g$d = array(0,n+4*h.max)
+    for (ix in seq(2*h.max+n[1])) {
+      for (iy in seq(2*h.max+n[2])) {
+        if (g$n[ix,iy]>0) {
+          sd.pixel = min(sd.max,max(sd.min,15*s/sqrt(g$n[ix,iy])))
+          i = min(n.kernels,round(sd.pixel/d)+1)
+          h = (dim(kernel[[i]])[1]-1)/2
+          rx = (ix-h+h.max):(ix+h+h.max)
+          ry = (iy-h+h.max):(iy+h+h.max)
+          g$d[rx,ry] = g$d[rx,ry]+map[ix,iy]*kernel[[i]]
+        }
+      }
+    }
+    g$d = g$d[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+
+  }
 
   # make boundaries
   if (any(reflect=='left')) g$d[(h.max+1):(2*h.max),] = g$d[(h.max+1):(2*h.max),]+g$d[h.max:1,]

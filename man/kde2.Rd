@@ -14,7 +14,8 @@ kde2(
   ylim = range(y),
   sd.min = NULL,
   sd.max = NULL,
-  reflect = ""
+  reflect = "",
+  cpp = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ kde2(
 \item{sd.max}{optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels}
 
 \item{reflect}{vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected}
+
+\item{cpp}{logical flag; if set to TRUE (default) a fast implementation in C++ is used.}
 }
 \value{
 Returns a list of items
