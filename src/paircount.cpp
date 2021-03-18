@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
-
+// [[Rcpp::interfaces(r, cpp)]]
 // [[Rcpp::export]]
 List paircountxx(NumericMatrix x, double dr, double rmax) {
 

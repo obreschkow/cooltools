@@ -1,7 +1,7 @@
 Package: cooltools
 Type: Package
 Title: Routines for scientific research
-Version: 1.38
+Version: 1.39
 Author: Danail Obreschkow
 Maintainer: The package maintainer <danail.obreschkow@gmail.com>
 Description: Collection of routines for scientific research with a focus on astrophysics.
@@ -23,7 +23,7 @@ Imports:
     rcosmo,
     raster,
     sp,
-    Rcpp (>= 1.0.0)
+    Rcpp
 LinkingTo: Rcpp
 License: GPL-3
 Encoding: UTF-8

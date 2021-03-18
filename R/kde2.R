@@ -1,6 +1,7 @@
 #' 2D kernel density estimation
 #'
 #' @importFrom pracma meshgrid
+#' @importFrom Rcpp sourceCpp
 #'
 #' @description Produces a 2D kernel density estimation on a 2D grid from a 2D point set, using adaptive smoothing and allowing for the data points to have weights.
 #'
@@ -42,6 +43,7 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   }
 
   # make smoothing kernels
+  tick('kernel')
   d = 0.1 # step between standard deviations in pixels
   n.sd = 3 # number of standard deviations considered
   n.pix = prod(n)
@@ -66,21 +68,25 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
     kernel[[i]] = kernel[[i]]/sum(kernel[[i]])
     kern.length[i] = n.side^2
   }
+  tock()
 
   # grid data onto oversized grid
   h.max = (dim(kernel[[n.kernels]])[1]-1)/2
   xlim = c(xlim[1]-(xlim[2]-xlim[1])/n[1]*h.max,xlim[2]+(xlim[2]-xlim[1])/n[1]*h.max)
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
+  tick('grid')
   g = griddata2(x,y,w,n+2*h.max,xlim=xlim,ylim=ylim)
+  tock()
 
   if (is.null(g$m)) {map=g$n} else {map=g$m}
 
   if (cpp) {
-
+    tick('cpp=T')
     g$d = kde2stampxx(map, g$n, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   } else {
 
+    tick('cpp=F')
     # this is the old R version
     g$d = array(0,n+4*h.max)
     for (ix in seq(2*h.max+n[1])) {
@@ -98,6 +104,7 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
     g$d = g$d[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   }
+  tock()
 
   # make boundaries
   if (any(reflect=='left')) g$d[(h.max+1):(2*h.max),] = g$d[(h.max+1):(2*h.max),]+g$d[h.max:1,]

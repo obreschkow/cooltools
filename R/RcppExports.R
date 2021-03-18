@@ -21,3 +21,7 @@ kde2stampxx <- function(map, counts, hmax, s, sdmin, sdmax, d, nkernels, kern, k
     .Call('_cooltools_kde2stampxx', PACKAGE = 'cooltools', map, counts, hmax, s, sdmin, sdmax, d, nkernels, kern, kernindex, kernlength)
 }
 
+# Register entry points for exported C++ functions
+methods::setLoadAction(function(ns) {
+    .Call('_cooltools_RcppExport_registerCCallable', PACKAGE = 'cooltools')
+})
