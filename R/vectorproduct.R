@@ -15,6 +15,9 @@
 
 vectorproduct = function(x,y,normalize=FALSE) {
 
+  x = as.matrix(x)
+  y = as.matrix(y)
+
   if (length(x)!=length(y)) stop('x and y must have the same length')
 
   if (length(x)==3) {
