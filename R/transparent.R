@@ -3,7 +3,7 @@
 #' @importFrom grDevices col2rgb
 #'
 #' @param col is a color or vector/array of colors, specified as text (e.g. 'purple') or 7/9-character (e.g. '#A020F0')
-#' @param alpha tranparency value between 0 and 1 or a vector/array thereof
+#' @param alpha transparency value between 0 and 1 or a vector/array thereof
 #'
 #' @return Returns a 9-character color or vector/array of 9-character colors.
 #'
@@ -14,6 +14,8 @@
 #'
 #' # Add the same transparency to different colors
 #' plot(runif(50),runif(50),pch=20,cex=10,col=transparent(rainbow(50)))
+#'
+#' @seealso \code{\link{lightness}}
 #'
 #' @author Danail Obreschkow
 #'
