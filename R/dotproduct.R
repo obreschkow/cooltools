@@ -9,7 +9,7 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @seealso \code{\link{scalarproduct}}, \code{\link{vectornorm}} and \code{\link{unitvector}}
+#' @seealso \code{\link{vectornorm}} and \code{\link{unitvector}}
 #'
 #' @export
 
