@@ -14,8 +14,7 @@
 
 car2sph = function(x) {
 
-  if (length(x)==3) x = matrix(x,1,3)
-  if (is.list(x)) x = as.matrix(x)
+  if (length(unlist(x,use.names = FALSE))==3) x = matrix(x,1,3)
 
   r = sqrt(rowSums(x^2))
   theta = acos(x[,3]/r)

@@ -14,8 +14,7 @@
 
 sph2car = function(x) {
 
-  if (length(x)==3) x = matrix(x,1,3)
-  if (is.list(x)) x = as.matrix(x)
+  if (length(unlist(x,use.names = FALSE))==3) x = matrix(x,1,3)
 
   return(data.frame(x=x[,1]*sin(x[,2])*cos(x[,3]),
                     y=x[,1]*sin(x[,2])*sin(x[,3]),

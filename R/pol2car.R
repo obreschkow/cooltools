@@ -14,9 +14,8 @@
 
 pol2car = function(x) {
 
-  if (length(x)==2) x = matrix(x,1,2)
-  if (length(x)==3) x = matrix(x,1,3)
-  if (is.list(x)) x = as.matrix(x)
+  if (length(unlist(x,use.names = FALSE))==2) x = matrix(x,1,2)
+  if (length(unlist(x,use.names = FALSE))==3) x = matrix(x,1,3)
 
   d = dim(x)[2]
 
