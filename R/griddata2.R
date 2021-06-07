@@ -43,6 +43,7 @@ griddata2 = function(x, y=NULL, w=NULL, n=c(20,20), xlim=NULL, ylim=NULL) {
 
   # handle inputs
   if (length(n)==1) n=c(n,n)
+  if (is.list(x)) x = as.matrix(x)
   if (is.matrix(x)) {
     if (dim(x)[2]!=2) stop('x must be a vector or a N-by-2 matrix')
     y = x[,2]

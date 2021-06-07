@@ -16,6 +16,7 @@ car2pol = function(x) {
 
   if (length(x)==2) x = matrix(x,1,2)
   if (length(x)==3) x = matrix(x,1,3)
+  if (is.list(x)) x = as.matrix(x)
 
   d = dim(x)[2]
 
@@ -29,9 +30,9 @@ car2pol = function(x) {
   phi = (atan2(x[,2],x[,1])+2*pi)%%(2*pi)
 
   if (d==2) {
-    return(cbind(r,phi))
+    return(data.frame(r,phi))
   } else {
-    return(cbind(r,phi,z=x[,3]))
+    return(data.frame(r,phi,z=x[,3]))
   }
 
 }

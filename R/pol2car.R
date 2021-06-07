@@ -16,15 +16,16 @@ pol2car = function(x) {
 
   if (length(x)==2) x = matrix(x,1,2)
   if (length(x)==3) x = matrix(x,1,3)
+  if (is.list(x)) x = as.matrix(x)
 
   d = dim(x)[2]
 
   if (!d%in%c(2,3)) stop('x must have 2 or 3 elements or columns')
 
   if (d==2) {
-    return(cbind(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2])))
+    return(data.frame(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2])))
   } else {
-    return(cbind(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2]),z=x[,3]))
+    return(data.frame(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2]),z=x[,3]))
   }
 
 }

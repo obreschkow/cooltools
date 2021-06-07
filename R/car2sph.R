@@ -15,12 +15,13 @@
 car2sph = function(x) {
 
   if (length(x)==3) x = matrix(x,1,3)
+  if (is.list(x)) x = as.matrix(x)
 
   r = sqrt(rowSums(x^2))
   theta = acos(x[,3]/r)
   theta[is.nan(theta)] = 0 # to set theta=0 if r=0
   phi = (atan2(x[,2],x[,1])+2*pi)%%(2*pi)
 
-  return(cbind(r,theta,phi))
+  return(data.frame(r,theta,phi))
 
 }
