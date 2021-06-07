@@ -35,12 +35,12 @@ fibonaccisphere = function(n=1000, r=1, out.xyz=TRUE, out.sph=FALSE) {
     y = r*sin(theta)*sin(phi)
     z = r*z
     if (out.sph) {
-      out = data.frame(x=x,y=y,z=z,theta=theta,phi=phi)
+      out = cbind(x=x,y=y,z=z,theta=theta,phi=phi)
     } else {
-      out = data.frame(x=x,y=y,z=z)
+      out = cbind(x=x,y=y,z=z)
     }
   } else {
-    out = data.frame(theta=theta,phi=phi)
+    out = cbind(theta=theta,phi=phi)
   }
 
   return(out)

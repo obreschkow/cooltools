@@ -25,7 +25,7 @@ vectorproduct = function(x,y,normalize=FALSE) {
     y = matrix(y,1,3)
   }
 
-  out = data.frame(cbind(x=x[,2]*y[,3]-x[,3]*y[,2], y=x[,3]*y[,1]-x[,1]*y[,3], z=x[,1]*y[,2]-x[,2]*y[,1]))
+  out = cbind(x=x[,2]*y[,3]-x[,3]*y[,2], y=x[,3]*y[,1]-x[,1]*y[,3], z=x[,1]*y[,2]-x[,2]*y[,1])
 
   if (normalize) out = unitvector(out)
 

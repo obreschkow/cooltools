@@ -32,7 +32,7 @@ runif3 = function(n=1,r=c(0,1), azimuth=c(0,2*pi), polarangle=c(0,pi)) {
   phi = runif(n,azimuth[1],azimuth[2])
   z = runif(n,cos(polarangle[2]),cos(polarangle[1]))
   xy = sqrt(1-z^2)*r
-  vec = cbind(xy*cos(phi),xy*sin(phi),z*r)
+  vec = cbind(x=xy*cos(phi),y=xy*sin(phi),z=z*r)
 
   # return values
   return(vec)

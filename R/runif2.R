@@ -29,7 +29,7 @@ runif2 = function(n=1, r=c(0,1), azimuth=c(0,2*pi)) {
   # make random vectors
   r = runif(n,r[1]^2,r[2]^2)^(1/2)
   phi = runif(n,azimuth[1],azimuth[2])
-  vec = cbind(r*cos(phi),r*sin(phi))
+  vec = cbind(x=r*cos(phi),y=r*sin(phi))
 
   # return values
   return(vec)

@@ -22,9 +22,9 @@ pol2car = function(x) {
   if (!d%in%c(2,3)) stop('x must have 2 or 3 elements or columns')
 
   if (d==2) {
-    return(data.frame(cbind(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2]))))
+    return(cbind(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2])))
   } else {
-    return(data.frame(cbind(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2]),z=x[,3])))
+    return(cbind(x=x[,1]*cos(x[,2]),y=x[,1]*sin(x[,2]),z=x[,3]))
   }
 
 }
