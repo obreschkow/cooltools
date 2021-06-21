@@ -1,7 +1,6 @@
 #' Spherical Harmonics
 #'
 #' @importFrom stats integrate
-#' @importFrom rcosmo sphericalHarmonics
 #'
 #' @description Evaluates spherical harmonics Y, either in the real-valued or complex-valued basis.
 #'
@@ -13,8 +12,6 @@
 #' @return Returns an n-vector of the spherical harmonics; for points x=c(0,0,0), a value of 0 is returned
 #'
 #' @author Danail Obreschkow
-#'
-#' @seealso The function \code{sphericalHarmonics} (with capital H) of the \code{rcosmo} package can be used to evaluate the real spherical harmonics, which are frequently used in physics.
 #'
 #' @examples
 #' ## Check orthonormalization of all spherical harmonics up to 3rd degree
@@ -84,7 +81,7 @@ sphericalharmonics = function(l, m, x, basis='real') {
   if (basis=='real') {
 
     x = unitvector(x) # normalize vector
-    Y = as.vector(rcosmo::sphericalHarmonics(l,m,x))
+    Y = as.vector(.rcosmo.sphericalHarmonics(l,m,x))
 
   } else if (basis=='complex') {
 
@@ -162,10 +159,10 @@ sphericalharmonics = function(l, m, x, basis='real') {
       x = unitvector(x) # normalize vector
 
       if (m==0) {
-        Y = as.vector(rcosmo::sphericalHarmonics(l,m,x))
+        Y = as.vector(.rcosmo.sphericalHarmonics(l,m,x))
       } else {
-        Yp = as.vector(rcosmo::sphericalHarmonics(l,abs(m),x))
-        Yn = as.vector(rcosmo::sphericalHarmonics(l,-abs(m),x))
+        Yp = as.vector(.rcosmo.sphericalHarmonics(l,abs(m),x))
+        Yn = as.vector(.rcosmo.sphericalHarmonics(l,-abs(m),x))
         if (m>0) {
           Y = (Yp+1i*Yn)/sqrt(2)*(-1)^m # cosine-type harmonics
         } else {
@@ -181,4 +178,77 @@ sphericalharmonics = function(l, m, x, basis='real') {
   Y[zeros] = 0
   return(Y)
 
+}
+
+.rcosmo.sphericalHarmonics = function (L, m, xyz)
+{
+  if (L == 0) {
+    Y <- matrix(1, dim(xyz)[1], 1)/sqrt(4 * pi)
+    return(Y)
+  }
+  if ((m < -L) || (m > L)) {
+    sprintf("Warning: m should be in [-%i,%i]", L)
+  }
+  else {
+    m_abs <- abs(m)
+    n <- 1:m_abs
+    c_ellm_2 <- prod(1 + m_abs/(L - n + 1))
+    c_ellm <- (sqrt(2)/2^m_abs) * sqrt((2 * L + 1)/(4 * pi) *
+                                         c_ellm_2)
+    x <- xyz[, 1]
+    y <- xyz[, 2]
+    z <- xyz[, 3]
+    phi <- matrix(0, length(x), 1)
+    t <- phi
+    logic_x3 <- (z == 1 | z == -1)
+    phi[logic_x3] <- 0
+    logic_x2_1 <- (y >= 0 & z < 1 & z > -1)
+    t[logic_x2_1] <- x[logic_x2_1]/sqrt(1 - (z[logic_x2_1])^2)
+    t[t > 1] <- 1
+    t[t < (-1)] <- -1
+    phi[logic_x2_1] = acos(t[logic_x2_1])
+    logic_x2_2 <- (y < 0 & z < 1 & z > -1)
+    t[logic_x2_2] <- x[logic_x2_2]/sqrt(1 - (z[logic_x2_2])^2)
+    t[t > 1] <- 1
+    t[t < (-1)] <- -1
+    phi[logic_x2_2] <- 2 * pi - acos(t[logic_x2_2])
+    if (m > 0) {
+      Y <- c_ellm * (1 - z^2)^(m_abs/2) * .rcosmo.jacobiPol(m_abs,
+                                                    m_abs, L - m_abs, z) * cos(m_abs * phi)
+    }
+    else if (m == 0) {
+      Y <- sqrt((2 * L + 1)/(4 * pi)) * .rcosmo.jacobiPol(0, 0,
+                                                  L, z)
+    }
+    else {
+      Y <- c_ellm * (1 - z^2)^(m_abs/2) * .rcosmo.jacobiPol(m_abs,
+                                                    m_abs, L - m_abs, z) * sin(m_abs * phi)
+    }
+  }
+  return(Y)
+}
+
+.rcosmo.jacobiPol = function (a, b, L, t)
+{
+  if (L == 0) {
+    YJ <- matrix(1, length(t), 1)
+  }
+  else if (L == 1) {
+    YJ <- (a - b)/2 + (a + b + 2)/2 * t
+  }
+  else {
+    pMisb1 <- matrix(1, length(t), 1)
+    pMi <- (a - b)/2 + (a + b + 2)/2 * t
+    for (i in seq(2, L, 1)) {
+      c <- 2 * i + a + b
+      tmppMisb1 <- pMi
+      pMi <- ((c - 1) * c * (c - 2) * t * pMi + (c - 1) *
+                (a^2 - b^2) * pMi - 2 * (i + a - 1) * (i + b -
+                                                         1) * c * pMisb1)/(2 * i * (i + a + b) * (c -
+                                                                                                    2))
+      pMisb1 <- tmppMisb1
+    }
+    YJ <- pMi
+  }
+  return(YJ)
 }

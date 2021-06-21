@@ -49,9 +49,6 @@ for (i in seq(16)) {
 }
 
 }
-\seealso{
-The function \code{sphericalHarmonics} (with capital H) of the \code{rcosmo} package can be used to evaluate the real spherical harmonics, which are frequently used in physics.
-}
 \author{
 Danail Obreschkow
 }
