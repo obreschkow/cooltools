@@ -2,7 +2,7 @@
 #'
 #' @importFrom data.table data.table .N .SD
 #'
-#' @description Generates a 1D grid from a 1D point set, optionally with weights; similar to hist.
+#' @description Generates a retular 1D grid from a 1D point set, optionally with weights; similar to hist.
 #'
 #' @param x N-element vector of points
 #' @param w optional N-element vector with weights
@@ -50,7 +50,9 @@ griddata = function(x, w=NULL, n=20, xlim=NULL) {
            xlim = xlim)
 
   # preselect x-coordinates within the range
-  x = x[x>=xlim[1] & x<=xlim[2]]
+  selection = x>=xlim[1] & x<=xlim[2]
+  x = x[selection]
+  if (!is.null(w)) w = w[selection]
 
   # convert continuous x-coordinates to discrete grid indices
   index = pmax(1,pmin(n,ceiling(((x-xlim[1])/(xlim[2]-xlim[1]))*n)))
