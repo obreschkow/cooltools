@@ -27,7 +27,7 @@ Returns a list of items
 \item{c}{normalized mass densities corresponding to m, such that sum(c)*dx=1; only available if \code{w} is specified.}
 }
 \description{
-Generates a 1D grid from a 1D point set, optionally with weights; similar to hist.
+Generates a retular 1D grid from a 1D point set, optionally with weights; similar to hist.
 }
 \examples{
 set.seed(1)
