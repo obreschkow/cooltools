@@ -2,20 +2,20 @@
 #'
 #' @importFrom data.table data.table .N .SD
 #'
-#' @description Generates a retular 1D grid from a 1D point set, optionally with weights; similar to hist.
+#' @description Generates a regular 1D grid from a 1D point set, optionally with weights; similar to hist.
 #'
 #' @param x N-element vector of points
 #' @param w optional N-element vector with weights
 #' @param n scalar specifying the number of equally space grid cells
-#' @param xlim 2-element vector specifying the data range (data cropped if necessary). If not given, xlim is set to the range of x
+#' @param xlim 2-element vector specifying the data range (data cropped if necessary). If not given, xlim is set to the full range of x.
 #'
 #' @return Returns a list of items
-#' \item{x}{N-element vector of cell-center x-coordinates}
+#' \item{x}{n-element vector of cell-center x-coordinates}
 #' \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates}
 #' \item{dx}{spacing between x-coordinates}
 #' \item{xlim}{range of xbreak, same as input argument xlim, if given}
-#' \item{n}{vector of point counts, such that sum(n)=N.}
-#' \item{m}{vector of weighted point counts (masses); only available if \code{w} is specified.}
+#' \item{n}{n-element vector giving the number of points in each grid cell}
+#' \item{m}{n-element vector of weighted point counts (masses); only available if \code{w} is specified.}
 #' \item{d}{normalized number densities corresponding to n, such that sum(d)*dx=1.}
 #' \item{c}{normalized mass densities corresponding to m, such that sum(c)*dx=1; only available if \code{w} is specified.}
 #'
