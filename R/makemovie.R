@@ -15,7 +15,7 @@
 #' @param height number of pixels along the vertical axis
 #' @param fps number of frames per second
 #' @param smear optional number of sub-frames used to smear each frame. If given, the function frame.draw must accept continuous arguments in between the values of frame.index.
-#' @param keep.frames logical flag specifying whether the temporary directory with the individual frame files should be kept
+#' @param keep.frames logical flag specifying whether the temporary directory with the individual frame files should be kept. If \code{manual} is set to \code{TRUE}, the frames are always kept.
 #' @param quiet logical flag; if true, all console outputs produced by 'ffmpeg' are suppressed
 #' @param separator filename separate of the system ('/' for Mac, Linux, Unix; '\' for Windows)
 #' @param ffmpeg.cmd command used to call ffmpeg form a terminal. Normally, this is just 'ffmpeg'.
@@ -123,15 +123,20 @@ makemovie = function(frame.draw,frame.index,
 
   # convert into movie
   .linuxspaces = function(txt) gsub(' ','\\\\ ',txt)
-  cat(sprintf('Write movie file %s\n',output.filename))
   call = sprintf('%s -y -r %d -f image2 -s %dx%d -i %sframe_%%08d.png %s %s%s %s',
                  ffmpeg.cmd,fps,width,height,.linuxspaces(frame.path),ffmpeg.opt,
                  .linuxspaces(output.path),.linuxspaces(output.filename),
                  ifelse(quiet,'-loglevel quiet',''))
-  if (!manual) system(call)
+  if (manual) {
+    cat('To make movie from frames, call:\n')
+    cat(sprintf('%s\n',call))
+  } else {
+    cat(sprintf('Write movie file %s\n',output.filename))
+    system(call)
+  }
 
   # remove frames
-  if (!keep.frames) {
+  if (!keep.frames & !manual) {
     cat('Delete individual frames.')
     delcall = sprintf('rm -rf %s',frame.path)
     system(delcall)

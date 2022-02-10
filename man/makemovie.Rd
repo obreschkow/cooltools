@@ -38,7 +38,7 @@ makemovie(
 
 \item{smear}{optional number of sub-frames used to smear each frame. If given, the function frame.draw must accept continuous arguments in between the values of frame.index.}
 
-\item{keep.frames}{logical flag specifying whether the temporary directory with the individual frame files should be kept}
+\item{keep.frames}{logical flag specifying whether the temporary directory with the individual frame files should be kept. If \code{manual} is set to \code{TRUE}, the frames are always kept.}
 
 \item{quiet}{logical flag; if true, all console outputs produced by 'ffmpeg' are suppressed}
 

@@ -1,6 +1,6 @@
 #' Plot a spherical function or point set
 #'
-#' @importFrom graphics lines polygon text points
+#' @importFrom graphics par lines polygon text points
 #' @importFrom grDevices gray.colors
 #' @importFrom raster spPolygons
 #' @importFrom sp plot

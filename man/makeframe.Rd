@@ -4,13 +4,7 @@
 \alias{makeframe}
 \title{Display a single movie frame}
 \usage{
-makeframe(
-  frame.draw,
-  frame.index,
-  width = 1080,
-  height = 720,
-  keep.frame = FALSE
-)
+makeframe(frame.draw, frame.index, width = 1080, height = 720)
 }
 \arguments{
 \item{frame.draw}{function that plots an individual frame. This function must have exactly one  argument 'x', which can be integer (e.g. a simple frame index) or real (e.g. a time).}
@@ -20,8 +14,6 @@ makeframe(
 \item{width}{number of pixels along the horizontal axis}
 
 \item{height}{number of pixels along the vertical axis}
-
-\item{keep.frame}{logical flag specifying whether to keep the temporary png-file of the frame}
 }
 \value{
 None
