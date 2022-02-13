@@ -2,14 +2,14 @@
 #'
 #' @importFrom stats approxfun
 #'
-#' @description Generates a fast function f(x,y) that interpolates regularly gridded data, based on the equivalent subroutine \code{\link[stats]{approxfun}} in 1D.
+#' @description Generates a fast function f(x,y) that interpolates gridded data, based on the analogous subroutine \code{\link[stats]{approxfun}} in 1D.
 #'
-#' @param x vector of x-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced
-#' @param y vector of y-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced
-#' @param z matrix of dimension c(length(x),length(y)) containing the function values to be interpolated
+#' @param x n-vector of x-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced
+#' @param y m-vector of y-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced
+#' @param z n-by-m matrix of dimension containing the known function values at the (x,y)-coordinates
 #' @param outside value of the approximation function outside the grid (default is NA)
 #'
-#' @return Returns a fast an vectorized interpolation function f(x,y)
+#' @return Returns a fast and vectorized interpolation function f(x,y)
 #'
 #' @author Danail Obreschkow
 #'

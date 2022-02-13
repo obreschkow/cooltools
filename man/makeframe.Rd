@@ -4,7 +4,7 @@
 \alias{makeframe}
 \title{Display a single movie frame}
 \usage{
-makeframe(frame.draw, frame.index, width = 1080, height = 720)
+makeframe(frame.draw, frame.index, width = 1080, height = 720, pngfile = NULL)
 }
 \arguments{
 \item{frame.draw}{function that plots an individual frame. This function must have exactly one  argument 'x', which can be integer (e.g. a simple frame index) or real (e.g. a time).}
@@ -14,9 +14,11 @@ makeframe(frame.draw, frame.index, width = 1080, height = 720)
 \item{width}{number of pixels along the horizontal axis}
 
 \item{height}{number of pixels along the vertical axis}
+
+\item{pngfile}{optional path+filename of output file to save the image. R must have write access to this file.}
 }
 \value{
-None
+Returns the displayed image as n-by-my-by 4 array, representing the 4 RGBA channels of height n and width m.
 }
 \description{
 Displays a single movie-frame in the R-console, exactly as used in a movie generated with \code{\link{makemovie}}.

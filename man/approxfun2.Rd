@@ -7,19 +7,19 @@
 approxfun2(x, y, z, outside = NA)
 }
 \arguments{
-\item{x}{vector of x-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced}
+\item{x}{n-vector of x-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced}
 
-\item{y}{vector of y-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced}
+\item{y}{m-vector of y-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced}
 
-\item{z}{matrix of dimension c(length(x),length(y)) containing the function values to be interpolated}
+\item{z}{n-by-m matrix of dimension containing the known function values at the (x,y)-coordinates}
 
 \item{outside}{value of the approximation function outside the grid (default is NA)}
 }
 \value{
-Returns a fast an vectorized interpolation function f(x,y)
+Returns a fast and vectorized interpolation function f(x,y)
 }
 \description{
-Generates a fast function f(x,y) that interpolates regularly gridded data, based on the equivalent subroutine \code{\link[stats]{approxfun}} in 1D.
+Generates a fast function f(x,y) that interpolates gridded data, based on the analogous subroutine \code{\link[stats]{approxfun}} in 1D.
 }
 \examples{
 x = seq(3)
