@@ -27,7 +27,7 @@ plot(x,y,xlim=c(-1,6),ylim=c(0,6),pch=16)
 lines(histcoord(x,y),lwd=3)
 
 # rebinning
-xout = seq(0.125,4.875,0.25)
+xout = seq(-0.9,6,0.3)
 yout = rebindensity(x,y,xout)
 points(xout,yout,col='red',pch=16)
 lines(histcoord(xout,yout),col='red')

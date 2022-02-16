@@ -21,7 +21,7 @@
 #' lines(histcoord(x,y),lwd=3)
 #'
 #' # rebinning
-#' xout = seq(0.125,4.875,0.25)
+#' xout = seq(-0.9,6,0.3)
 #' yout = rebindensity(x,y,xout)
 #' points(xout,yout,col='red',pch=16)
 #' lines(histcoord(xout,yout),col='red')
@@ -49,12 +49,16 @@ rebindensity = function(x,y,xout) {
   # rebinning
   yout = rep(0,nout)
   for (iout in seq(nout)) {
-    i0 = which(x1>xout0[iout])[1]
-    i1 = utils::tail(which(x0<xout1[iout]),1)
-    if (length(i0)==0) i0 = 1
-    if (length(i1)==0) i1 = n
-    dx = pmin(xout1[iout],x1[i0:i1])-pmax(xout0[iout],x0[i0:i1])
-    yout[iout] = yout[iout]+sum(y[i0:i1]*dx)
+    sel0 = x1>xout0[iout]
+    sel1 = x0<xout1[iout]
+    if (any(sel0) & any(sel1)) {
+      i0 = which(sel0)[1]
+      i1 = utils::tail(which(sel1),1)
+      dx = pmin(xout1[iout],x1[i0:i1])-pmax(xout0[iout],x0[i0:i1])
+      yout[iout] = yout[iout]+sum(y[i0:i1]*dx)
+    } else {
+      yout[iout] = 0
+    }
   }
   yout = yout/(xout1-xout0)
 
