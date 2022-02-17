@@ -35,8 +35,8 @@
 ngon = function(x=0, y=0, s=1, n=6, angle=0, fix.aspect=TRUE, ...) {
 
   # safe use of par()
-  #oldpar = par(no.readonly = TRUE)
-  #on.exit(par(oldpar))
+  oldpar = par(no.readonly = TRUE)
+  on.exit(par(oldpar))
 
   ntiles = max(length(x),length(y))
 
