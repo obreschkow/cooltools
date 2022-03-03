@@ -22,8 +22,7 @@
 histcoord = function(x,y,yleft=0,yright=0) {
   n = length(x)
   x = c(x[1]-(x[2]-x[1])/2, (x[2:n]+x[1:(n-1)])/2, x[n]+(x[n]-x[n-1])/2)
-  data.frame(x = rep(x,each=2),
-             y = c(yleft,rep(y,each=2),yright))
+  return(cbind(x = rep(x,each=2), y = c(yleft,rep(y,each=2),yright)))
 }
 
 

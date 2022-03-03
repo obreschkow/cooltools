@@ -31,7 +31,7 @@ car2pol = function(x) {
   if (d==2) {
     return(cbind(r,phi))
   } else {
-    return(cbind(r,phi,z=x[,3]))
+    return(cbind(r=r,phi=phi,z=x[,3]))
   }
 
 }

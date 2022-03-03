@@ -10,7 +10,7 @@ scalarproduct(x, y)
 \item{x, y}{d-element vectors or n-by-d matrices representing n d-element vectors}
 }
 \value{
-Returns a scalar or a n-element vector with the scalar products
+Returns a scalar or a n-element vector with the scalar products.
 }
 \description{
 Compute scalar product of two vectors

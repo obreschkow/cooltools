@@ -21,6 +21,6 @@ car2sph = function(x) {
   theta[is.nan(theta)] = 0 # to set theta=0 if r=0
   phi = (atan2(x[,2],x[,1])+2*pi)%%(2*pi)
 
-  return(cbind(r,theta,phi))
+  return(cbind(r=r,theta=theta,phi=phi))
 
 }

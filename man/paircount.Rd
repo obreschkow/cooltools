@@ -18,8 +18,8 @@ paircount(x, y = NULL, dr, rmax, cpp = TRUE)
 \item{cpp}{logical flag; if set to TRUE (default) a fast implementation in C++ is used, otherwise the counting is performed less efficiently in R.}
 }
 \value{
-Returns a list with two vectors
-\item{r}{vector with the mid-points of the distance bins.}
+Returns a data frame of two column vectors:
+\item{r}{mid-points of the distance bins.}
 \item{n}{number of pairs in the distance bin.}
 }
 \description{

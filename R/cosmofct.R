@@ -8,9 +8,11 @@
 #' @param zmin minimum redshift for which the conversion functions are used
 #' @param zmax maximum redshift for which the conversion functions are used
 #' @param dz redshift interval on which the conversion functions are interpolated (default of 0.02 is normally largely sufficient)
-#' @param ... cosmological parameters accepted by \code{cosdist} of the *celestial* package. Defaults are H0=100, OmegaM=0.3, OmegaL=1-OmegaM-OmegaR, OmegaR=0, w0=-1, wprime=0.
+#' @param H0 local Hubble constant in units of km/s/Mpc (default 70).
+#' @param OmegaM local normalised matter density (default 0.3).
+#' @param ... other cosmological parameters accepted by \code{cosdist} of the *celestial* package. Defaults are OmegaL=1-OmegaM-OmegaR, OmegaR=0, w0=-1, wprime=0.
 #'
-#' @return Returns a list of 20 vectorized functions; e.g. dc2z to convert from comoving distance to redshift. Also lists the \code{age} of the universe at z=0. All distances are in units of Mpc and times are in units of Gyr.
+#' @return Returns a list of 20 vectorized functions; e.g. dc2z to convert from comoving distance to redshift. Also contains the \code{age} of the universe at z=0. All distances are in units of Mpc and times are in units of Gyr.
 #'
 #' @author Danail Obreschkow (based on *celestial* package by Aaron Robotham)
 #'
@@ -27,10 +29,10 @@
 #'
 #' @export
 
-cosmofct = function(zmin=0,zmax=1,dz=0.02,...) {
+cosmofct = function(zmin=0,zmax=1,dz=0.02,H0=70,OmegaM=0.3,...) {
 
   z = seq(zmin,zmax,length.out=ceiling((zmax-zmin)/dz)+1)
-  out = quiet(celestial::cosdist(z,age=TRUE,...))
+  out = quiet(celestial::cosdist(z,age=TRUE,H0=H0,OmegaM=OmegaM,...))
   dl = out$LumDist
   dc = out$CoDist
   da = out$AngDist

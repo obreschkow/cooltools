@@ -5,13 +5,13 @@
 #'
 #' @description Performs a Mollweide projection (also known as Babinet projection, homalographic projection, homolographic projection, and elliptical projection) of longitude and latitude coordinates. The most important feature of the Mollweide projection is that it preserves surface areas, which makes it a commonly used projection in geography, astronomy and cosmology. The total surface area of the standard projection is equal to the surface area of the unit sphere (4pi); and the shape of the fully projected sphere is an ellipse (with axes lengths 2*sqrt(2) and sqrt(2)).
 #'
-#' @param lon longitude or vector of longitudes in radians (unless deg=TRUE)
-#' @param lat latitude or vector of latitudes in radians (unless deg=TRUE), must lie between -pi/2 and +pi/2
+#' @param lon n-vector of longitudes in radian (unless deg=TRUE)
+#' @param lat n-vector of latitudes in radian (unless deg=TRUE), must lie between -pi/2 and +pi/2
 #' @param lon0 latitude of null meridian, which will be projected on to x=0
-#' @param radius radius of spherical projection, such that the surface area of the projection equals 4piR^2
+#' @param radius radius of spherical projection, such that the surface area of the projection equals 4*pi*radius^2
 #' @param deg logical flag; if set to TRUE, the input arguments \code{lon}, \code{lat}, \code{lon0} are assumed to be in degrees (otherwise in radians)
 #'
-#' @return Returns a data frame of 2D Cartesian coordinates \code{x} and \code{y}.
+#' @return Returns an n-by-2 matrix of 2D Cartesian coordinates \code{x} and \code{y}.
 #'
 #' @author Danail Obreschkow
 #'
@@ -77,6 +77,6 @@ mollweide = function (lon, lat, lon0=0, radius=1, deg=FALSE) {
   y = radius*sqrt(2)*sin(alpha)
 
   # return Cartesian coordinates
-  return(data.frame(x=x,y=y))
+  return(cbind(x=x,y=y))
 
 }

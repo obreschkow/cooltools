@@ -4,7 +4,7 @@
 #'
 #' @param x,y d-element vectors or n-by-d matrices representing n d-element vectors
 #'
-#' @return Returns a scalar or a n-element vector with the scalar products
+#' @return Returns a scalar or a n-element vector with the scalar products.
 #'
 #' @author Danail Obreschkow
 #'

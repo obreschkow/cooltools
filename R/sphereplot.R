@@ -137,7 +137,7 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
     ylim = c(-sqrt(2),sqrt(2))
     sph2xy = function(p) {
       m = mollweide(p$phi, pi/2-p$theta)
-      return(data.frame(x=m$x, y=m$y))
+      return(data.frame(x=m[,'x'], y=m[,'y']))
     }
     xy2sph = function(p) {
       alpha = asin(p$y/sqrt(2))
@@ -186,55 +186,51 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
   if (!add) nplot(center[1]+radius*xlim,center[2]+radius*ylim,asp=1)
 
   # plot projection
+  if (is.function(f)) {
 
-  if (!is.null(f)) {
+    # make xy-coordinates of plot
+    wx = diff(xlim)
+    wy = diff(ylim)
+    nx = round(n*sqrt(wx/wy))
+    ny = round(n*sqrt(wy/wx))
+    p = expand.grid(x=midseq(xlim[1],xlim[2],nx), y=midseq(ylim[1],ylim[2],ny))
 
-    if (is.function(f)) {
+    # compute inverse projection
+    p = xy2sph(p)
 
-      # make xy-coordinates of plot
-      wx = diff(xlim)
-      wy = diff(ylim)
-      nx = round(n*sqrt(wx/wy))
-      ny = round(n*sqrt(wy/wx))
-      p = expand.grid(x=midseq(xlim[1],xlim[2],nx), y=midseq(ylim[1],ylim[2],ny))
+    # rotate spherical coordinates
+    p = rotate(p)
 
-      # compute inverse projection
-      p = xy2sph(p)
+    # evaluate function
+    p$f = f(p$theta,p$phi,...)
 
-      # rotate spherical coordinates
-      p = rotate(p)
+    # determine color range
+    if (is.null(clim)) clim = range(p$f)
+    if (clim[2]==clim[1]) clim=clim+c(-1,1)
 
-      # evaluate function
-      p$f = f(p$theta,p$phi,...)
+    # make color array
+    ncol = length(col)
+    p$img = col[pmax(1,pmin(ncol,round(0.5+ncol*(p$f-clim[1])/(clim[2]-clim[1]))))]
+    p$img[p$out] = background
 
-      # determine color range
-      if (is.null(clim)) clim = range(p$f)
-      if (clim[2]==clim[1]) clim=clim+c(-1,1)
+    # plot raster
+    rasterImage(rasterflip(array(p$img,c(nx,ny))), interpolate = T,
+                  center[1]+radius*xlim[1], center[2]+radius*ylim[1], center[1]+radius*xlim[2], center[2]+radius*ylim[2])
 
-      # make color array
-      ncol = length(col)
-      p$img = col[pmax(1,pmin(ncol,round(0.5+ncol*(p$f-clim[1])/(clim[2]-clim[1]))))]
-      p$img[p$out] = background
+  } else if (is.array(f) && dim(f)[2]==2) {
 
-      # plot raster
-      rasterImage(rasterflip(array(p$img,c(nx,ny))), interpolate = T,
-                    center[1]+radius*xlim[1], center[2]+radius*ylim[1], center[1]+radius*xlim[2], center[2]+radius*ylim[2])
+    p = data.frame(theta=f[,1], phi=f[,2])
+    p = rotate(p)
+    p = sph2xy(p)
+    p = t(t(p)*radius+center)
+    points(p, pch=pch, cex=pt.cex, col=pt.col)
 
-    } else if (is.array(f) && dim(f)[2]==2) {
+    need.frame = FALSE
 
-      p = data.frame(theta=f[,1], phi=f[,2])
-      p = rotate(p)
-      p = sph2xy(p)
-      p = t(t(p)*radius+center)
-      points(p, pch=pch, cex=pt.cex, col=pt.col)
+  } else {
 
-      need.frame = FALSE
+    stop('unknown type of f')
 
-    } else {
-
-      stop('unknown type of f')
-
-    }
   }
 
   # grid lines

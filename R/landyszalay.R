@@ -7,7 +7,7 @@
 #' @param dr bin size for the evaluation of the two-point correlation function
 #' @param cpp logical flag; if set to TRUE (default) a fast implementation in C++ is used to count the point-pairs in distance bins, otherwise the counting is performed less efficiently in R.
 #'
-#' @return Returns a list with the two-point statistics of the data points:
+#' @return Returns a data frame with the two-point statistics of the data points:
 #' \item{r}{vector with the mid-points of the distance bins for which the two-point correlation function has been evaluated.}
 #' \item{xi}{values of the two-point correlation function at the distances r.}
 #' \item{err}{Poisson errors of xi.}

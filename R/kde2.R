@@ -50,7 +50,7 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
     sd.min = 0
   }
   if (is.null(sd.max)) {
-    sd.max = round(sqrt(n.pix)/4) # maximum standard deviation in pixel
+    sd.max = max(1,round(sqrt(n.pix)/4)) # maximum standard deviation in pixel
   }
   sd = seq(0,sd.max,by=d) # list of standard deviations
   n.kernels = length(sd)

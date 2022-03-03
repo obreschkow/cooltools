@@ -65,7 +65,7 @@ List paircountxx1d(NumericVector x, double dr, double rmax) {
   // count pairs
   for (int i = 0; i<(nx-1); i++) {
     for (int j = i+1; j<nx; j++) {
-      double r = abs(x(i)-x(j));
+      double r = fabs(x(i)-x(j));
       if (r<=rmax) {
         int index = round(r/dr);
         count[index] = count[index]+1;
@@ -91,7 +91,7 @@ List paircountxy1d(NumericVector x, NumericVector y, double dr, double rmax) {
   // count pairs
   for (int i = 0; i<nx; i++) {
     for (int j = 0; j<ny; j++) {
-      double r = abs(x(i)-y(j));
+      double r = fabs(x(i)-y(j));
       if (r<=rmax) {
         int index = round(r/dr);
         count[index] = count[index]+1;
