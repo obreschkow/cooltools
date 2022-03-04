@@ -15,7 +15,8 @@
 #' @param sd.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param sd.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param reflect vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected
-#' @param cpp logical flag; if set to TRUE (default) a fast implementation in C++ is used.
+#' @param smoothw logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.
+#' @param cpp logical flag; if set to TRUE (default), a fast implementation in C++ is used.
 #'
 #' @return Returns a list of items
 #' \item{x}{n-element vector of cell-center x-coordinates.}
@@ -32,7 +33,8 @@
 #'
 #' @export
 #'
-kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL, reflect='', cpp=TRUE) {
+kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL,
+                reflect='', smoothw=FALSE, cpp=TRUE) {
 
   # handle inputs
   if (length(n)==1) n=c(n,n)
@@ -50,8 +52,9 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
     sd.min = 0
   }
   if (is.null(sd.max)) {
-    sd.max = max(1,round(sqrt(n.pix)/4)) # maximum standard deviation in pixel
+    sd.max = round(sqrt(n.pix)/4) # maximum standard deviation in pixel
   }
+  sd.max = max(2*d,sd.max)
   sd = seq(0,sd.max,by=d) # list of standard deviations
   n.kernels = length(sd)
   kernel = {}
@@ -74,11 +77,21 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
   g = griddata2(x,y,w,n+2*h.max,xlim=xlim,ylim=ylim)
 
-  if (is.null(g$m)) {map=g$n} else {map=g$m}
+  if (is.null(g$m)) {
+    map=g$n
+  } else {
+    map=g$m
+  }
 
   if (cpp) {
 
-    g$d = kde2stampxx(map, g$n, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+    if (smoothw) {
+      count = g$m/sum(g$m)*sum(g$n)
+    } else {
+      count = g$n
+    }
+
+    g$d = kde2stampxx(map, count, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   } else {
 
