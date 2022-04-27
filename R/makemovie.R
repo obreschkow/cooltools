@@ -14,13 +14,15 @@
 #' @param width number of pixels along the horizontal axis
 #' @param height number of pixels along the vertical axis
 #' @param fps number of frames per second
-#' @param smear optional number of sub-frames used to smear each frame. If given, the function frame.draw must accept continuous arguments in between the values of frame.index.
 #' @param keep.frames logical flag specifying whether the temporary directory with the individual frame files should be kept. If \code{manual} is set to \code{TRUE}, the frames are always kept.
 #' @param quiet logical flag; if true, all console outputs produced by 'ffmpeg' are suppressed
 #' @param separator filename separate of the system ('/' for Mac, Linux, Unix; '\' for Windows)
 #' @param ffmpeg.cmd command used to call ffmpeg form a terminal. Normally, this is just 'ffmpeg'.
 #' @param ffmpeg.opt compression and formatting options used with ffmpeg
 #' @param manual logical flag; if true, ffmpeg is not called from within the code and the frames are never deleted. The suggested linux command line is returned as output.
+#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.
+#' @param first.index integer specifying the first index of the vector frame.index to consider. Choosing a value larger than the default (1) can be used to continue a previously interrupted call of makemovie and/or to call makemovie from different R sessions in parallel.
+#' @param last.index integer specifying the last index of the vector frame.index to consider. Choosing a value smaller than the default (length(frame.index)) can be used to continue a previously interrupted call of makemovie and/or to call makemovie from different R sessions in parallel.
 #'
 #' @return Linux command line to convert frames into movie using ffmpeg.
 #'
@@ -52,11 +54,22 @@
 
 makemovie = function(frame.draw,frame.index,
                      output.path,output.filename,
-                     width=1080,height=720,fps=60,smear=NULL,
-                     keep.frames=FALSE, quiet=TRUE, separator='/',
+                     width=1080,height=720,fps=60,
+                     keep.frames=FALSE, quiet=FALSE, separator='/',
                      ffmpeg.cmd='ffmpeg',
                      ffmpeg.opt='-vcodec libx264 -crf 18 -pix_fmt yuv420p',
-                     manual=FALSE) {
+                     manual=FALSE,
+                     oversampling=1,
+                     first.index=1,
+                     last.index=length(frame.index)) {
+
+  if (oversampling<1) stop('oversampling cannot be smaller than 1.')
+  if (oversampling!=round(oversampling)) stop('oversampling should be an integer')
+  if (oversampling>1) {
+    if (!requireNamespace("EBImage", quietly=TRUE)) {
+      stop('Package EBImage is needed in function makemovie.')
+    }
+  }
 
   # make output path, if needed
   if (substr(output.path,nchar(output.path),nchar(output.path))!=separator) {
@@ -72,53 +85,24 @@ makemovie = function(frame.draw,frame.index,
   system(call)
 
   # write frames
-  if (is.null(smear)) {
-
-    for (i in seq_along(frame.index)) {
-      cat(sprintf('Write frame %0.6d.\n',i))
-      fn = file.path(frame.path,sprintf('frame_%0.8d.png',i))
-      grDevices::png(fn,width=width,height=height)
-      frame.draw(frame.index[i])
-      grDevices::dev.off()
+  nframes = length(frame.index)
+  dt = rep(NA,nframes)
+  t = 0
+  for (i in seq(first.index,last.index)) {
+    cat(sprintf('Write frame %d/%d.',i,nframes))
+    pracma::tic()
+    fn = file.path(frame.path,sprintf('frame_%0.8d.png',i))
+    grDevices::png(fn,width=width*oversampling,height=height*oversampling)
+    frame.draw(frame.index[i])
+    grDevices::dev.off()
+    if (oversampling>1) {
+      img = readPNG(fn)
+      img = EBImage::resize(img,height,width,antialias=TRUE)
+      writePNG(img, fn)
     }
-
-  } else {
-
-    for (i in seq_along(frame.index)) {
-
-      cat(sprintf('Write frame %0.6d.\n',i))
-
-      # make subframe indices and weights
-      if (i==1 | i==length(frame.index)) {
-        subframe.index = frame.index[i]
-        weight = 1
-      } else {
-        subframe.index = seq(frame.index[i-1],frame.index[i+1],length=smear)
-        weight = exp(-seq(-1,1,length=smear)^2)
-      }
-
-      # draw all subframes
-      for (k in seq_along(subframe.index)) {
-        fn = file.path(frame.path,sprintf('subframe_%0.8d.png',k))
-        grDevices::png(fn,width=width,height=height)
-        frame.draw(subframe.index[k])
-        grDevices::dev.off()
-      }
-
-      # merge subframes
-      for (k in seq_along(subframe.index)) {
-        fn = file.path(frame.path,sprintf('subframe_%0.8d.png',k))
-        if (k==1) {
-          img = weight[k]*png::readPNG(fn)
-        } else {
-          img = img+weight[k]*png::readPNG(fn)
-        }
-      }
-      img = img/sum(weight)
-      fn = file.path(frame.path,sprintf('frame_%0.8d.png',i))
-      png::writePNG(img, fn)
-    }
-
+    dt[i] = as.double(pracma::toc(echo = F))
+    t = t+dt[i]
+    cat(sprintf(' (%0.3fs, FPS=%0.1f)\n',dt[i],i/t))
   }
 
   # convert into movie
