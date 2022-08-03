@@ -13,6 +13,7 @@
 #' @param output.filename movie filename without path. This filename should end on the extension '.mp4'.
 #' @param width number of pixels along the horizontal axis
 #' @param height number of pixels along the vertical axis
+#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.
 #' @param fps number of frames per second
 #' @param keep.frames logical flag specifying whether the temporary directory with the individual frame files should be kept. If \code{manual} is set to \code{TRUE}, the frames are always kept.
 #' @param quiet logical flag; if true, all console outputs produced by 'ffmpeg' are suppressed
@@ -20,7 +21,6 @@
 #' @param ffmpeg.cmd command used to call ffmpeg form a terminal. Normally, this is just 'ffmpeg'.
 #' @param ffmpeg.opt compression and formatting options used with ffmpeg
 #' @param manual logical flag; if true, ffmpeg is not called from within the code and the frames are never deleted. The suggested linux command line is returned as output.
-#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.
 #' @param first.index integer specifying the first index of the vector frame.index to consider. Choosing a value larger than the default (1) can be used to continue a previously interrupted call of makemovie and/or to call makemovie from different R sessions in parallel.
 #' @param last.index integer specifying the last index of the vector frame.index to consider. Choosing a value smaller than the default (length(frame.index)) can be used to continue a previously interrupted call of makemovie and/or to call makemovie from different R sessions in parallel.
 #'
@@ -87,7 +87,7 @@ makemovie = function(frame.draw,frame.index,
   # write frames
   nframes = length(frame.index)
   dt = rep(NA,nframes)
-  t = 0
+  t = k = 0
   for (i in seq(first.index,last.index)) {
     cat(sprintf('Write frame %d/%d.',i,nframes))
     pracma::tic()
@@ -96,13 +96,14 @@ makemovie = function(frame.draw,frame.index,
     frame.draw(frame.index[i])
     grDevices::dev.off()
     if (oversampling>1) {
-      img = readPNG(fn)
+      img = png::readPNG(fn)
       img = EBImage::resize(img,height,width,antialias=TRUE)
-      writePNG(img, fn)
+      png::writePNG(img, fn)
     }
     dt[i] = as.double(pracma::toc(echo = F))
     t = t+dt[i]
-    cat(sprintf(' (%0.3fs, FPS=%0.1f)\n',dt[i],i/t))
+    k = k+1
+    cat(sprintf(' (%0.3fs, FPS=%0.1f)\n',dt[i],k/t))
   }
 
   # convert into movie

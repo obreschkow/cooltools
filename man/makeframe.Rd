@@ -4,7 +4,14 @@
 \alias{makeframe}
 \title{Display a single movie frame}
 \usage{
-makeframe(frame.draw, frame.index, width = 1080, height = 720, pngfile = NULL)
+makeframe(
+  frame.draw,
+  frame.index,
+  width = 1080,
+  height = 720,
+  oversampling = 1,
+  pngfile = NULL
+)
 }
 \arguments{
 \item{frame.draw}{function that plots an individual frame. This function must have exactly one  argument 'x', which can be integer (e.g. a simple frame index) or real (e.g. a time).}
@@ -14,6 +21,8 @@ makeframe(frame.draw, frame.index, width = 1080, height = 720, pngfile = NULL)
 \item{width}{number of pixels along the horizontal axis}
 
 \item{height}{number of pixels along the vertical axis}
+
+\item{oversampling}{integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.}
 
 \item{pngfile}{optional path+filename of output file to save the image. R must have write access to this file.}
 }

@@ -11,6 +11,7 @@
 #' @param frame.index list of frame indices 'x' to be included in the movie
 #' @param width number of pixels along the horizontal axis
 #' @param height number of pixels along the vertical axis
+#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.
 #' @param pngfile optional path+filename of output file to save the image. R must have write access to this file.
 #'
 #' @author Danail Obreschkow
@@ -41,11 +42,20 @@
 #'
 #' @export
 
-makeframe = function(frame.draw,frame.index,width=1080,height=720,pngfile=NULL) {
+makeframe = function(frame.draw,frame.index,width=1080,height=720,oversampling=1,pngfile=NULL) {
 
   # safe use of par()
   oldpar = par(no.readonly = TRUE)
   on.exit(par(oldpar))
+
+  # handle oversampling argument
+  if (oversampling<1) stop('oversampling cannot be smaller than 1.')
+  if (oversampling!=round(oversampling)) stop('oversampling should be an integer')
+  if (oversampling>1) {
+    if (!requireNamespace("EBImage", quietly=TRUE)) {
+      stop('Package EBImage is needed in function makemovie.')
+    }
+  }
 
   # make unique frame file name
   if (is.null(pngfile)) {
@@ -56,12 +66,20 @@ makeframe = function(frame.draw,frame.index,width=1080,height=720,pngfile=NULL) 
   }
 
   # write frames
-  grDevices::png(fn,width=width,height=height)
+  grDevices::png(fn,width=width*oversampling,height=height*oversampling)
   frame.draw(frame.index)
   grDevices::dev.off()
 
-  # display frame
+  # load frame
   img = png::readPNG(fn)
+
+  # resize frame
+  if (oversampling>1) {
+    img = EBImage::resize(img,height,width,antialias=TRUE)
+    if (!is.null(pngfile)) png::writePNG(img, fn)
+  }
+
+  # display frame
   par(bg='grey',mar=c(0,0,0,0))
   nplot(xlim=c(0,width),ylim=c(0,height),asp=1)
   rasterImage(img,0,0,width,height)
