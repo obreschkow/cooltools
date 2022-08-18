@@ -2,7 +2,7 @@
 % Please edit documentation in R/kde2.R
 \name{kde2}
 \alias{kde2}
-\title{2D kernel density estimation}
+\title{2D adaptive kernel density estimation}
 \usage{
 kde2(
   x,

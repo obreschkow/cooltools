@@ -1,4 +1,4 @@
-#' 2D kernel density estimation
+#' 2D adaptive kernel density estimation
 #'
 #' @importFrom pracma meshgrid
 #' @importFrom Rcpp sourceCpp
