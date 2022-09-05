@@ -53,12 +53,13 @@
 #' x = MASS::mvrnorm(n=1000, mu=c(0,0), matrix(c(3,1,1,2),2,2))
 #'
 #' # grid these points onto a regular 20-by-20 grid
-#' g = griddata2(x, xlim=c(-6,6), ylim=c(-6,6))
+#' g = griddata(x, xlim=c(-6,6), ylim=c(-6,6))
 #'
 #' # find 1-sigma and 2-sigma contour levels and draw contours at these levels
-#' l = contourlevel(g$n)
-#' plot(x, xlim=g$xlim, ylim=g$ylim, pch=20, cex=0.5)
-#' contour(g$x,g$y,g$n,levels=l,add=TRUE,col='red',lwd=c(2,1),labels=NA)
+#' l = contourlevel(g$counts)
+#' plot(x, xlim=g$grid[[1]]$lim, ylim=g$grid[[2]]$lim, pch=20, cex=0.5)
+#' contour(g$grid[[1]]$mid,g$grid[[2]]$mid,g$counts,
+#'         levels=l,add=TRUE,col='red',lwd=c(2,1),labels=NA)
 #'
 #' @export
 

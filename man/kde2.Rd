@@ -15,8 +15,7 @@ kde2(
   sd.min = NULL,
   sd.max = NULL,
   reflect = "",
-  smoothw = FALSE,
-  cpp = TRUE
+  smoothw = FALSE
 )
 }
 \arguments{
@@ -41,8 +40,6 @@ kde2(
 \item{reflect}{vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected}
 
 \item{smoothw}{logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.}
-
-\item{cpp}{logical flag; if set to TRUE (default), a fast implementation in C++ is used.}
 }
 \value{
 Returns a list of items
@@ -58,7 +55,7 @@ Returns a list of items
 Produces a 2D kernel density estimation on a 2D grid from a 2D point set, using adaptive smoothing and allowing for the data points to have weights.
 }
 \seealso{
-\code{\link{griddata2}}
+\code{\link{griddata}}
 }
 \author{
 Danail Obreschkow

@@ -2,8 +2,7 @@
 #'
 #' @importFrom graphics par lines polygon text points
 #' @importFrom grDevices gray.colors
-#' @importFrom raster spPolygons
-#' @importFrom sp plot
+#' @importFrom sf st_geometry st_polygon
 #'
 #' @description Plots a spherical function or a point set in a 2D projection using only standard R graphics. This avoids compatibility issues of rgl, e.g. knitting markdown documents.
 #'
@@ -279,8 +278,8 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
     xl = xlim*radius+center[1]
     yl = ylim*radius+center[2]
     rect = cbind(c(xl[1]-d,xl[2]+d,xl[2]+d,xl[1]-d),c(yl[1]-d,yl[1]-d,yl[2]+d,yl[2]+d))
-    frame = raster::spPolygons(list(rect,bd))
-    sp::plot(frame,col=background,border=NA,add=T)
+    frame = sf::st_geometry(sf::st_polygon(list(rbind(rect,rect[1,]), rbind(bd,bd[1,]))))
+    plot(frame,col=background,border=NA,add=T)
   }
 
   # plot border

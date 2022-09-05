@@ -34,7 +34,7 @@ mutual = function(x, y=NULL, b=exp(1), n=NULL, xlim=NULL, ylim=NULL) {
     if (is.null(n)) n=min(1000,max(2,round(0.2*sqrt(length(x)))))
     if (is.null(xlim)) xlim=range(x)+c(0,eps)
     if (is.null(ylim)) ylim=range(y)+c(0,eps)
-    p = griddata2(x,y,n=n,xlim=xlim,ylim=ylim)$n
+    p = griddata(x,y,n=n,xlim=xlim,ylim=ylim)$counts
   }
 
   p = p/sum(p)

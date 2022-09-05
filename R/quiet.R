@@ -1,6 +1,6 @@
 #' Suppress in-routine output
 #'
-#' @description Runs any routine or command while supressing in-routine console output
+#' @description Runs any routine or command while suppressing in-routine console output
 #'
 #' @param x routine to be called
 #'

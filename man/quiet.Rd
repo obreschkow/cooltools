@@ -13,7 +13,7 @@ quiet(x)
 Returns whatever the called routine returns in invisible form.
 }
 \description{
-Runs any routine or command while supressing in-routine console output
+Runs any routine or command while suppressing in-routine console output
 }
 \examples{
 # Test function
