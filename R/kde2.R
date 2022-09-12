@@ -100,11 +100,12 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   g$x = g$grid[[1]]$mid[h.max+(1:n[1])]
   g$y = g$grid[[2]]$mid[h.max+(1:n[2])]
   g$xbreak = g$grid[[1]]$breaks[h.max+(1:(n[1]+1))]
-  g$ybreak = g$grid[[1]]$breaks[h.max+(1:(n[2]+1))]
+  g$ybreak = g$grid[[2]]$breaks[h.max+(1:(n[2]+1))]
   g$n = g$counts[h.max+(1:n[1]),h.max+(1:n[2])]
   if (!is.null(w)) g$m = g$mass[h.max+(1:n[1]),h.max+(1:n[2])]
   g$xlim = range(g$xbreak)
   g$ylim = range(g$ybreak)
+  g$grid = NULL
 
   # return result
   return(g)
