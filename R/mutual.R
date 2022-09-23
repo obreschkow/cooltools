@@ -1,6 +1,6 @@
 #' Mutual information of two random variables
 #'
-#' @description Computes the mutual information of two random variables X and Y, given their 2D represented in a matrix.
+#' @description Computes the mutual information of two random variables X and Y, given their 2D density represented in a matrix.
 #'
 #' @param x either of the following: (1) an m-by-n matrix representing the 2D probability mass function of two random variables X and Y; all elements must be non-negative; the normalization is irrelevant. (2) an n-vector of sampled x-values; in this case y must be specified.
 #' @param y optional vector of sampled y-values (only used if \code{x} is a vector of x-values).
@@ -34,7 +34,7 @@ mutual = function(x, y=NULL, b=exp(1), n=NULL, xlim=NULL, ylim=NULL) {
     if (is.null(n)) n=min(1000,max(2,round(0.2*sqrt(length(x)))))
     if (is.null(xlim)) xlim=range(x)+c(0,eps)
     if (is.null(ylim)) ylim=range(y)+c(0,eps)
-    p = griddata(x,y,n=n,xlim=xlim,ylim=ylim)$counts
+    p = griddata(cbind(x,y),n=n,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))$counts
   }
 
   p = p/sum(p)

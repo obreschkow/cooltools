@@ -4,28 +4,18 @@
 \alias{griddata}
 \title{Distribute a point set onto a regular grid}
 \usage{
-griddata(
-  x,
-  y = NULL,
-  w = NULL,
-  n = 10,
-  xlim = NULL,
-  ylim = NULL,
-  density = FALSE
-)
+griddata(x, w = NULL, n = 10, min = NULL, max = NULL, density = FALSE)
 }
 \arguments{
-\item{x}{N-element vector of x-coordinates or N-by-D matrix, giving the Cartesian coordinates of N points in D dimensions.}
-
-\item{y}{optional N-element vector of y-coordinates (only used in D=2 dimensions if x is given as a vector).}
+\item{x}{N-element vector (if D=1) or N-by-D matrix (if D>1), giving the Cartesian coordinates of N points in D dimensions.}
 
 \item{w}{optional N-element vector with weights.}
 
 \item{n}{scalar or D-element vector specifying the number of equally space grid cells along each dimension.}
 
-\item{xlim}{2-element vector or 2-by-D matrix specifying the rectangular domain on which the grid is produced. If not given, xlim is set to the range of x.}
+\item{min}{scalar or D-element vector specifying the lower bound of the grid. If not given, min is adjusted to the range of x.}
 
-\item{ylim}{2-element vector specifying the range long the y-coordinate (only used in D=2 dimensions if x is given as a vector).}
+\item{max}{scalar or D-element vector specifying the upper bound of the grid. If not given, max is adjusted to the range of x.}
 
 \item{density}{logical. If TRUE, the output arrays \code{counts} and \code{mass} are rescaled, such that the total number of points is \code{sum(counts) dV} and the total mass is \code{sum(mass) dV}, where \code{dV} is the volume of the D-dimensional grid cells.}
 }
@@ -43,21 +33,21 @@ Distributes a set of points in D dimensions onto a regular, D-dimensional grid, 
 # Distribute 1-dimensional data onto a regular grid
 npoints = 1e4
 x = rnorm(npoints)
-g = griddata(x,xlim=c(-3,3),n=100,density=TRUE)
+g = griddata(x,min=-3,max=3,n=100,density=TRUE)
 curve(dnorm(x),-3,3)
 points(g$grid$mid,g$counts/npoints,pch=16)
 
 # Distribute 2-dimensional data onto a regular grid
 x = runif(100,max=2)
 y = runif(100)
-g = griddata(x,y,xlim=c(0,2),ylim=c(0,1),n=c(20,10))
+g = griddata(cbind(x,y),min=c(0,0),max=c(2,1),n=c(20,10))
 image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$counts,
       asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
 points(x,y,col='red',pch=16)
 
 # ... same with weights
 w = runif(100)
-g = griddata(x,y,w=w,xlim=c(0,2),ylim=c(0,1),n=c(20,10))
+g = griddata(cbind(x,y),w,min=c(0,0),max=c(2,1),n=c(20,10))
 image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$mass,asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
 points(x,y,col='red',pch=16,cex=w)
 

@@ -25,7 +25,7 @@ Returns a list of items:
 \item{N}{normalized mutual information I(X,Y)/sqrt(H(X)*H(Y)), where H is the Shannon information entropy.}
 }
 \description{
-Computes the mutual information of two random variables X and Y, given their 2D represented in a matrix.
+Computes the mutual information of two random variables X and Y, given their 2D density represented in a matrix.
 }
 \author{
 Danail Obreschkow
