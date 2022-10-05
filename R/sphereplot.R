@@ -86,10 +86,6 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
   #   with the spherical coordinates columns theta,phi
   # + boundary(nv) a function generating the boundary of the projection in xy with nv points
 
-  # safe use of par()
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
-
   # initialize projection
   if (projection=='globe') {
 
@@ -276,7 +272,6 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
 
   # overplot frame to truncated pixels outside projection
   bd = t(t(boundary(nv))*radius+center)
-  par(xpd=TRUE)
 
   if (need.frame) {
     d = sqrt(diff(xlim)*diff(ylim))*radius*0.01
