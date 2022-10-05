@@ -29,7 +29,7 @@ car2pol = function(x) {
   phi = (atan2(x[,2],x[,1])+2*pi)%%(2*pi)
 
   if (d==2) {
-    return(cbind(r,phi))
+    return(cbind(r=r,phi=phi))
   } else {
     return(cbind(r=r,phi=phi,z=x[,3]))
   }

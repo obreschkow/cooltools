@@ -291,6 +291,6 @@ sphereplot = function(f, n = 100, theta0 = pi/2, phi0 = 0, angle = 0, projection
   if (show.border) lines(rbind(bd,bd[1,]),col=line.col,lwd=lwd)
 
   # return values
-  return(list(col=col, clim=clim))
+  invisible(list(col=col, clim=clim))
 
 }
