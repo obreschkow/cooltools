@@ -2,7 +2,7 @@
 % Please edit documentation in R/lim.R
 \name{lim}
 \alias{lim}
-\title{Crop values of vector or array to a custom range}
+\title{Crop values to a custom range}
 \usage{
 lim(x, min = 0, max = 1, clip = NULL, na = NULL)
 }
@@ -21,7 +21,10 @@ lim(x, min = 0, max = 1, clip = NULL, na = NULL)
 vector/array of the same shape as \code{x}
 }
 \description{
-limits the values of a vector or array to a desired interval, while keeping the shape of the vector/array
+Limits the values of a vector or array to a desired interval, while keeping the shape of the input argument
+}
+\seealso{
+\code{stretch}
 }
 \author{
 Danail Obreschkow

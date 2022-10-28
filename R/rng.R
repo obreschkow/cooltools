@@ -74,7 +74,7 @@ rng = function(f,n,min,max,fmax=NULL,seed=NULL,warn=TRUE) {
   k = 0
   while (k<n) {
     dn = n-k
-    xtrial = array(runif(d*dn,min,max),c(dn,d))
+    xtrial = t(array(runif(d*dn,min,max),c(d,dn)))
     ntrials = ntrials+dn
     feval = fvect(xtrial)
     s = feval>runif(dn,max=fmax)

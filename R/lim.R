@@ -1,6 +1,6 @@
-#' Crop values of vector or array to a custom range
+#' Crop values to a custom range
 #'
-#' @description limits the values of a vector or array to a desired interval, while keeping the shape of the vector/array
+#' @description Limits the values of a vector or array to a desired interval, while keeping the shape of the input argument
 #'
 #' @param x vector or array
 #' @param min minimum value
@@ -11,6 +11,8 @@
 #' @return vector/array of the same shape as \code{x}
 #'
 #' @author Danail Obreschkow
+#'
+#' @seealso \code{stretch}
 #'
 #' @export
 
