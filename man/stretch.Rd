@@ -4,7 +4,7 @@
 \alias{stretch}
 \title{Stretch values to a custom range}
 \usage{
-stretch(x, min = 0, max = 1, na = NULL)
+stretch(x, min = 0, max = 1, invert = FALSE, gamma = NULL, na = NULL)
 }
 \arguments{
 \item{x}{vector or array}
@@ -13,13 +13,17 @@ stretch(x, min = 0, max = 1, na = NULL)
 
 \item{max}{maximum value}
 
+\item{invert}{logical flag specifying whether the data should be inverted, such that the smallest input value maps to max and the largest input value maps to min.}
+
+\item{gamma}{optional argument specifying a non-linear transformation x->x^gamma, if gamma>0, or x->1-(1-x)^(-gamma), if gamma<0.}
+
 \item{na}{optional value specifying the value assigned to non-numbers (NA and NaN)}
 }
 \value{
 vector/array of the same shape as \code{x}
 }
 \description{
-Linearly shifts and stretches the values of a vector or array to a desired interval, while maintaining the shape of the input argument
+Shifts and stretches the values of a vector or array to a desired interval, while maintaining the shape of the input argument
 }
 \seealso{
 \code{lim}
