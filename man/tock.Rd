@@ -4,13 +4,15 @@
 \alias{tock}
 \title{Stop timer}
 \usage{
-tock(txt = "")
+tock(txt = "", fmt = " (\%.2fs). \%s\\n")
 }
 \arguments{
-\item{txt}{optional custom text to be displayed}
+\item{txt}{custom text to be displayed}
+
+\item{fmt}{character vector of format strings. It must contain exactly one \%s as placeholder for \code{txt} and one numerical format, such as \%f or \%e, as placeholder for the time}
 }
 \value{
-None
+Returns the elapsed time in seconds since calling tick().
 }
 \description{
 Stop timer and write the computation in seconds since the last call of tick().
