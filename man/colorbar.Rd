@@ -10,7 +10,6 @@ colorbar(
   xright,
   ytop,
   col = gray.colors(256, 0, 1),
-  n = length(col),
   clim = c(0, 1),
   show.border = TRUE,
   text = "",
@@ -33,8 +32,6 @@ colorbar(
 \item{ytop}{top y-coordinate of the bar}
 
 \item{col}{vector of colors}
-
-\item{n}{number of polygons used to draw the bar}
 
 \item{clim}{2-vector specifying the range of values, linearly represented by the full color scale}
 

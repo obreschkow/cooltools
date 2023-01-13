@@ -15,7 +15,7 @@ mcintegral(f, a, b, n = 1e+05, qmc = FALSE, seed = NULL, warn = TRUE)
 
 \item{n}{approximate number of random evaluations. (The exact number is max(1,round(sqrt(n)))^2.)}
 
-\item{qmc}{logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers, generated from an additive recurrence algorithm are used.}
+\item{qmc}{logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers from a D-dimensional Halton sequence are used.}
 
 \item{seed}{optional seed for random number generator. Only used if \code{qmc} is false.}
 
@@ -28,7 +28,7 @@ Returns a list of items:
 \item{iterations}{exact number of evaluations (close to n).}
 }
 \description{
-Numerical integration using a Monte Carlo (MC) or Quasi-Monte Carlo (QMC) algorithm. These algorithms are of low order (1/sqrt(n) for MC, log(n)/n for QMC in one dimension) compared to the typical orders of 1D deterministic integrators, such as those available in the \code{integrate} function. The MC and QMC integrators are suitable to compute D-dimensional integrals with D>>1, since the order of most deterministic methods deteriorates exponentially with D, whereas the order of MC remains 1/sqrt(n), irrespective of D, and the order of QMC only deteriorates slowly with D as log(n)^D/n.
+Numerical integration using a Monte Carlo (MC) or Quasi-Monte Carlo (QMC) algorithm, based on a Halton sequence. These algorithms are of low order (1/sqrt(n) for MC, log(n)/n for QMC in one dimension) compared to the typical orders of 1D deterministic integrators, such as those available in the \code{integrate} function. The MC and QMC integrators are suitable to compute D-dimensional integrals with D>>1, since the order of most deterministic methods deteriorates exponentially with D, whereas the order of MC remains 1/sqrt(n), irrespective of D, and the order of QMC only deteriorates slowly with D as log(n)^D/n.
 }
 \examples{
 

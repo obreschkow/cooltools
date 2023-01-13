@@ -1,15 +1,16 @@
 #' Monte Carlo and Quasi-Monte Carlo integration in any dimension
 #'
 #' @importFrom stats runif sd
+#' @importFrom randtoolbox halton
 #' @importFrom pracma primes
 #'
-#' @description Numerical integration using a Monte Carlo (MC) or Quasi-Monte Carlo (QMC) algorithm. These algorithms are of low order (1/sqrt(n) for MC, log(n)/n for QMC in one dimension) compared to the typical orders of 1D deterministic integrators, such as those available in the \code{integrate} function. The MC and QMC integrators are suitable to compute D-dimensional integrals with D>>1, since the order of most deterministic methods deteriorates exponentially with D, whereas the order of MC remains 1/sqrt(n), irrespective of D, and the order of QMC only deteriorates slowly with D as log(n)^D/n.
+#' @description Numerical integration using a Monte Carlo (MC) or Quasi-Monte Carlo (QMC) algorithm, based on a Halton sequence. These algorithms are of low order (1/sqrt(n) for MC, log(n)/n for QMC in one dimension) compared to the typical orders of 1D deterministic integrators, such as those available in the \code{integrate} function. The MC and QMC integrators are suitable to compute D-dimensional integrals with D>>1, since the order of most deterministic methods deteriorates exponentially with D, whereas the order of MC remains 1/sqrt(n), irrespective of D, and the order of QMC only deteriorates slowly with D as log(n)^D/n.
 #'
 #' @param f scalar function of a D-vector to be integrated numerically; for fast performance, this function should be vectorized, such that it returns an N-element vector if it is given an N-by-D matrix as argument. An automatic warning is produced if the function is not vectorized in this manner.
 #' @param a D-vector with lower limit(s) of the integration
 #' @param b D-vector with upper limit(s) of the integration
 #' @param n approximate number of random evaluations. (The exact number is max(1,round(sqrt(n)))^2.)
-#' @param qmc logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers, generated from an additive recurrence algorithm are used.
+#' @param qmc logical flag. If false (default), pseudo-random numbers are used; if true, quasi-random numbers from a D-dimensional Halton sequence are used.
 #' @param seed optional seed for random number generator. Only used if \code{qmc} is false.
 #' @param warn logical flag. If true (default), a warning is produced if the function f is not vectorized.
 #'
@@ -58,21 +59,15 @@ mcintegral = function(f,a,b,n=1e5,qmc=FALSE,seed=NULL,warn=TRUE) {
   m = max(1,round(sqrt(n))) # number of iterations and evaluations per iteration
   dx = prod(b-a)/m
   Q = array(0,m)
-  if (qmc) {
-    np = d*log(d*sqrt(log(d+2)))*1.02+20 # upper bound for n, such that the nb of primes<=n is >=d
-    alpha = sqrt(pracma::primes(np)) # vector of irrational numbers
-  } else {
-    if (!is.null(seed)) set.seed(seed)
-  }
+  if ((!qmc) & (!is.null(seed))) set.seed(seed)
 
   for (i in seq(m)) {
 
     # generate random numbers
     if (qmc) {
-      x = array(NA,c(m,d))
-      for (j in seq(d)) x[,j] = (seq((i-1)*m+1,i*m)*(1+alpha[j]))%%1*(b[j]-a[j])+a[j]
+      x = t(t(randtoolbox::halton(m,d,start=(i-1)*m+1))*(b-a)+a)
     } else {
-      x = t(array(runif(m*d),c(d,m))*(b-a)+a)
+      x = t(array(stats::runif(m*d),c(d,m))*(b-a)+a)
     }
 
     # evaluate integral

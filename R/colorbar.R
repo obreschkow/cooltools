@@ -10,7 +10,6 @@
 #' @param xright right x-coordinate of the bar
 #' @param ytop top y-coordinate of the bar
 #' @param col vector of colors
-#' @param n number of polygons used to draw the bar
 #' @param clim 2-vector specifying the range of values, linearly represented by the full color scale
 #' @param show.border logical flag specifying whether to draw a rectangular border around the bar
 #' @param text axis label
@@ -37,7 +36,7 @@
 #' @export
 
 colorbar = function(xleft, ybottom, xright, ytop,
-                    col = gray.colors(256,0,1), n = length(col),
+                    col = gray.colors(256,0,1),
                     clim = c(0,1),
                     show.border = TRUE, text = '', line=2,
                     show.axis = TRUE, side = 'right', lwd=1, nticks=5, at=NULL, ...) {
@@ -50,6 +49,7 @@ colorbar = function(xleft, ybottom, xright, ytop,
   par(xpd=TRUE)
 
   # plot gradient
+  n = length(col)
   rgb = array(NA,c(n,1,3))
   rgb[,1,] =  t(col2rgb(rev(col))/255)
   rasterImage(rgb, xleft, ybottom, xright, ytop)

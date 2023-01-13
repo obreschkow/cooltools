@@ -1,6 +1,7 @@
 #' Random number generator for a custom d-dimensional distribution
 #'
 #' @importFrom stats runif optim optimize
+#' @importFrom randtoolbox halton
 #'
 #' @description Brute-force algorithm for drawing random numbers from a d-dimensional distribution.
 #'
@@ -8,8 +9,9 @@
 #' @param n number of random numbers to be generated
 #' @param min,max are d-vectors specifying the domain of distribution function; the domain must be finite and should be as restrictive as possible to keep the number of random trials as low as possible.
 #' @param fmax maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.
-#' @param seed optional seed for random number generator.
-#' @param warn logical flag. If true (default), a warning is produced if the function f is not vectorized.
+#' @param seed optional seed for random number generator; ignored if \code{quasi=TRUE}.
+#' @param quasi logical flag. If true, quasi-random numbers with low-discrepancy are drawn, based on a Halton sequence. Otherwise, the standard internal pseudo-random generator of \code{runif()} is used.
+#' @param warn logical flag. If true, a warning is produced if the function f is not vectorized.
 #'
 #' @return Returns list of items:
 #' \item{x}{n-by-d matrix of n random d-vectors.}
@@ -19,11 +21,18 @@
 #'
 #' @examples
 #'
-#' ## 1D random number generation (sin-function)
+#' ## 1D random number generation from a sine-function
 #' f = function(x) sin(x)
-#' out = rng(f,1e3,0,pi)
-#' hist(out$x,freq=FALSE,xlab='x')
+#' out.pseudo = rng(f,1e3,0,pi,seed=1)
+#' out.quasi = rng(f,1e3,0,pi,quasi=TRUE)
+#' hist(out.pseudo$x,100,freq=FALSE,border=NA,xlab='x',main='sine-distribution')
+#' hist(out.quasi$x,100,freq=FALSE,border=NA,col='#ff000066',add=TRUE)
 #' curve(sin(x)/2,0,pi,add=TRUE)
+#'
+#' ## 2D quasi-random sampling of a disk with exponentially declining surface density
+#' f = function(x) exp(-sqrt(x[,1]^2+x[,2]^2))
+#' out = rng(f,1e4,min=c(-5,-5),max=c(5,5),quasi=TRUE)
+#' plot(out$x,cex=0.3,pch=16,asp=1,main='Quasi-random exponential disk')
 #'
 #' ## 5D random number generation (5-dimensional sphere)
 #' f = function(x) as.numeric(sum(x^2)<=1)
@@ -37,7 +46,7 @@
 #'
 #' @export
 
-rng = function(f,n,min,max,fmax=NULL,seed=NULL,warn=TRUE) {
+rng = function(f,n,min,max,fmax=NULL,seed=NULL,quasi=FALSE,warn=TRUE) {
 
   # initialize
   d = length(min)
@@ -74,10 +83,19 @@ rng = function(f,n,min,max,fmax=NULL,seed=NULL,warn=TRUE) {
   k = 0
   while (k<n) {
     dn = n-k
-    xtrial = t(array(runif(d*dn,min,max),c(d,dn)))
+    if (quasi) {
+      halt = randtoolbox::halton(dn,d+1,start=ntrials+1)
+      xtrial = t(t(array(halt[,1:d],c(dn,d)))*(max-min)+min)
+    } else {
+      xtrial = t(array(stats::runif(d*dn,min,max),c(d,dn)))
+    }
     ntrials = ntrials+dn
     feval = fvect(xtrial)
-    s = feval>runif(dn,max=fmax)
+    if (quasi) {
+      s = feval>halt[,d+1]
+    } else {
+      s = feval>stats::runif(dn,max=fmax)
+    }
     l = sum(s)
     if (l>0) {
       x[(k+1):(k+l),] = xtrial[s,]

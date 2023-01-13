@@ -4,7 +4,7 @@
 \alias{rng}
 \title{Random number generator for a custom d-dimensional distribution}
 \usage{
-rng(f, n, min, max, fmax = NULL, seed = NULL, warn = TRUE)
+rng(f, n, min, max, fmax = NULL, seed = NULL, quasi = FALSE, warn = TRUE)
 }
 \arguments{
 \item{f}{function of a d-vector representing a d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized. For fast performance, this function should be vectorized, such that it returns an N-element vector if it is given an N-by-D matrix as argument. An automatic warning is produced if the function is not vectorized in this manner.}
@@ -15,9 +15,11 @@ rng(f, n, min, max, fmax = NULL, seed = NULL, warn = TRUE)
 
 \item{fmax}{maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.}
 
-\item{seed}{optional seed for random number generator.}
+\item{seed}{optional seed for random number generator; ignored if \code{quasi=TRUE}.}
 
-\item{warn}{logical flag. If true (default), a warning is produced if the function f is not vectorized.}
+\item{quasi}{logical flag. If true, quasi-random numbers with low-discrepancy are drawn, based on a Halton sequence. Otherwise, the standard internal pseudo-random generator of \code{runif()} is used.}
+
+\item{warn}{logical flag. If true, a warning is produced if the function f is not vectorized.}
 }
 \value{
 Returns list of items:
@@ -31,11 +33,18 @@ Brute-force algorithm for drawing random numbers from a d-dimensional distributi
 }
 \examples{
 
-## 1D random number generation (sin-function)
+## 1D random number generation from a sine-function
 f = function(x) sin(x)
-out = rng(f,1e3,0,pi)
-hist(out$x,freq=FALSE,xlab='x')
+out.pseudo = rng(f,1e3,0,pi,seed=1)
+out.quasi = rng(f,1e3,0,pi,quasi=TRUE)
+hist(out.pseudo$x,100,freq=FALSE,border=NA,xlab='x',main='sine-distribution')
+hist(out.quasi$x,100,freq=FALSE,border=NA,col='#ff000066',add=TRUE)
 curve(sin(x)/2,0,pi,add=TRUE)
+
+## 2D quasi-random sampling of a disk with exponentially declining surface density
+f = function(x) exp(-sqrt(x[,1]^2+x[,2]^2))
+out = rng(f,1e4,min=c(-5,-5),max=c(5,5),quasi=TRUE)
+plot(out$x,cex=0.3,pch=16,asp=1,main='Quasi-random exponential disk')
 
 ## 5D random number generation (5-dimensional sphere)
 f = function(x) as.numeric(sum(x^2)<=1)
