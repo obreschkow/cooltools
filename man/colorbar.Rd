@@ -19,6 +19,9 @@ colorbar(
   lwd = 1,
   nticks = 5,
   at = NULL,
+  srt = 0,
+  ticklength = 0.1,
+  shift = 0,
   ...
 )
 }
@@ -51,7 +54,13 @@ colorbar(
 
 \item{at}{vector of values specifying the tick positions on the axis, this overrides nticks.}
 
-\item{...}{optional arguments to be passed to the function \code{\link{axis}}}
+\item{srt}{rotation angle of tick text}
+
+\item{ticklength}{length of ticks}
+
+\item{shift}{extra distance between axis numbers and color bar}
+
+\item{...}{optional arguments to be passed text function.}
 }
 \value{
 None

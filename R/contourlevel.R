@@ -56,9 +56,9 @@
 #' g = griddata(x, min=-6, max=6)
 #'
 #' # find 1-sigma and 2-sigma contour levels and draw contours at these levels
-#' l = contourlevel(g$counts)
+#' l = contourlevel(g$field)
 #' plot(x, xlim=g$grid[[1]]$lim, ylim=g$grid[[2]]$lim, pch=20, cex=0.5)
-#' contour(g$grid[[1]]$mid,g$grid[[2]]$mid,g$counts,
+#' contour(g$grid[[1]]$mid,g$grid[[2]]$mid,g$field,
 #'         levels=l,add=TRUE,col='red',lwd=c(2,1),labels=NA)
 #'
 #' @export

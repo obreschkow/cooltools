@@ -14,12 +14,15 @@
 #' @param show.border logical flag specifying whether to draw a rectangular border around the bar
 #' @param text axis label
 #' @param line distance between label and color bar
+#' @param shift extra distance between axis numbers and color bar
 #' @param show.axis logical flag specifying whether to draw an axis
 #' @param side character string, which specifies the location of the axis on the bar. This has to be 'left' or 'right' (default).
 #' @param lwd linewidth of border and ticks
 #' @param nticks number of ticks on the axis
 #' @param at vector of values specifying the tick positions on the axis, this overrides nticks.
-#' @param ... optional arguments to be passed to the function \code{\link{axis}}
+#' @param srt rotation angle of tick text
+#' @param ticklength length of ticks
+#' @param ... optional arguments to be passed text function.
 #'
 #' @return None
 #'
@@ -39,7 +42,8 @@ colorbar = function(xleft, ybottom, xright, ytop,
                     col = gray.colors(256,0,1),
                     clim = c(0,1),
                     show.border = TRUE, text = '', line=2,
-                    show.axis = TRUE, side = 'right', lwd=1, nticks=5, at=NULL, ...) {
+                    show.axis = TRUE, side = 'right', lwd=1, nticks=5, at=NULL,
+                    srt=0, ticklength=0.1, shift=0, ...) {
 
   # safe use of par()
   oldpar = par(no.readonly = TRUE)
@@ -65,11 +69,21 @@ colorbar = function(xleft, ybottom, xright, ytop,
 
     if (is.null(at)) at=seq(clim[1], clim[2], length=nticks)
     if (side=='left') {
-      axis(side=2, pos=xleft, at=at, lwd = NA, lwd.ticks = lwd, ...)
+      x0 = xleft
+      x1 = x0-ticklength
+      dx = -shift
+      pos = 2
     } else if (side=='right') {
-      axis(side=4, pos=xright, at=at, lwd = NA, lwd.ticks = lwd, ...)
+      x0 = xright
+      x1 = x0+ticklength
+      dx = shift
+      pos = 4
     } else {
       stop('unknown side')
+    }
+    for (i in seq_along(at)) {
+      lines(c(x0,x1),c(at[i],at[i]),lwd=lwd)
+      text(x1+shift,at,at,pos=pos,srt=srt,...)
     }
 
     # restore plotting area
@@ -78,9 +92,9 @@ colorbar = function(xleft, ybottom, xright, ytop,
 
   # label axis
   if (side=='left') {
-    text(xleft-line*(xright-xleft),(ybottom+ytop)/2,text,srt='90')
+    text(xleft-line*(xright-xleft),(ybottom+ytop)/2,text,srt=90,...)
   } else if (side=='right') {
-    text(xright+line*(xright-xleft),(ybottom+ytop)/2,text,srt='90')
+    text(xright+line*(xright-xleft),(ybottom+ytop)/2,text,srt=90,...)
   } else {
     stop('unknown side')
   }

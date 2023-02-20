@@ -7,13 +7,12 @@
 #' @param x N-element vector (if D=1) or N-by-D matrix (if D>1), giving the Cartesian coordinates of N points in D dimensions.
 #' @param w optional N-element vector with weights.
 #' @param n scalar or D-element vector specifying the number of equally space grid cells along each dimension.
-#' @param min scalar or D-element vector specifying the lower bound of the grid. If not given, min is adjusted to the range of x.
-#' @param max scalar or D-element vector specifying the upper bound of the grid. If not given, max is adjusted to the range of x.
-#' @param density logical. If TRUE, the output arrays \code{counts} and \code{mass} are rescaled, such that the total number of points is \code{sum(counts) dV} and the total mass is \code{sum(mass) dV}, where \code{dV} is the volume of the D-dimensional grid cells.
+#' @param min optional scalar or D-element vector specifying the lower bound of the grid. If not given, min is adjusted to the range of x.
+#' @param max optional scalar or D-element vector specifying the upper bound of the grid. If not given, max is adjusted to the range of x.
+#' @param type character string ("counts", "density", "probability") specifying the normalization of the output: (1) "counts" returns the number of points (multiplied by their weights, if given) in each cell; thus the total number of points (or total mass, if weights are given) is \code{sum(field)}. (2) "density" returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) dV}. (3) "probability" returns a probability density, such that \code{sum(field) dV}=1.
 #'
 #' @return Returns a list of items
-#' \item{counts}{D-dimensional array representing the number of points in each grid cell}
-#' \item{mass}{D-dimensional array representing the mass (=sum of weights) of points in each grid cell. Only exists, if argument w is provided.}
+#' \item{field}{D-dimensional array representing the value in each grid cell. See parameter \code{type} for more details.}
 #' \item{grid}{List of D elements with the grid properties along each dimension. n: number of grid cells; mid: n-vector of mid-cell coordinates; breaks: (n+1)-vector of cell edges; lim: 2-vector of considered range; delta: cell width.}
 #'
 #' @author Danail Obreschkow
@@ -23,27 +22,28 @@
 #' # Distribute 1-dimensional data onto a regular grid
 #' npoints = 1e4
 #' x = rnorm(npoints)
-#' g = griddata(x,min=-3,max=3,n=100,density=TRUE)
+#' g = griddata(x,min=-3,max=3,n=100,type='probability')
 #' curve(dnorm(x),-3,3)
-#' points(g$grid$mid,g$counts/npoints,pch=16)
+#' points(g$grid$mid,g$field,pch=16)
 #'
 #' # Distribute 2-dimensional data onto a regular grid
 #' x = runif(100,max=2)
 #' y = runif(100)
 #' g = griddata(cbind(x,y),min=c(0,0),max=c(2,1),n=c(20,10))
-#' image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$counts,
+#' image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$field,
 #'       asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
 #' points(x,y,col='red',pch=16)
 #'
 #' # ... same with weights
 #' w = runif(100)
 #' g = griddata(cbind(x,y),w,min=c(0,0),max=c(2,1),n=c(20,10))
-#' image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$mass,asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
+#' image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$field,
+#'       asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
 #' points(x,y,col='red',pch=16,cex=w)
 #'
 #' @export
 
-griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, density=FALSE) {
+griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
 
   # handle inputs
   if (is.list(x)) x = as.matrix(x)
@@ -140,17 +140,22 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, density=FALSE) {
     f = f*n[k]
   }
 
-  # efficiently count number of points of each index
-  g$counts = array(tabulate(index,prod(n)),n)
-  if (density) g$counts = g$counts/dV
-
-  # efficiently county mass at each index
-  if (!is.null(w)) {
+  if (is.null(w)) {
+    # efficiently count number of points of each index
+    g$field = array(tabulate(index,prod(n)),n)
+  } else {
+    # efficiently county mass at each index
     DT = data.table(index=index, w=w)
     q = DT[, c(.N, lapply(.SD, sum)), by=index]
-    g$mass = array(0,n)
-    g$mass[q$index] = q$w
-    if (density) g$mass = g$mass/dV
+    g$field = array(0,n)
+    g$field[q$index] = q$w
+  }
+
+  # apply custome normalization
+  if (type=='density') {
+    g$field = g$field/dV
+  } else if (type=='probability') {
+    g$field = g$field/(dV*dim(x)[1])
   }
 
   # return data
