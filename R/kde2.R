@@ -16,6 +16,7 @@
 #' @param sd.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param reflect vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected
 #' @param smoothw logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.
+#' @param gamma numerical factor; if different form 1, a non-linear smoothing is applied.
 #'
 #' @return Returns a list of items
 #' \item{x}{n-element vector of cell-center x-coordinates.}
@@ -33,7 +34,7 @@
 #' @export
 #'
 kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL,
-                reflect='', smoothw=FALSE) {
+                reflect='', smoothw=FALSE, gamma=1) {
 
   # handle inputs
   if (length(n)==1) n=c(n,n)
@@ -85,8 +86,9 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
       count = map/sum(map)*sum(count)
     }
   }
+  count = count^gamma/sum(count^gamma)*sum(count)
 
-  g$d = kde2stampxx(map, count, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+  g$d = kde2stampxx(map, count, h.max, s*sqrt(gamma), sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   # make boundaries
   if (any(reflect=='left')) g$d[(h.max+1):(2*h.max),] = g$d[(h.max+1):(2*h.max),]+g$d[h.max:1,]
