@@ -16,7 +16,6 @@
 #' @param sd.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
 #' @param reflect vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected
 #' @param smoothw logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.
-#' @param gamma numerical factor; if different form 1, a non-linear smoothing is applied.
 #'
 #' @return Returns a list of items
 #' \item{x}{n-element vector of cell-center x-coordinates.}
@@ -34,7 +33,7 @@
 #' @export
 #'
 kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL,
-                reflect='', smoothw=FALSE, gamma=1) {
+                reflect='', smoothw=FALSE) {
 
   # handle inputs
   if (length(n)==1) n=c(n,n)
@@ -75,20 +74,20 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   h.max = (dim(kernel[[n.kernels]])[1]-1)/2
   xlim = c(xlim[1]-(xlim[2]-xlim[1])/n[1]*h.max,xlim[2]+(xlim[2]-xlim[1])/n[1]*h.max)
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
-  g = griddata(cbind(x,y),w=w,n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))
-  map = g$field
+  g = griddata(x=x,y=y,w=w,n=n+2*h.max,xlim=xlim,ylim=ylim)
 
-  if (is.null(w)) {
-    count = map
+  if (is.null(g$mass)) {
+    map=g$counts
   } else {
-    count = griddata(cbind(x,y),n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))$field
-    if (smoothw) {
-      count = map/sum(map)*sum(count)
-    }
+    map=g$mass
   }
-  count = count^gamma/sum(count^gamma)*sum(count)
 
-  g$d = kde2stampxx(map, count, h.max, s*sqrt(gamma), sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
+  if (smoothw) {
+    count = g$mass/sum(g$mass)*sum(g$counts)
+  } else {
+    count = g$counts
+  }
+  g$d = kde2stampxx(map, count, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   # make boundaries
   if (any(reflect=='left')) g$d[(h.max+1):(2*h.max),] = g$d[(h.max+1):(2*h.max),]+g$d[h.max:1,]
@@ -106,7 +105,11 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   if (!is.null(w)) g$m = g$mass[h.max+(1:n[1]),h.max+(1:n[2])]
   g$xlim = range(g$xbreak)
   g$ylim = range(g$ybreak)
+
+  # remove outputs from griddata
   g$grid = NULL
+  g$field = NULL
+  g$dV = NULL
 
   # return result
   return(g)

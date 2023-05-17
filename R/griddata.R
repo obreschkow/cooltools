@@ -9,11 +9,12 @@
 #' @param n scalar or D-element vector specifying the number of equally space grid cells along each dimension.
 #' @param min optional scalar or D-element vector specifying the lower bound of the grid. If not given, min is adjusted to the range of x.
 #' @param max optional scalar or D-element vector specifying the upper bound of the grid. If not given, max is adjusted to the range of x.
-#' @param type character string ("counts", "density", "probability") specifying the normalization of the output: (1) "counts" returns the number of points (multiplied by their weights, if given) in each cell; thus the total number of points (or total mass, if weights are given) is \code{sum(field)}. (2) "density" returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) dV}. (3) "probability" returns a probability density, such that \code{sum(field) dV}=1.
+#' @param type character string ("counts", "density", "probability") specifying the normalization of the output: "counts" (default) returns the number of points (multiplied by their weights, if given) in each cell; thus the total number of points (or total mass, if weights are given) is \code{sum(field)}. "density" returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) dV}. "probability" returns a probability density, such that \code{sum(field) dV}=1.
 #'
 #' @return Returns a list of items
 #' \item{field}{D-dimensional array representing the value in each grid cell. See parameter \code{type} for more details.}
 #' \item{grid}{List of D elements with the grid properties along each dimension. n: number of grid cells; mid: n-vector of mid-cell coordinates; breaks: (n+1)-vector of cell edges; lim: 2-vector of considered range; delta: cell width.}
+#' \item{dV}{Single number representing the volume of the D-dimensional grid cells.}
 #'
 #' @author Danail Obreschkow
 #'
@@ -100,7 +101,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
         x = cbind(x[x>=min[1] & x<=max[1]])
       } else {
         for (k in seq(d)) {
-          x = x[x[,k]>=min[k] & x[,k]<=max[k],]
+          x = rbind(x[x[,k]>=min[k] & x[,k]<=max[k],])
         }
       }
     } else {
@@ -119,15 +120,14 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
   }
 
   # make grid coordinates
-  g = list(grid = list())
-  dV = 1
+  g = list(grid = list(), dV = 1)
   for (k in 1:d) {
     g$grid[[k]] = list(n = n[k],
                        mid = (seq(n[k])-0.5)/n[k]*(max[k]-min[k])+min[k],
                        breaks = seq(min[k], max[k], length = n[k]+1),
                        min = min[k], max = max[k],
                        delta = (max[k]-min[k])/n[k])
-    dV = dV*g$grid[[k]]$delta
+    g$dV = g$dV*g$grid[[k]]$delta
   }
   if (d==1) g$grid = g$grid[[1]]
 
@@ -153,9 +153,9 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
 
   # apply custome normalization
   if (type=='density') {
-    g$field = g$field/dV
+    g$field = g$field/g$dV
   } else if (type=='probability') {
-    g$field = g$field/(dV*dim(x)[1])
+    g$field = g$field/(g$dV*dim(x)[1])
   }
 
   # return data
