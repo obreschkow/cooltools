@@ -15,8 +15,7 @@ kde2(
   sd.min = NULL,
   sd.max = NULL,
   reflect = "",
-  smoothw = FALSE,
-  gamma = 1
+  smoothw = FALSE
 )
 }
 \arguments{
@@ -41,8 +40,6 @@ kde2(
 \item{reflect}{vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected}
 
 \item{smoothw}{logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.}
-
-\item{gamma}{numerical factor; if different form 1, a non-linear smoothing is applied.}
 }
 \value{
 Returns a list of items

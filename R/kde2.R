@@ -74,7 +74,7 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   h.max = (dim(kernel[[n.kernels]])[1]-1)/2
   xlim = c(xlim[1]-(xlim[2]-xlim[1])/n[1]*h.max,xlim[2]+(xlim[2]-xlim[1])/n[1]*h.max)
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
-  g = griddata(x=x,y=y,w=w,n=n+2*h.max,xlim=xlim,ylim=ylim)
+  g = griddata(x=cbind(x,y),w=w,n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))
 
   if (is.null(g$mass)) {
     map=g$counts

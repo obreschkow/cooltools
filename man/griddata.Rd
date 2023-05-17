@@ -17,12 +17,13 @@ griddata(x, w = NULL, n = 10, min = NULL, max = NULL, type = "counts")
 
 \item{max}{optional scalar or D-element vector specifying the upper bound of the grid. If not given, max is adjusted to the range of x.}
 
-\item{type}{character string ("counts", "density", "probability") specifying the normalization of the output: (1) "counts" returns the number of points (multiplied by their weights, if given) in each cell; thus the total number of points (or total mass, if weights are given) is \code{sum(field)}. (2) "density" returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) dV}. (3) "probability" returns a probability density, such that \code{sum(field) dV}=1.}
+\item{type}{character string ("counts", "density", "probability") specifying the normalization of the output: "counts" (default) returns the number of points (multiplied by their weights, if given) in each cell; thus the total number of points (or total mass, if weights are given) is \code{sum(field)}. "density" returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) dV}. "probability" returns a probability density, such that \code{sum(field) dV}=1.}
 }
 \value{
 Returns a list of items
 \item{field}{D-dimensional array representing the value in each grid cell. See parameter \code{type} for more details.}
 \item{grid}{List of D elements with the grid properties along each dimension. n: number of grid cells; mid: n-vector of mid-cell coordinates; breaks: (n+1)-vector of cell edges; lim: 2-vector of considered range; delta: cell width.}
+\item{dV}{Single number representing the volume of the D-dimensional grid cells.}
 }
 \description{
 Distributes a set of points in D dimensions onto a regular, D-dimensional grid, using a fast nearest neighbor algorithm. Weights can be used optionally.
