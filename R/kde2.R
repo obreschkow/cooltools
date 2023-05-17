@@ -74,19 +74,18 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   h.max = (dim(kernel[[n.kernels]])[1]-1)/2
   xlim = c(xlim[1]-(xlim[2]-xlim[1])/n[1]*h.max,xlim[2]+(xlim[2]-xlim[1])/n[1]*h.max)
   ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
-  g = griddata(x=cbind(x,y),w=w,n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))
+  g = griddata(cbind(x,y),w=w,n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))
+  map = g$field
 
-  if (is.null(g$mass)) {
-    map=g$counts
+  if (is.null(w)) {
+    count = map
   } else {
-    map=g$mass
+    count = griddata(cbind(x,y),n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))$field
+    if (smoothw) {
+      count = map/sum(map)*sum(count)
+    }
   }
 
-  if (smoothw) {
-    count = g$mass/sum(g$mass)*sum(g$counts)
-  } else {
-    count = g$counts
-  }
   g$d = kde2stampxx(map, count, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
 
   # make boundaries
@@ -106,7 +105,7 @@ kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.
   g$xlim = range(g$xbreak)
   g$ylim = range(g$ybreak)
 
-  # remove outputs from griddata
+  # remove griddata outputs
   g$grid = NULL
   g$field = NULL
   g$dV = NULL
