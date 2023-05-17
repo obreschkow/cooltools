@@ -2,57 +2,59 @@
 % Please edit documentation in R/kde2.R
 \name{kde2}
 \alias{kde2}
-\title{2D adaptive kernel density estimation}
+\title{Multi-dimensional adaptive kernel density estimation}
 \usage{
 kde2(
   x,
-  y,
   w = NULL,
   s = 1,
-  n = c(20, 20),
-  xlim = range(x),
-  ylim = range(y),
-  sd.min = NULL,
-  sd.max = NULL,
+  nx = 300,
+  xlim = NULL,
+  ylim = NULL,
+  smoothing = 1,
+  sigma.min = 0,
+  sigma.max = Inf,
   reflect = "",
-  smoothw = FALSE
+  algorithm = "nn",
+  probability = FALSE
 )
 }
 \arguments{
-\item{x}{N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates}
-
-\item{y}{N-element vector of y-coordinates (only used if x is a vector)}
+\item{x}{N-by-D vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates}
 
 \item{w}{optional N-element vector with weights}
 
 \item{s}{characteristic smoothing length}
 
-\item{n}{scalar or 2-element vector specifying the number of equally space grid cells}
+\item{nx}{integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.}
 
 \item{xlim}{2-element vector specifying the x-range}
 
-\item{ylim}{2-element vector specifying the y-range}
+\item{ylim}{2-element vector specifying the y-range; if needed, this range is slightly adjusted to allow for an integer number of pixels.}
 
-\item{sd.min}{optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels}
+\item{smoothing}{positive linear smoothing factor, the larger, the more smoothed the Kernel estimation turns out.}
 
-\item{sd.max}{optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels}
+\item{sigma.min}{optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels}
 
-\item{reflect}{vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected}
+\item{sigma.max}{optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels}
 
-\item{smoothw}{logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.}
+\item{reflect}{vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected}
+
+\item{algorithm}{character string: "fast" is a purely 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number (or mass, if weights given) of objects in each pixel. "nn" is a more sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually.}
+
+\item{probability}{logical flag. If TRUE, the output field is normalised such that sum(field)dpixel^2=1. If FALSE (default), the field is such that sum(field)dpixel^2 equals the effective number of particles (or effective mass, if weights are given) in the range specified by xlim and ylim, including particle fractions that have been smoothed into the field and excluding particle fractions that have been smoothed out of it.}
 }
 \value{
 Returns a list of items
-\item{x}{n-element vector of cell-center x-coordinates.}
-\item{y}{n-element vector of cell-center y-coordinates.}
-\item{xbreak}{(n+1)-element vector of cell-edge x-coordinates.}
-\item{ybreak}{(n+1)-element vector of cell-edge y-coordinates.}
-\item{n}{2D array of point counts.}
-\item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
-\item{d}{2D array of smoothed density field.}
+\item{field}{2D array of smoothed density field.}
+\item{x}{nx-element vector of cell-center x-coordinates.}
+\item{y}{ny-element vector of cell-center y-coordinates.}
+\item{xbreak}{(nx+1)-element vector of cell-edge x-coordinates.}
+\item{ybreak}{(ny+1)-element vector of cell-edge y-coordinates.}
+\item{dpixel}{grid spacing along x-coordinate and y-coordinate.}
 }
 \description{
-Produces a 2D kernel density estimation on a 2D grid from a 2D point set, using adaptive smoothing and allowing for the data points to have weights.
+Produces a 2D kernel density estimation on a 2D grid from a D-dimensional (D>=2) point set
 }
 \seealso{
 \code{\link{griddata}}

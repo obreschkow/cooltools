@@ -1,30 +1,31 @@
-#' 2D adaptive kernel density estimation
+#' Multi-dimensional adaptive kernel density estimation
 #'
 #' @importFrom pracma meshgrid
 #' @importFrom Rcpp sourceCpp
+#' @importFrom FNN knn.dist
 #'
-#' @description Produces a 2D kernel density estimation on a 2D grid from a 2D point set, using adaptive smoothing and allowing for the data points to have weights.
+#' @description Produces a 2D kernel density estimation on a 2D grid from a D-dimensional (D>=2) point set
 #'
-#' @param x N-element vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
-#' @param y N-element vector of y-coordinates (only used if x is a vector)
+#' @param x N-by-D vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
 #' @param w optional N-element vector with weights
 #' @param s characteristic smoothing length
-#' @param n scalar or 2-element vector specifying the number of equally space grid cells
+#' @param nx integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.
 #' @param xlim 2-element vector specifying the x-range
-#' @param ylim 2-element vector specifying the y-range
-#' @param sd.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels
-#' @param sd.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
-#' @param reflect vector of characters c('left','right','bottom','top') specifying the edges, where the data should be reflected
-#' @param smoothw logical flag; if set TRUE, the smoothing depends on the weighted mass rather than the counts in each pixel.
+#' @param ylim 2-element vector specifying the y-range; if needed, this range is slightly adjusted to allow for an integer number of pixels.
+#' @param smoothing positive linear smoothing factor, the larger, the more smoothed the Kernel estimation turns out.
+#' @param sigma.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels
+#' @param sigma.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
+#' @param reflect vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected
+#' @param algorithm character string: "fast" is a purely 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number (or mass, if weights given) of objects in each pixel. "nn" is a more sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually.
+#' @param probability logical flag. If TRUE, the output field is normalised such that sum(field)dpixel^2=1. If FALSE (default), the field is such that sum(field)dpixel^2 equals the effective number of particles (or effective mass, if weights are given) in the range specified by xlim and ylim, including particle fractions that have been smoothed into the field and excluding particle fractions that have been smoothed out of it.
 #'
 #' @return Returns a list of items
-#' \item{x}{n-element vector of cell-center x-coordinates.}
-#' \item{y}{n-element vector of cell-center y-coordinates.}
-#' \item{xbreak}{(n+1)-element vector of cell-edge x-coordinates.}
-#' \item{ybreak}{(n+1)-element vector of cell-edge y-coordinates.}
-#' \item{n}{2D array of point counts.}
-#' \item{m}{2D array of weighted point counts (masses); only available if \code{w} is specified.}
-#' \item{d}{2D array of smoothed density field.}
+#' \item{field}{2D array of smoothed density field.}
+#' \item{x}{nx-element vector of cell-center x-coordinates.}
+#' \item{y}{ny-element vector of cell-center y-coordinates.}
+#' \item{xbreak}{(nx+1)-element vector of cell-edge x-coordinates.}
+#' \item{ybreak}{(ny+1)-element vector of cell-edge y-coordinates.}
+#' \item{dpixel}{grid spacing along x-coordinate and y-coordinate.}
 #'
 #' @author Danail Obreschkow
 #'
@@ -32,85 +33,132 @@
 #'
 #' @export
 #'
-kde2 = function(x, y, w=NULL, s=1, n=c(20,20), xlim=range(x), ylim=range(y), sd.min=NULL, sd.max=NULL,
-                reflect='', smoothw=FALSE) {
+kde2 = function(x, w=NULL, s=1, nx=300, xlim=NULL, ylim=NULL,
+                smoothing = 1, sigma.min=0, sigma.max=Inf,
+                reflect='', algorithm='nn', probability=FALSE) {
 
   # handle inputs
-  if (length(n)==1) n=c(n,n)
-  if (is.matrix(x)) {
-    if (dim(x)[2]!=2) stop('x must be a vector or a N-by-2 matrix')
-    y = x[,2]
-    x = x[,1]
-  }
+  if (is.null(dim(x)) || length(dim(x))!=2 || dim(x)[2]<2) stop('x must be a vector or a N-by-D matrix with D>=2.')
+  if (is.null(xlim)) xlim=range(x[,1])
+  if (is.null(ylim)) ylim=range(x[,2])
+  npoints.all = dim(x)[1]
 
-  # make smoothing kernels
-  d = 0.1 # step between standard deviations in pixels
-  n.sd = 3 # number of standard deviations considered
-  n.pix = prod(n)
-  if (is.null(sd.min)) {
-    sd.min = 0
-  }
-  if (is.null(sd.max)) {
-    sd.max = round(sqrt(n.pix)/4) # maximum standard deviation in pixel
-  }
-  sd.max = max(2*d,sd.max)
-  sd = seq(0,sd.max,by=d) # list of standard deviations
-  n.kernels = length(sd)
-  kernel = {}
-  kernel[[1]] = matrix(c(0,0,0,0,1,0,0,0,0),3,3)
-  kern.index = rep(1,n.kernels)
-  kern.length = rep(9,n.kernels)
-  for (i in seq(2,n.kernels)) {
-    kern.index[i] = kern.index[i-1]+kern.length[i-1]
-    h = ceiling(sd[i]*n.sd)
-    n.side = 2*h+1 # number of pixels per side
-    mesh = pracma::meshgrid(seq(-h,h))
-    kernel[[i]] = exp(-(mesh$X^2+mesh$Y^2)/2/sd[i]^2)
-    kernel[[i]] = kernel[[i]]/sum(kernel[[i]])
-    kern.length[i] = n.side^2
-  }
+  # make grid spacing and tweak y-range to contain an integer number of pixels
+  dpixel = diff(xlim)/nx
+  ny = round(diff(ylim)/dpixel)
+  deltay = ny*dpixel-diff(ylim)
+  ylim = ylim+c(-0.5,0.5)*deltay
 
-  # grid data onto oversized grid
-  h.max = (dim(kernel[[n.kernels]])[1]-1)/2
-  xlim = c(xlim[1]-(xlim[2]-xlim[1])/n[1]*h.max,xlim[2]+(xlim[2]-xlim[1])/n[1]*h.max)
-  ylim = c(ylim[1]-(ylim[2]-ylim[1])/n[2]*h.max,ylim[2]+(ylim[2]-ylim[1])/n[2]*h.max)
-  g = griddata(cbind(x,y),w=w,n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))
-  map = g$field
+  # determine size of embedding frame
+  h = max(1,round(min(c(nx,ny))/10)) # [pixels] thickness of additional margin
+  xlim.frame = c(xlim[1]-dpixel*h,xlim[2]+dpixel*h)
+  ylim.frame = c(ylim[1]-dpixel*h,ylim[2]+dpixel*h)
 
-  if (is.null(w)) {
-    count = map
-  } else {
-    count = griddata(cbind(x,y),n=n+2*h.max,min=c(xlim[1],ylim[1]),max=c(xlim[2],ylim[2]))$field
-    if (smoothw) {
-      count = map/sum(map)*sum(count)
+  # select points inside embedding frame
+  s = which(x[,1]>=xlim.frame[1] & x[,1]<=xlim.frame[2] & x[,2]>=ylim.frame[1] & x[,2]<=ylim.frame[2])
+  if (length(s)>=1) {
+
+    x = rbind(x[s,])
+    if (!is.null(w)) w = w[s]
+
+    if (algorithm=='fast') {
+
+      # make smoothing kernels
+      d = 0.1 # step between standard deviations in pixels
+      n.sd = 3 # number of standard deviations considered
+      n.pix = nx*ny
+      sd.max = max(2*d,min(min(c(nx,ny))/10,sigma.max))
+      sd = seq(0,sd.max,by=d) # list of standard deviations
+      n.kernels = length(sd)
+      kernel = {}
+      kernel[[1]] = matrix(c(0,0,0,0,1,0,0,0,0),3,3)
+      kern.index = rep(1,n.kernels)
+      kern.length = rep(9,n.kernels)
+
+      for (i in seq(2,n.kernels)) {
+        kern.index[i] = kern.index[i-1]+kern.length[i-1]
+        hh = ceiling(sd[i]*n.sd)
+        if (hh>h) {
+          n.kernels = i-1
+          break
+        }
+        n.side = 2*hh+1 # number of pixels per side
+        mesh = pracma::meshgrid(seq(-hh,hh))
+        kernel[[i]] = exp(-(mesh$X^2+mesh$Y^2)/2/sd[i]^2)
+        kernel[[i]] = kernel[[i]]/sum(kernel[[i]])
+        kern.length[i] = n.side^2
+      }
+
+      # grid data onto embedding frame
+      count = griddata(x[,1:2],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
+      if (is.null(w)) {
+        map = count
+      } else {
+        map = griddata(x[,1:2],w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
+      }
+
+      field = kde2stampxx(map, count, h, smoothing*0.4, sigma.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
+
+    } else if (algorithm=='nn') {
+
+      if (!requireNamespace("EBImage", quietly=TRUE)) {
+        stop('Package EBImage is needed to run kde2 in with nn algorithm.')
+      }
+
+      # parameters fixed by developer
+      npoints = length(s)
+      smoothing.scaling = 1.6 # overall linear smoothing factor
+      sub = ifelse(npoints<5e3,2,1) # stepping of smoothing kernel in factors of 2^(1/sub)
+      k = max(2,round(log10(npoints+1))) # number of nearest neighbors the smaller the faster
+
+      # determine smoothing kernel size for each particle (in bins)
+      nn = FNN::knn.dist(x,k=k)[,k]
+      nn = nn/dpixel # mean distance to the k nearest neighbors in pixel
+      idist = round(log2(nn)*sub)
+      idist.min = log2(max(0.1,sigma.min)/smoothing/smoothing.scaling)*sub
+      idist.max = log2(min(min(c(nx,ny))/10,sigma.max)/smoothing/smoothing.scaling)*sub
+      idist = pmax(pmin(idist,idist.max),idist.min)
+
+      # smooth particles from smallest to largest kernel
+      field = array(0,c(nx,ny)+2*h)
+      for (i in unique(idist)) {
+        sel = which(idist==i)
+        g = griddata(rbind(x[sel,1:2]),w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')
+        sigma = 2^(i/sub)*smoothing*smoothing.scaling
+        field = field+EBImage::gblur(g$field,sigma)
+      }
+      field[field<0] = 0 # remove very small negatives due to floating point inaccuracies of gblur
+
+    } else {
+
+      stop('unknown algorithm')
+
     }
+
+    # reflect boundaries if desired
+    if (any(reflect=='left')) field[(h+1):(2*h),] = field[(h+1):(2*h),]+field[h:1,]
+    if (any(reflect=='right')) field[(h+nx):(1+nx),] = field[(h+nx):(1+nx),]+field[(h+nx+1):(2*h+nx),]
+    if (any(reflect=='bottom')) field[,(h+1):(2*h)] = field[,(h+1):(2*h)]+field[,h:1]
+    if (any(reflect=='top')) field[,(h+ny):(1+ny)] = field[,(h+ny):(1+ny)]+field[,(h+ny+1):(2*h+ny)]
+
+    # cut margin of embedding frame
+    field = field[h+(1:nx),h+(1:ny)]
+
+    # normalised field
+    if (probability) field = field/(sum(field)*dpixel^2)
+
+  } else {
+
+    field = array(0,c(nx,ny))
+
   }
 
-  g$d = kde2stampxx(map, count, h.max, s, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h.max+(1:(n[1]+2*h.max)),h.max+(1:(n[2]+2*h.max))]
-
-  # make boundaries
-  if (any(reflect=='left')) g$d[(h.max+1):(2*h.max),] = g$d[(h.max+1):(2*h.max),]+g$d[h.max:1,]
-  if (any(reflect=='right')) g$d[(h.max+n[1]):(1+n[1]),] = g$d[(h.max+n[1]):(1+n[1]),]+g$d[(h.max+n[1]+1):(2*h.max+n[1]),]
-  if (any(reflect=='bottom')) g$d[,(h.max+1):(2*h.max)] = g$d[,(h.max+1):(2*h.max)]+g$d[,h.max:1]
-  if (any(reflect=='top')) g$d[,(h.max+n[2]):(1+n[2])] = g$d[,(h.max+n[2]):(1+n[2])]+g$d[,(h.max+n[2]+1):(2*h.max+n[2])]
-  g$d = g$d[h.max+(1:n[1]),h.max+(1:n[2])]
-
-  # crop grid
-  g$x = g$grid[[1]]$mid[h.max+(1:n[1])]
-  g$y = g$grid[[2]]$mid[h.max+(1:n[2])]
-  g$xbreak = g$grid[[1]]$breaks[h.max+(1:(n[1]+1))]
-  g$ybreak = g$grid[[2]]$breaks[h.max+(1:(n[2]+1))]
-  g$n = g$counts[h.max+(1:n[1]),h.max+(1:n[2])]
-  if (!is.null(w)) g$m = g$mass[h.max+(1:n[1]),h.max+(1:n[2])]
-  g$xlim = range(g$xbreak)
-  g$ylim = range(g$ybreak)
-
-  # remove griddata outputs
-  g$grid = NULL
-  g$field = NULL
-  g$dV = NULL
-
-  # return result
-  return(g)
+  # make output data
+  out = list(field=field,
+             x=midseq(xlim[1],xlim[2],nx),
+             y=midseq(ylim[1],ylim[2],ny),
+             xbreak=seq(xlim[1],xlim[2],nx+1),
+             ybreak=seq(ylim[1],ylim[2],ny+1),
+             dpixel=dpixel)
 
 }
