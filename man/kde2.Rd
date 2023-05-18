@@ -38,7 +38,7 @@ kde2(
 
 \item{sigma.max}{optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels}
 
-\item{reflect}{vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected}
+\item{reflect}{vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected to avoid probability density leaking outside the window}
 
 \item{algorithm}{character string: "fast" is a purely 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number (or mass, if weights given) of objects in each pixel. "nn" is a more sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually.}
 
@@ -57,31 +57,40 @@ Returns a list of items
 Produces a 2D kernel density estimation on a 2D grid from a D-dimensional (D>=2) point set
 }
 \examples{
-# make a mock 3D point set of three different components (1D arc, 2D shell, 3D normal distr)
+# make a mock sample of n d-dimensional points from
+# three different components (1D line, 2D square, d-D normal distr)
+d = 3 # number of dimensions of mock point set; try to choose different values 2, 3, 4, ...
 n = 1e4 # number of particles per component
 set.seed(1)
-x = rbind(array(rnorm(3*n),c(n,3)),
-          runif3(n,r=1,azimuth=c(1,3),polarangle = c(1,2)),
-          cbind(runif2(n,r=1.5,azimuth = c(pi,2*pi)),0))
+x = rbind(cbind(array(rep(runif(n,-1,1),2),c(n,2)),array(0,c(n,d-2))),
+          cbind(array(runif(2*n),c(n,2)),array(0,c(n,d-2))),
+          array(rnorm(d*n),c(n,d)))
 
-# convert 3D point set into a projected 2D density field using 4 different methods
+# grid total projected probability density
 npixels = 500 # number of pixels along a grid side
-f1 = griddata(x[,1:2], n=npixels, min=c(-2,-2), max=c(2,2), type='probability')$field
-if (requireNamespace("EBImage")) {f2=EBImage::gblur(f1,npixels*0.005)} else {f2=rbind(0)}
-f3 = kde2(x, n=npixels, xlim=c(-2,2), ylim=c(-2,2), algorithm='fast',probability=TRUE)$field
-f4 = kde2(x, n=npixels, xlim=c(-2,2), ylim=c(-2,2), algorithm='nn', probability=TRUE)$field
+q = midseq(-3,3,npixels)
+f1 = outer(dnorm(q),dnorm(q),'*')/3+outer(dunif(q),dunif(q),'*')/3
+q = seq(round(npixels/3),round(npixels*2/3))
+f1[q+npixels*(q-1)] = f1[q+npixels*(q-1)]+(npixels/6)^2/length(q)/3
 
-# plot the 2D fields of the 4 methods
+# grid point sample for display
+f2 = griddata(x[,1:2], n=npixels, min=c(-3,-3), max=c(3,3), type='probability')$field
+
+# recover 2D projected pdf from 3D point sample using two different methods
+f3 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='fast',probability=TRUE)$field
+f4 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='nn', probability=TRUE)$field
+
+# plot the 2D fields
 img = function(f,x,y,title) {
-  graphics::rasterImage(rasterflip(lim(f*0.4)^0.3),x,y,x+1,y+1)
+  graphics::rasterImage(rasterflip(lim(f)^0.3),x,y,x+0.99,y+0.99)
   graphics::text(x+0.05,y+0.9,title,col='orange',pos=4)
 }
 graphics::par(mar=rep(0.1,4))
-nplot(c(0,2.1),c(0,2.1),asp=1)
-img(f1,0,1,'Simple gridding')
-img(f2,1,1,'Gaussian blur')
-img(f3,0,0,'Fast KDE approximation')
-img(f4,1,0,'Advanced nn KDE')
+nplot(c(0,2),c(0,2),asp=1)
+img(f1,0,1,'Input pdf')
+img(f2,1,1,'Random sample')
+img(f3,0,0,'Recovered pdf (fast)')
+img(f4,1,0,'Recovered pdf (nn)')
 
 }
 \seealso{
