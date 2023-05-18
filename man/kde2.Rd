@@ -56,6 +56,34 @@ Returns a list of items
 \description{
 Produces a 2D kernel density estimation on a 2D grid from a D-dimensional (D>=2) point set
 }
+\examples{
+# make a mock 3D point set of three different components (1D arc, 2D shell, 3D normal distr)
+n = 1e4 # number of particles per component
+set.seed(1)
+x = rbind(array(rnorm(3*n),c(n,3)),
+          runif3(n,r=1,azimuth=c(1,3),polarangle = c(1,2)),
+          cbind(runif2(n,r=1.5,azimuth = c(pi,2*pi)),0))
+
+# convert 3D point set into a projected 2D density field using 4 different methods
+npixels = 500 # number of pixels along a grid side
+f1 = griddata(x[,1:2], n=npixels, min=c(-2,-2), max=c(2,2), type='probability')$field
+if (requireNamespace("EBImage")) {f2=EBImage::gblur(f1,npixels*0.005)} else {f2=rbind(0)}
+f3 = kde2(x, n=npixels, xlim=c(-2,2), ylim=c(-2,2), algorithm='fast',probability=TRUE)$field
+f4 = kde2(x, n=npixels, xlim=c(-2,2), ylim=c(-2,2), algorithm='nn', probability=TRUE)$field
+
+# plot the 2D fields of the 4 methods
+img = function(f,x,y,title) {
+  graphics::rasterImage(rasterflip(lim(f*0.4)^0.3),x,y,x+1,y+1)
+  graphics::text(x+0.05,y+0.9,title,col='orange',pos=4)
+}
+graphics::par(mar=rep(0.1,4))
+nplot(c(0,2.1),c(0,2.1),asp=1)
+img(f1,0,1,'Simple gridding')
+img(f2,1,1,'Gaussian blur')
+img(f3,0,0,'Fast KDE approximation')
+img(f4,1,0,'Advanced nn KDE')
+
+}
 \seealso{
 \code{\link{griddata}}
 }

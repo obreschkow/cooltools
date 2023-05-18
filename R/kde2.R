@@ -3,6 +3,7 @@
 #' @importFrom pracma meshgrid
 #' @importFrom Rcpp sourceCpp
 #' @importFrom FNN knn.dist
+#' @importFrom graphics rasterImage text par
 #'
 #' @description Produces a 2D kernel density estimation on a 2D grid from a D-dimensional (D>=2) point set
 #'
@@ -30,6 +31,33 @@
 #' @author Danail Obreschkow
 #'
 #' @seealso \code{\link{griddata}}
+#'
+#' @examples
+#' # make a mock 3D point set of three different components (1D arc, 2D shell, 3D normal distr)
+#' n = 1e4 # number of particles per component
+#' set.seed(1)
+#' x = rbind(array(rnorm(3*n),c(n,3)),
+#'           runif3(n,r=1,azimuth=c(1,3),polarangle = c(1,2)),
+#'           cbind(runif2(n,r=1.5,azimuth = c(pi,2*pi)),0))
+#'
+#' # convert 3D point set into a projected 2D density field using 4 different methods
+#' npixels = 500 # number of pixels along a grid side
+#' f1 = griddata(x[,1:2], n=npixels, min=c(-2,-2), max=c(2,2), type='probability')$field
+#' if (requireNamespace("EBImage")) {f2=EBImage::gblur(f1,npixels*0.005)} else {f2=rbind(0)}
+#' f3 = kde2(x, n=npixels, xlim=c(-2,2), ylim=c(-2,2), algorithm='fast',probability=TRUE)$field
+#' f4 = kde2(x, n=npixels, xlim=c(-2,2), ylim=c(-2,2), algorithm='nn', probability=TRUE)$field
+#'
+#' # plot the 2D fields of the 4 methods
+#' img = function(f,x,y,title) {
+#'   graphics::rasterImage(rasterflip(lim(f*0.4)^0.3),x,y,x+1,y+1)
+#'   graphics::text(x+0.05,y+0.9,title,col='orange',pos=4)
+#' }
+#' graphics::par(mar=rep(0.1,4))
+#' nplot(c(0,2.1),c(0,2.1),asp=1)
+#' img(f1,0,1,'Simple gridding')
+#' img(f2,1,1,'Gaussian blur')
+#' img(f3,0,0,'Fast KDE approximation')
+#' img(f4,1,0,'Advanced nn KDE')
 #'
 #' @export
 #'
@@ -63,9 +91,12 @@ kde2 = function(x, w=NULL, s=1, nx=300, xlim=NULL, ylim=NULL,
 
     if (algorithm=='fast') {
 
-      # make smoothing kernels
+      # parameters fixed by developer
+      smoothing.scaling = 0.3 # overall linear smoothing factor
       d = 0.1 # step between standard deviations in pixels
       n.sd = 3 # number of standard deviations considered
+
+      # make smoothing kernels
       n.pix = nx*ny
       sd.max = max(2*d,min(min(c(nx,ny))/10,sigma.max))
       sd = seq(0,sd.max,by=d) # list of standard deviations
@@ -97,7 +128,7 @@ kde2 = function(x, w=NULL, s=1, nx=300, xlim=NULL, ylim=NULL,
         map = griddata(x[,1:2],w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
       }
 
-      field = kde2stampxx(map, count, h, smoothing*0.4, sigma.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
+      field = kde2stampxx(map, count, h, smoothing*smoothing.scaling, sigma.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
 
     } else if (algorithm=='nn') {
 
@@ -107,7 +138,7 @@ kde2 = function(x, w=NULL, s=1, nx=300, xlim=NULL, ylim=NULL,
 
       # parameters fixed by developer
       npoints = length(s)
-      smoothing.scaling = 1.6 # overall linear smoothing factor
+      smoothing.scaling = 1.2 # overall linear smoothing factor
       sub = ifelse(npoints<5e3,2,1) # stepping of smoothing kernel in factors of 2^(1/sub)
       k = max(2,round(log10(npoints+1))) # number of nearest neighbors the smaller the faster
 
