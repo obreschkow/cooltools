@@ -9,7 +9,6 @@
 #'
 #' @param x N-by-D vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
 #' @param w optional N-element vector with weights
-#' @param s characteristic smoothing length
 #' @param nx integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.
 #' @param xlim 2-element vector specifying the x-range
 #' @param ylim 2-element vector specifying the y-range; if needed, this range is slightly adjusted to allow for an integer number of pixels.
@@ -70,7 +69,7 @@
 #'
 #' @export
 #'
-kde2 = function(x, w=NULL, s=1, nx=300, xlim=NULL, ylim=NULL,
+kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
                 smoothing = 1, sigma.min=0, sigma.max=Inf,
                 reflect='', algorithm='nn', probability=FALSE) {
 
@@ -131,11 +130,7 @@ kde2 = function(x, w=NULL, s=1, nx=300, xlim=NULL, ylim=NULL,
 
       # grid data onto embedding frame
       count = griddata(x[,1:2],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
-      if (is.null(w)) {
-        map = count
-      } else {
-        map = griddata(x[,1:2],w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
-      }
+      map = griddata(x[,1:2],w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')$field
 
       field = kde2stampxx(map, count, h, smoothing*smoothing.scaling, sigma.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
 

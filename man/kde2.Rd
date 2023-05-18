@@ -7,7 +7,6 @@
 kde2(
   x,
   w = NULL,
-  s = 1,
   nx = 300,
   xlim = NULL,
   ylim = NULL,
@@ -23,8 +22,6 @@ kde2(
 \item{x}{N-by-D vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates}
 
 \item{w}{optional N-element vector with weights}
-
-\item{s}{characteristic smoothing length}
 
 \item{nx}{integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.}
 
