@@ -75,9 +75,14 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
 
   # handle inputs
   if (is.null(dim(x)) || length(dim(x))!=2 || dim(x)[2]<2) stop('x must be a vector or a N-by-D matrix with D>=2.')
-  if (is.null(xlim)) xlim=range(x[,1])
-  if (is.null(ylim)) ylim=range(x[,2])
   npoints.all = dim(x)[1]
+  if (npoints.all>1) {
+    if (is.null(xlim)) xlim=range(x[,1])
+    if (is.null(ylim)) ylim=range(x[,2])
+  } else {
+    if (is.null(xlim)) xlim=range(x[,1])+c(-0.5,0.5)
+    if (is.null(ylim)) ylim=range(x[,2])+c(-0.5,0.5)
+  }
 
   # make grid spacing and tweak y-range to contain an integer number of pixels
   dpixel = diff(xlim)/nx
@@ -129,8 +134,8 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
       }
 
       # grid data onto embedding frame
-      count = griddata(x[,1:2],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
-      map = griddata(x[,1:2],w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')$field
+      count = griddata(rbind(x[,1:2]),n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
+      map = griddata(rbind(x[,1:2]),w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')$field
 
       field = kde2stampxx(map, count, h, smoothing*smoothing.scaling, sigma.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
 
@@ -144,10 +149,14 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
       npoints = length(s)
       smoothing.scaling = ifelse(dim(x)[2]==2,3.5,1.6) # overall linear smoothing factor
       sub = ifelse(npoints<5e3,2,1) # stepping of smoothing kernel in factors of 2^(1/sub)
-      k = max(2,round(log10(npoints+1))) # number of nearest neighbors the smaller the faster
+      k = min(dim(x)[1]-1,max(2,round(log10(npoints+1)))) # number of nearest neighbors the smaller the faster
 
       # determine smoothing kernel size for each particle (in bins)
-      nn = FNN::knn.dist(x,k=k)[,k]
+      if (k<1) {
+        nn = dpixel
+      } else {
+        nn = FNN::knn.dist(x,k=k)[,k]
+      }
       nn = nn/dpixel # mean distance to the k nearest neighbors in pixel
       idist = round(log2(nn)*sub)
       idist.min = log2(max(0.1,sigma.min)/smoothing/smoothing.scaling)*sub
@@ -158,7 +167,7 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
       field = array(0,c(nx,ny)+2*h)
       for (i in unique(idist)) {
         sel = which(idist==i)
-        g = griddata(rbind(x[sel,1:2]),w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')
+        g = griddata(rbind(x[sel,1:2]),w=w[sel],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')
         sigma = 2^(i/sub)*smoothing*smoothing.scaling
         field = field+EBImage::gblur(g$field,sigma)
       }
@@ -195,5 +204,6 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
              xbreak=seq(xlim[1],xlim[2],nx+1),
              ybreak=seq(ylim[1],ylim[2],ny+1),
              dpixel=dpixel)
+  return(out)
 
 }
