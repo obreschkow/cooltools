@@ -81,6 +81,14 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
   # handle inputs
   if (is.null(dim(x)) || length(dim(x))!=2 || dim(x)[2]<2) stop('x must be a vector or a N-by-D matrix with D>=2.')
   npoints.all = dim(x)[1]
+  if (!is.null(sigma)) {
+    if (length(sigma)==1) rep(sigma,npoints)
+    if (length(sigma)!=npoints) stop('sigma must be an vector with the same number of elements as rows in x')
+  }
+  if (!is.null(w)) {
+    if (length(w)==1) rep(w,npoints)
+    if (length(w)!=npoints) stop('w must be an vector with the same number of elements as rows in x')
+  }
   if (npoints.all>1) {
     if (is.null(xlim)) xlim=range(x[,1])
     if (is.null(ylim)) ylim=range(x[,2])
