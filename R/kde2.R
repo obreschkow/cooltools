@@ -12,12 +12,18 @@
 #' @param nx integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.
 #' @param xlim 2-element vector specifying the x-range
 #' @param ylim 2-element vector specifying the y-range; if needed, this range is slightly adjusted to allow for an integer number of pixels.
-#' @param smoothing positive linear smoothing factor, the larger, the more smoothed the Kernel estimation turns out.
-#' @param sigma.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in units of pixels
-#' @param sigma.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in units of pixels
+#' @param smoothing positive linear smoothing factor; the larger, the smoother the density field
+#' @param sigma optional N-vector, specifying the blurring of each pixel individually in length units of x; only used if algorithm=4.
+#' @param sigma.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in length units of x
+#' @param sigma.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in length units of x
 #' @param reflect vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected to avoid probability density leaking outside the window
-#' @param algorithm character string: "fast" is a purely 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number (or mass, if weights given) of objects in each pixel. "nn" is a more sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually.
-#' @param probability logical flag. If TRUE, the output field is normalised such that sum(field)dpixel^2=1. If FALSE (default), the field is such that sum(field)dpixel^2 equals the effective number of particles (or effective mass, if weights are given) in the range specified by xlim and ylim, including particle fractions that have been smoothed into the field and excluding particle fractions that have been smoothed out of it.
+#' @param algorithm integer value or character string specifying the smoothing altorithm:\cr
+#' \code{basic (0):} basic nearest-neighbor gridding algorithm without smoothing
+#' \code{blur (1):} simple Gaussian blur of gridded density field
+#' \code{kdefast (2):} 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number of objects in each pixel
+#' \code{kdennnn  (3):} sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually
+#' \code{manual (4):} smooths each data point individually using a Gaussian Kernel with point-dependent standard deviations given in the optional vector \code{sigma}\cr\cr
+#' @param probability logical flag. If TRUE, the output field is normalized such that sum(field)dpixel^2=1. If FALSE (default), the field is such that sum(field)dpixel^2 equals the effective number of particles (or effective mass, if weights are given) in the range specified by xlim and ylim, including particle fractions that have been smoothed into the field and excluding particle fractions that have been smoothed out of it.
 #'
 #' @return Returns a list of items
 #' \item{field}{2D array of smoothed density field.}
@@ -26,6 +32,7 @@
 #' \item{xbreak}{(nx+1)-element vector of cell-edge x-coordinates.}
 #' \item{ybreak}{(ny+1)-element vector of cell-edge y-coordinates.}
 #' \item{dpixel}{grid spacing along x-coordinate and y-coordinate.}
+#' \item{algorithm}{name of algorithm in use.}
 #'
 #' @author Danail Obreschkow
 #'
@@ -48,12 +55,10 @@
 #' q = seq(round(npixels/3),round(npixels*2/3))
 #' f1[q+npixels*(q-1)] = f1[q+npixels*(q-1)]+(npixels/6)^2/length(q)/3
 #'
-#' # grid point sample for display
-#' f2 = griddata(x[,1:2], n=npixels, min=c(-3,-3), max=c(3,3), type='probability')$field
-#'
-#' # recover 2D projected pdf from 3D point sample using two different methods
-#' f3 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='fast',probability=TRUE)$field
-#' f4 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='nn', probability=TRUE)$field
+#' # recover 2D projected pdf from 3D point sample using different methods
+#' f2 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='basic', probability=TRUE)$field
+#' f3 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='kdefast', probability=TRUE)$field
+#' f4 = kde2(x, n=npixels, xlim=c(-3,3), ylim=c(-3,3), algorithm='kdenn', probability=TRUE)$field
 #'
 #' # plot the 2D fields
 #' img = function(f,x,y,title) {
@@ -63,15 +68,15 @@
 #' graphics::par(mar=rep(0.1,4))
 #' nplot(c(0,2),c(0,2),asp=1)
 #' img(f1,0,1,'Input pdf')
-#' img(f2,1,1,'Random sample')
-#' img(f3,0,0,'Recovered pdf (fast)')
-#' img(f4,1,0,'Recovered pdf (nn)')
+#' img(f2,1,1,'Random sample ("basic")')
+#' img(f3,0,0,'Recovered pdf ("kdefast")')
+#' img(f4,1,0,'Recovered pdf ("kdenn")')
 #'
 #' @export
 #'
 kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
-                smoothing = 1, sigma.min=0, sigma.max=Inf,
-                reflect='', algorithm='nn', probability=FALSE) {
+                smoothing = 1, sigma=NULL, sigma.min=0, sigma.max=Inf,
+                reflect='', algorithm='kdenn', probability=FALSE) {
 
   # handle inputs
   if (is.null(dim(x)) || length(dim(x))!=2 || dim(x)[2]<2) stop('x must be a vector or a N-by-D matrix with D>=2.')
@@ -83,6 +88,7 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
     if (is.null(xlim)) xlim=range(x[,1])+c(-0.5,0.5)
     if (is.null(ylim)) ylim=range(x[,2])+c(-0.5,0.5)
   }
+  if (is.numeric(algorithm)) algorithm=c('basic','blur','kdefast','kdenn','manual')[algorithm+1]
 
   # make grid spacing and tweak y-range to contain an integer number of pixels
   dpixel = diff(xlim)/nx
@@ -97,12 +103,30 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
 
   # select points inside embedding frame
   s = which(x[,1]>=xlim.frame[1] & x[,1]<=xlim.frame[2] & x[,2]>=ylim.frame[1] & x[,2]<=ylim.frame[2])
-  if (length(s)>=1) {
+  npoints = length(s)
+
+  if (npoints>=1) {
 
     x = rbind(x[s,])
     if (!is.null(w)) w = w[s]
+    if (!is.null(sigma)) sigma = sigma[s]
 
-    if (algorithm=='fast') {
+    # determine allowed smoothing range in pixel
+    sd.min = max(0,sigma.min/dpixel) # [pixel]
+    sd.max = min(min(nx,ny)/10,sigma.max/dpixel) # [pixel]
+
+    if (algorithm%in%c('basic','blur')) {
+
+      field = griddata(rbind(x[,1:2]),w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')$field
+
+      if (algorithm=='blur' & smoothing>0) {
+        if (!requireNamespace("EBImage", quietly=TRUE)) {
+          stop('Package EBImage is needed to run kde2 in with blur algorithm.')
+        }
+        field = EBImage::gblur(field,lim(smoothing*sqrt(nx*ny/npoints),sd.min,sd.max))
+      }
+
+    } else if (algorithm=='kdefast') {
 
       # parameters fixed by developer
       smoothing.scaling = 0.4 # overall linear smoothing factor
@@ -137,47 +161,59 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
       count = griddata(rbind(x[,1:2]),n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='counts')$field
       map = griddata(rbind(x[,1:2]),w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')$field
 
-      field = kde2stampxx(map, count, h, smoothing*smoothing.scaling, sigma.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
+      field = kde2stampxx(map, count, h, smoothing*smoothing.scaling, sd.min, sd.max, d, n.kernels, unlist(kernel), kern.index, kern.length)[h+(1:(nx+2*h)),h+(1:(ny+2*h))]
 
-    } else if (algorithm=='nn') {
+    } else if (algorithm%in%c('kdenn','manual')) {
 
       if (!requireNamespace("EBImage", quietly=TRUE)) {
-        stop('Package EBImage is needed to run kde2 in with nn algorithm.')
+        stop('Package EBImage is needed to run kde2 in with kdenn or manual algorithm.')
       }
 
-      # parameters fixed by developer
-      npoints = length(s)
-      smoothing.scaling = ifelse(dim(x)[2]==2,3.5,1.6) # overall linear smoothing factor
       sub = ifelse(npoints<5e3,2,1) # stepping of smoothing kernel in factors of 2^(1/sub)
-      k = min(dim(x)[1]-1,max(2,round(log10(npoints+1)))) # number of nearest neighbors the smaller the faster
+      idist.min = round(sub*log2(max(0.1,sd.min)/smoothing))
+      idist.max = round(sub*log2(sd.max/smoothing))
 
-      # determine smoothing kernel size for each particle (in bins)
-      if (k<1) {
-        nn = dpixel
+      if (algorithm=='kdenn') {
+
+        # parameters fixed by developer
+        smoothing.scaling = ifelse(dim(x)[2]==2,3.5,1.6) # overall linear smoothing factor
+        k = min(npoints-1,max(2,round(log10(npoints+1)))) # number of nearest neighbors the smaller the faster
+
+        # determine smoothing kernel size for each particle (in bins)
+        if (k<1) {
+          nn = dpixel
+        } else {
+          nn = FNN::knn.dist(x,k=k)[,k]
+        }
+        nn = nn/dpixel # mean distance to the k nearest neighbors in pixel
+        idist = round(log2(nn*smoothing.scaling)*sub)
+        idist = lim(idist,idist.min,idist.max)
+
       } else {
-        nn = FNN::knn.dist(x,k=k)[,k]
+
+        if (is.null(sigma)) stop('sigma N-vector must be provided for manual algorithm')
+        idist = round(log2(sigma/dpixel)*sub)
+        idist = pmax(pmin(idist,idist.max),idist.min)
+
       }
-      nn = nn/dpixel # mean distance to the k nearest neighbors in pixel
-      idist = round(log2(nn)*sub)
-      idist.min = log2(max(0.1,sigma.min)/smoothing/smoothing.scaling)*sub
-      idist.max = log2(min(min(c(nx,ny))/10,sigma.max)/smoothing/smoothing.scaling)*sub
-      idist = pmax(pmin(idist,idist.max),idist.min)
 
       # smooth particles from smallest to largest kernel
       field = array(0,c(nx,ny)+2*h)
       for (i in unique(idist)) {
         sel = which(idist==i)
         g = griddata(rbind(x[sel,1:2]),w=w[sel],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')
-        sigma = 2^(i/sub)*smoothing*smoothing.scaling
+        sigma = 2^(i/sub)*smoothing
         field = field+EBImage::gblur(g$field,sigma)
       }
-      field[field<0] = 0 # remove very small negatives due to floating point inaccuracies of gblur
 
     } else {
 
       stop('unknown algorithm')
 
     }
+
+    # remove very small negatives due to floating point inaccuracies
+    field[field<0] = 0
 
     # reflect boundaries if desired
     if (any(reflect=='left')) field[(h+1):(2*h),] = field[(h+1):(2*h),]+field[h:1,]
@@ -203,7 +239,8 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
              y=midseq(ylim[1],ylim[2],ny),
              xbreak=seq(xlim[1],xlim[2],nx+1),
              ybreak=seq(ylim[1],ylim[2],ny+1),
-             dpixel=dpixel)
+             dpixel=dpixel,
+             algorithm=algorithm)
   return(out)
 
 }
