@@ -17,6 +17,17 @@ Returns a 3-by-3 symmetric matrix
 \description{
 Compute the tensor of second moments of a set of point masses
 }
+\examples{
+# Make a randomly oriented ellipsoid of semi-axes a=2.1, b=1.73, c=0.8
+x = t(t(fibonaccisphere(1e4))*c(2.1,1.73,0.8))
+x = x\%*\%rotation3(c(0.3,1.64,2.31))
+
+# Recover lengths of semi-axes from eigenvalues of second moment tensor
+M = moments(x,m=1/dim(x)[1])
+v = sqrt(3*eigen(M)$values)
+print(v)
+
+}
 \seealso{
 \code{\link{inertia}}, \code{\link{quadrupole}}
 }

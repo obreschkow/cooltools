@@ -11,7 +11,7 @@
 #'
 #' @seealso \code{\link{inertia}}, \code{\link{quadrupole}}
 #'
-#' @example
+#' @examples
 #' # Make a randomly oriented ellipsoid of semi-axes a=2.1, b=1.73, c=0.8
 #' x = t(t(fibonaccisphere(1e4))*c(2.1,1.73,0.8))
 #' x = x%*%rotation3(c(0.3,1.64,2.31))
@@ -22,7 +22,7 @@
 #' print(v)
 #'
 #' @export
-
+#'
 moments = function(x,m=1) {
 
   if (length(x)==3) x = array(x,c(1,3)) # to make sure that x is an array
