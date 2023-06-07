@@ -11,7 +11,7 @@ approxfun2(x, y, z, outside = NA)
 
 \item{y}{m-vector of y-coordinates; must be strictly monotonically increasing, but not necessarily equally spaced}
 
-\item{z}{n-by-m matrix of dimension containing the known function values at the (x,y)-coordinates}
+\item{z}{n-by-m matrix containing the known function values at the (x,y)-coordinates}
 
 \item{outside}{value of the approximation function outside the grid (default is NA)}
 }

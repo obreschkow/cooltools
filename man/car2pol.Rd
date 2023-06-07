@@ -7,10 +7,10 @@
 car2pol(x)
 }
 \arguments{
-\item{x}{2/3-element or n-by-2/3 matrix representing the Cartesian components (x,y)/(x,y,z)  of n two/three-dimensional vectors}
+\item{x}{2/3-vector or n-by-2/3 matrix representing the Cartesian components x,y,(z) of n two/three-dimensional vectors}
 }
 \value{
-Returns a 2/3-element vector or a n-by-2/3 element matrix representing the polar/cylindrical coordinates (r,phi)/(r,phi,z), where phi=0...2*pi is the azimuth measured positively from the x-axis.
+Returns a 2/3-vector or a n-by-2/3 matrix representing the polar/cylindrical coordinates r,phi,(z), where phi=0...2*pi is the azimuth measured positively from the x-axis.
 }
 \description{
 Convert 2D/3D Cartesian to polar/cylindrical coordinates

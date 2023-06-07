@@ -7,10 +7,10 @@
 car2sph(x)
 }
 \arguments{
-\item{x}{3-element or n-by-3 matrix representing the Cartesian components (x,y,z)  of n three-dimensional vectors}
+\item{x}{3-vector or n-by-3 matrix representing the Cartesian components (x,y,z)  of n three-dimensional vectors}
 }
 \value{
-Returns a 3-element vector or a n-by-3 element matrix representing the spherical coordinates (r,theta,phi), where theta=0...pi is the polar angle measured from the north pole and phi=0...2*pi is the azimuth measured positively from the x-axis (ISO 80000-2:2019 physics convention).
+Returns a 3-vector or a n-by-3 element matrix representing the spherical coordinates (r,theta,phi), where theta=0...pi is the polar angle measured from the north pole and phi=0...2*pi is the azimuth measured positively from the x-axis (ISO 80000-2:2019 physics convention).
 }
 \description{
 Convert 3D Cartesian to spherical coordinates
