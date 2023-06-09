@@ -9,6 +9,7 @@ makeframe(
   frame.index,
   width = 1080,
   height = 720,
+  cex = 1,
   oversampling = 1,
   pngfile = NULL
 )
@@ -18,11 +19,13 @@ makeframe(
 
 \item{frame.index}{list of frame indices 'x' to be included in the movie}
 
-\item{width}{number of pixels along the horizontal axis}
+\item{width}{integer number of pixels along the horizontal axis}
 
-\item{height}{number of pixels along the vertical axis}
+\item{height}{integer number of pixels along the vertical axis}
 
-\item{oversampling}{integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.}
+\item{cex}{number defining the overall scaling of line widths, font sizes, etc.}
+
+\item{oversampling}{integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with (width*oversampling)-by-(height*oversampling) pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly.}
 
 \item{pngfile}{optional path+filename of output file to save the image. R must have write access to this file.}
 }

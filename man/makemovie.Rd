@@ -18,6 +18,7 @@ makemovie(
   ffmpeg.cmd = "ffmpeg",
   ffmpeg.opt = "-vcodec libx264 -crf 18 -pix_fmt yuv420p",
   manual = FALSE,
+  cex = 1,
   oversampling = 1,
   first.index = 1,
   last.index = length(frame.index)
@@ -32,9 +33,9 @@ makemovie(
 
 \item{output.filename}{movie filename without path. This filename should end on the extension '.mp4'.}
 
-\item{width}{number of pixels along the horizontal axis}
+\item{width}{integer number of pixels along the horizontal axis}
 
-\item{height}{number of pixels along the vertical axis}
+\item{height}{integer number of pixels along the vertical axis}
 
 \item{fps}{number of frames per second}
 
@@ -50,7 +51,9 @@ makemovie(
 
 \item{manual}{logical flag; if true, ffmpeg is not called from within the code and the frames are never deleted. The suggested linux command line is returned as output.}
 
-\item{oversampling}{integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.}
+\item{cex}{number defining the overall scaling of line widths, font sizes, etc.}
+
+\item{oversampling}{integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with (width*oversampling)-by-(height*oversampling) pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly.}
 
 \item{first.index}{integer specifying the first index of the vector frame.index to consider. Choosing a value larger than the default (1) can be used to continue a previously interrupted call of makemovie and/or to call makemovie from different R sessions in parallel.}
 

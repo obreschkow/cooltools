@@ -9,9 +9,10 @@
 #'
 #' @param frame.draw function that plots an individual frame. This function must have exactly one  argument 'x', which can be integer (e.g. a simple frame index) or real (e.g. a time).
 #' @param frame.index list of frame indices 'x' to be included in the movie
-#' @param width number of pixels along the horizontal axis
-#' @param height number of pixels along the vertical axis
-#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.
+#' @param width integer number of pixels along the horizontal axis
+#' @param height integer number of pixels along the vertical axis
+#' @param cex number defining the overall scaling of line widths, font sizes, etc.
+#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with (width*oversampling)-by-(height*oversampling) pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly.
 #' @param pngfile optional path+filename of output file to save the image. R must have write access to this file.
 #'
 #' @author Danail Obreschkow
@@ -42,7 +43,7 @@
 #'
 #' @export
 
-makeframe = function(frame.draw,frame.index,width=1080,height=720,oversampling=1,pngfile=NULL) {
+makeframe = function(frame.draw,frame.index,width=1080,height=720,cex=1,oversampling=1,pngfile=NULL) {
 
   # safe use of par()
   oldpar = par(no.readonly = TRUE)
@@ -66,7 +67,7 @@ makeframe = function(frame.draw,frame.index,width=1080,height=720,oversampling=1
   }
 
   # write frames
-  grDevices::png(fn,width=width*oversampling,height=height*oversampling)
+  grDevices::png(fn,width=width*oversampling,height=height*oversampling,res=0.17*sqrt(width*height)*oversampling*cex)
   frame.draw(frame.index)
   grDevices::dev.off()
 

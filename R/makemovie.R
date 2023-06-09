@@ -11,9 +11,10 @@
 #' @param frame.index list of frame indices 'x' to be included in the movie
 #' @param output.path character specifying the directory, where the movie and temporary frames are saved
 #' @param output.filename movie filename without path. This filename should end on the extension '.mp4'.
-#' @param width number of pixels along the horizontal axis
-#' @param height number of pixels along the vertical axis
-#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with width*overampling-by-height*oversampling pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly. Importantly, line widths and text sizes have to be scaled by the same oversampling factor inside the provided frame.draw argument.
+#' @param width integer number of pixels along the horizontal axis
+#' @param height integer number of pixels along the vertical axis
+#' @param cex number defining the overall scaling of line widths, font sizes, etc.
+#' @param oversampling integer specifying the oversampling factor along both dimensions. If larger than 1, frames are plotted with (width*oversampling)-by-(height*oversampling) pixels and then resized back to width-by-height. This can be used to make line objects and text move more smoothly.
 #' @param fps number of frames per second
 #' @param keep.frames logical flag specifying whether the temporary directory with the individual frame files should be kept. If \code{manual} is set to \code{TRUE}, the frames are always kept.
 #' @param quiet logical flag; if true, all console outputs produced by 'ffmpeg' are suppressed
@@ -59,6 +60,7 @@ makemovie = function(frame.draw,frame.index,
                      ffmpeg.cmd='ffmpeg',
                      ffmpeg.opt='-vcodec libx264 -crf 18 -pix_fmt yuv420p',
                      manual=FALSE,
+                     cex=1,
                      oversampling=1,
                      first.index=1,
                      last.index=length(frame.index)) {
@@ -92,7 +94,7 @@ makemovie = function(frame.draw,frame.index,
     cat(sprintf('Write frame %d/%d.',i,nframes))
     pracma::tic()
     fn = file.path(frame.path,sprintf('frame_%0.8d.png',i))
-    grDevices::png(fn,width=width*oversampling,height=height*oversampling)
+    grDevices::png(fn,width=width*oversampling,height=height*oversampling,res=0.17*sqrt(width*height)*oversampling*cex)
     frame.draw(frame.index[i])
     grDevices::dev.off()
     if (oversampling>1) {
