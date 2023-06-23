@@ -54,6 +54,12 @@ bindata = function(x, y, bins=20, method='regular', xlim=NULL) {
   y = as.vector(y)
   if (length(x)!=length(y)) stop('x and y must be vectors of the same length.')
 
+  # sort data
+  s = sort.int(x,index.return = T)
+  x = s$x
+  y = y[s$ix]
+  s = NULL
+
   # make limits
   if (method=='custom' & !is.null(xlim)) stop('xlim must not be specified for method "custom".')
   if (is.null(xlim)) xlim=range(x)
@@ -84,14 +90,19 @@ bindata = function(x, y, bins=20, method='regular', xlim=NULL) {
   bin$dx = bin$xright-bin$xleft
 
   # make bin statistics
-  bin$count = bin$x = bin$y = bin$xmedian = bin$ymedian = bin$yerr = bin$ysd = bin$y16 = bin$y84 = rep(NA,bin$n)
-  for (i in seq(bin$n)) {
-    if (i<bin$n) {
-      sel = x>=bin$xleft[i] & x<bin$xright[i]
-    } else {
-      sel = x>=bin$xleft[i] & x<=bin$xright[i]
-    }
-    bin$count[i] = sum(sel)
+  index = cut(x,xedges,labels=FALSE,include.lowest=TRUE)
+  tb = table(index)
+  indexlist = as.numeric(names(tb))
+  nindex = as.numeric(tb)
+  current.index = which(index==indexlist[1])[1]
+  bin$x = bin$y = bin$xmedian = bin$ymedian = bin$yerr = bin$ysd = bin$y16 = bin$y84 = rep(NA,bin$n)
+  bin$count = rep(0,bin$n)
+  for (k in seq_along(indexlist)) {
+    print
+    i = indexlist[k]
+    sel = seq(current.index,length=nindex[k])
+    current.index = current.index+nindex[k]
+    bin$count[i] = length(sel)
     bin$x[i] = mean(x[sel])
     bin$y[i] = mean(y[sel])
     bin$xmedian[i] = stats::median(x[sel])
