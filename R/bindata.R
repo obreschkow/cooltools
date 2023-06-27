@@ -47,7 +47,7 @@
 #'
 #' @export
 
-bindata = function(x, y, bins=20, method='regular', xlim=NULL) {
+bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) {
 
   # handle inputs
   x = as.vector(x)

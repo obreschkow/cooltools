@@ -4,7 +4,7 @@
 \alias{bindata}
 \title{Bin two-dimensional data in one dimension}
 \usage{
-bindata(x, y, bins = 20, method = "regular", xlim = NULL)
+bindata(x, y = rep(0, length(x)), bins = 20, method = "regular", xlim = NULL)
 }
 \arguments{
 \item{x}{N-element vector of x-coordinates}
