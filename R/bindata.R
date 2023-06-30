@@ -2,10 +2,10 @@
 #'
 #' @importFrom stats quantile median pnorm
 #'
-#' @description Bins (x,y)-data along x, using regular or irregular bins.
+#' @description Divides a vector of values x into finite intervals; returns the counts and other statistics in each interval.
 #'
 #' @param x N-element vector of x-coordinates
-#' @param y N-element vector of y-coordinates
+#' @param y optional N-element vector of values associated with the different points in x
 #' @param bins If method is 'regular' or 'equal', this is a scalar specifying the number of bins. If method is 'custom' this is a vector of (n+1) x-values delimiting the n bins.
 #' @param method Character string. Choose 'regular' for regularly space bins, 'equal' for bins containing an equal number of points (+-1), or 'custom' for bins with custom edges.
 #' @param xlim optional 2-element vector specifying the data range (data cropped if necessary). If not given, xlim is set to the full range of x.
@@ -47,18 +47,24 @@
 #'
 #' @export
 
-bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) {
+bindata = function(x, y=NULL, bins=20, method='regular', xlim=NULL) {
 
   # handle inputs
   x = as.vector(x)
-  y = as.vector(y)
-  if (length(x)!=length(y)) stop('x and y must be vectors of the same length.')
+  if (!is.null(y)) {
+    y = as.vector(y)
+    if (length(x)!=length(y)) stop('x and y must be vectors of the same length.')
+  }
 
   # sort data
-  s = sort.int(x,index.return = T)
-  x = s$x
-  y = y[s$ix]
-  s = NULL
+  if (is.null(y)) {
+    x = sort(x)
+  } else {
+    s = sort.int(x,index.return = T)
+    x = s$x
+    y = y[s$ix]
+    s = NULL
+  }
 
   # make limits
   if (method=='custom' & !is.null(xlim)) stop('xlim must not be specified for method "custom".')
@@ -67,7 +73,7 @@ bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) 
   # preselect x-coordinates within the range
   selection = x>=xlim[1] & x<=xlim[2]
   x = x[selection]
-  y = y[selection]
+  if (!is.null(y)) y = y[selection]
 
   # make grid
   bin = list(xlim = xlim)
@@ -75,6 +81,11 @@ bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) 
     if (length(bins)!=1) stop('For method "regular", bins has to be a positive integer.')
     bin$n = bins
     xedges = seq(xlim[1], xlim[2], length = bin$n+1) # vector of cell-edge x-coordinates
+  } else if (method=='log') {
+    if (length(bins)!=1) stop('For method "log", bins has to be a positive integer.')
+    if (xlim[1]<=0) stop('For method "log", the considered x-values must all be positive.')
+    bin$n = bins
+    xedges = exp(seq(log(xlim[1]), log(xlim[2]), length = bin$n+1)) # vector of cell-edge x-coordinates
   } else if (method=='equal') {
     if (length(bins)!=1) stop('For method "equal", bins has to be a positive integer.')
     bin$n = bins
@@ -83,6 +94,8 @@ bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) 
     if (length(bins)<2) stop('For method "custom", bins as to be a vector containing the bin edges.')
     bin$n = length(bins)
     xedges = bins
+  } else {
+    stop('unknown method')
   }
   bin$xleft = xedges[1:bin$n]
   bin$xright = xedges[2:(bin$n+1)]
@@ -95,7 +108,8 @@ bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) 
   indexlist = as.numeric(names(tb))
   nindex = as.numeric(tb)
   current.index = which(index==indexlist[1])[1]
-  bin$x = bin$y = bin$xmedian = bin$ymedian = bin$yerr = bin$ysd = bin$y16 = bin$y84 = rep(NA,bin$n)
+  bin$x = bin$xmedian = rep(NA,bin$n)
+  if (!is.null(y)) bin$y = bin$ymedian = bin$yerr = bin$ysd = bin$y16 = bin$y84 = rep(NA,bin$n)
   bin$count = rep(0,bin$n)
   for (k in seq_along(indexlist)) {
     print
@@ -104,13 +118,15 @@ bindata = function(x, y=rep(0,length(x)), bins=20, method='regular', xlim=NULL) 
     current.index = current.index+nindex[k]
     bin$count[i] = length(sel)
     bin$x[i] = mean(x[sel])
-    bin$y[i] = mean(y[sel])
     bin$xmedian[i] = stats::median(x[sel])
-    bin$ymedian[i] = stats::median(y[sel])
-    bin$ysd[i] = sd(y[sel])
-    bin$yerr[i] = bin$ysd[i]/sqrt(bin$count[i])
-    bin$y16[i] = stats::quantile(y[sel],stats::pnorm(-1),names=FALSE)
-    bin$y84[i] = stats::quantile(y[sel],stats::pnorm(+1),names=FALSE)
+    if (!is.null(y)) {
+      bin$y[i] = mean(y[sel])
+      bin$ymedian[i] = stats::median(y[sel])
+      bin$ysd[i] = sd(y[sel])
+      bin$yerr[i] = bin$ysd[i]/sqrt(bin$count[i])
+      bin$y16[i] = stats::quantile(y[sel],stats::pnorm(-1),names=FALSE)
+      bin$y84[i] = stats::quantile(y[sel],stats::pnorm(+1),names=FALSE)
+    }
   }
 
   # return data

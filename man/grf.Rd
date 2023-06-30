@@ -19,7 +19,7 @@ grf(nside = 100, dim = 2, alpha = 0, seed = NULL)
 Returns a vector, matrix or 3D-array with \code{nside} elements per dimension
 }
 \description{
-Generates a scalar Gaussian Random Field (GRF) in 1, 2 or 3 dimensions, with a power-law power spectrum of custom slope alpha. The field is normalized such that its mean is strictly zero (up to floating point errors) and its expected standard deviation is one, for alpha=0. The Fourier phases are sampled in order of increasing frequency, such that the random structure is preserved when changing the output size.
+Generates a scalar Gaussian Random Field (GRF) in 1, 2 or 3 dimensions, with a power-law power spectrum of custom slope alpha. The field is normalized such that its mean is zero (up to floating point errors) and its expected standard deviation is one, for alpha=0. The Fourier phases are sampled in order of increasing frequency, such that the random structure is preserved when changing the output size.
 }
 \examples{
 # Generate the same 2D GRF in two different resolutions

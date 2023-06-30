@@ -4,12 +4,12 @@
 \alias{bindata}
 \title{Bin two-dimensional data in one dimension}
 \usage{
-bindata(x, y = rep(0, length(x)), bins = 20, method = "regular", xlim = NULL)
+bindata(x, y = NULL, bins = 20, method = "regular", xlim = NULL)
 }
 \arguments{
 \item{x}{N-element vector of x-coordinates}
 
-\item{y}{N-element vector of y-coordinates}
+\item{y}{optional N-element vector of values associated with the different points in x}
 
 \item{bins}{If method is 'regular' or 'equal', this is a scalar specifying the number of bins. If method is 'custom' this is a vector of (n+1) x-values delimiting the n bins.}
 
@@ -36,7 +36,7 @@ Returns a list of items
 \item{y84}{n-element vector giving the 84.13-percentile of the y-values}
 }
 \description{
-Bins (x,y)-data along x, using regular or irregular bins.
+Divides a vector of values x into finite intervals; returns the counts and other statistics in each interval.
 }
 \examples{
 # make and plot 100 random (x,y)-points
