@@ -57,7 +57,7 @@ approxfun2 = function(x,y,z,outside=NA) {
     x1 = (x-xmin)+i*interval
     x2 = (x-xmin)+j*interval
     out = (1-w)*fun(x1)+w*fun(x2)
-    out[is.infinite(out)] = outside
+    out[!is.finite(out)] = outside
     return(out)
   }
 
