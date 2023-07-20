@@ -4,7 +4,14 @@
 \alias{runif3}
 \title{Generate randomly oriented vectors in 3D}
 \usage{
-runif3(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi), polarangle = c(0, pi))
+runif3(
+  n = 1,
+  r = c(0, 1),
+  azimuth = c(0, 2 * pi),
+  polarangle = c(0, pi),
+  quasi = FALSE,
+  start = 1
+)
 }
 \arguments{
 \item{n}{number of random vectors to be generated}
@@ -14,6 +21,10 @@ runif3(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi), polarangle = c(0, pi))
 \item{azimuth}{2-vector specifying the range of azimuth angles (maximum range 0..2*pi)}
 
 \item{polarangle}{2-vector specifying the range of polar angles (maximum range 0..pi)}
+
+\item{quasi}{logical flag. If true, quasi-random numbers with low-discrepancy are drawn, based on a Halton sequence. Otherwise, the standard internal pseudo-random generator of \code{runif()} is used.}
+
+\item{start}{starting index of Halton sequence. Only used if \code{quasi=TRUE}.}
 }
 \value{
 Returns an n-by-3 array of n vectors.

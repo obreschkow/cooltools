@@ -4,7 +4,7 @@
 \alias{rng}
 \title{Random number generator for a custom d-dimensional distribution}
 \usage{
-rng(f, n, min, max, fmax = NULL, seed = NULL, quasi = FALSE, warn = TRUE)
+rng(f, n, min, max, fmax = NULL, quasi = FALSE, start = 1, warn = TRUE)
 }
 \arguments{
 \item{f}{function of a d-vector representing a d-dimensional distribution function. This function must be non-negative on the whole domain. It does not need to be normalized. For fast performance, this function should be vectorized, such that it returns an N-element vector if it is given an N-by-D matrix as argument. An automatic warning is produced if the function is not vectorized in this manner.}
@@ -15,9 +15,9 @@ rng(f, n, min, max, fmax = NULL, seed = NULL, quasi = FALSE, warn = TRUE)
 
 \item{fmax}{maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.}
 
-\item{seed}{optional seed for random number generator; ignored if \code{quasi=TRUE}.}
-
 \item{quasi}{logical flag. If true, quasi-random numbers with low-discrepancy are drawn, based on a Halton sequence. Otherwise, the standard internal pseudo-random generator of \code{runif()} is used.}
+
+\item{start}{starting index of Halton sequence. Only used if \code{quasi=TRUE}.}
 
 \item{warn}{logical flag. If true, a warning is produced if the function f is not vectorized.}
 }
@@ -35,7 +35,7 @@ Brute-force algorithm for drawing random numbers from a d-dimensional distributi
 
 ## 1D random number generation from a sine-function
 f = function(x) sin(x)
-out.pseudo = rng(f,1e3,0,pi,seed=1)
+out.pseudo = rng(f,1e3,0,pi)
 out.quasi = rng(f,1e3,0,pi,quasi=TRUE)
 hist(out.pseudo$x,100,freq=FALSE,border=NA,xlab='x',main='sine-distribution')
 hist(out.quasi$x,100,freq=FALSE,border=NA,col='#ff000066',add=TRUE)

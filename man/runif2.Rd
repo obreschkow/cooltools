@@ -4,7 +4,7 @@
 \alias{runif2}
 \title{Generate randomly oriented vectors in 2D}
 \usage{
-runif2(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi))
+runif2(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi), quasi = FALSE, start = 1)
 }
 \arguments{
 \item{n}{number of random vectors to be generated}
@@ -12,6 +12,10 @@ runif2(n = 1, r = c(0, 1), azimuth = c(0, 2 * pi))
 \item{r}{2-vector specifying the range of radii}
 
 \item{azimuth}{2-vector specifying the range of azimuth angles}
+
+\item{quasi}{logical flag. If true, quasi-random numbers with low-discrepancy are drawn, based on a Halton sequence. Otherwise, the standard internal pseudo-random generator of \code{runif()} is used.}
+
+\item{start}{starting index of Halton sequence. Only used if \code{quasi=TRUE}.}
 }
 \value{
 Returns an n-by-2 array of n vectors.

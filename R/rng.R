@@ -9,8 +9,8 @@
 #' @param n number of random numbers to be generated
 #' @param min,max are d-vectors specifying the domain of distribution function; the domain must be finite and should be as restrictive as possible to keep the number of random trials as low as possible.
 #' @param fmax maximum value of \code{f} on its domain. If set to \code{NULL} (default), this value will be determined automatically, using the \code{\link[stats]{optimize}} (if d=1) and \code{\link[stats]{optim}} (if d>1) function with its default options. A value for \code{fmax} should be set, if the automatically determined value (see output list) is incorrect.
-#' @param seed optional seed for random number generator; ignored if \code{quasi=TRUE}.
 #' @param quasi logical flag. If true, quasi-random numbers with low-discrepancy are drawn, based on a Halton sequence. Otherwise, the standard internal pseudo-random generator of \code{runif()} is used.
+#' @param start starting index of Halton sequence. Only used if \code{quasi=TRUE}.
 #' @param warn logical flag. If true, a warning is produced if the function f is not vectorized.
 #'
 #' @return Returns list of items:
@@ -23,7 +23,7 @@
 #'
 #' ## 1D random number generation from a sine-function
 #' f = function(x) sin(x)
-#' out.pseudo = rng(f,1e3,0,pi,seed=1)
+#' out.pseudo = rng(f,1e3,0,pi)
 #' out.quasi = rng(f,1e3,0,pi,quasi=TRUE)
 #' hist(out.pseudo$x,100,freq=FALSE,border=NA,xlab='x',main='sine-distribution')
 #' hist(out.quasi$x,100,freq=FALSE,border=NA,col='#ff000066',add=TRUE)
@@ -46,12 +46,11 @@
 #'
 #' @export
 
-rng = function(f,n,min,max,fmax=NULL,seed=NULL,quasi=FALSE,warn=TRUE) {
+rng = function(f,n,min,max,fmax=NULL,quasi=FALSE,start=1,warn=TRUE) {
 
   # initialize
   d = length(min)
   if (length(max)!=d) stop('min and max must have the same length.')
-  if (!is.null(seed)) set.seed(seed)
 
   # check if f is vectorized
   if (length(f(rbind(min,min)))==1 & length(f(rbind(min,min,min)))==1) {
@@ -84,7 +83,7 @@ rng = function(f,n,min,max,fmax=NULL,seed=NULL,quasi=FALSE,warn=TRUE) {
   while (k<n) {
     dn = n-k
     if (quasi) {
-      halt = randtoolbox::halton(dn,d+1,start=ntrials+1)
+      halt = randtoolbox::halton(dn,d+1,start=ntrials+start)
       xtrial = t(t(array(halt[,1:d],c(dn,d)))*(max-min)+min)
     } else {
       xtrial = t(array(stats::runif(d*dn,min,max),c(d,dn)))
