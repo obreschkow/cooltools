@@ -40,7 +40,8 @@ approxfun2 = function(x,y,z,outside=NA) {
   }
 
   xmin = min(x)
-  interval = (max(x)-xmin)*2
+  xmax = max(x)
+  interval = (xmax-xmin)*2
 
   xvect = rep(c(-1e-5,x-xmin,max(x)-xmin+1e-5),ny+2)+rep(seq(ny+2)*interval,each=nx+2)
   zvect = as.vector(cbind(rep(Inf,nx+2),rbind(rep(Inf,ny),z,rep(Inf,ny)),rep(Inf,nx+2)))
@@ -58,6 +59,7 @@ approxfun2 = function(x,y,z,outside=NA) {
     x2 = (x-xmin)+j*interval
     out = (1-w)*fun(x1)+w*fun(x2)
     out[!is.finite(out)] = outside
+    out[x<xmin | x>xmax] = outside
     return(out)
   }
 
