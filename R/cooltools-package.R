@@ -4,7 +4,6 @@
 #'
 #' @author Danail Obreschkow
 #'
-#' @docType package
-#' @name cooltools
+"_PACKAGE"
 #' @useDynLib cooltools
 NULL
