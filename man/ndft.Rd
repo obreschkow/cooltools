@@ -18,7 +18,7 @@ ndft(
 
 \item{x}{vector of points in direct space, typically time or position coordinates. If \code{inverse=FALSE}, \code{x} must have the same length as \code{f}.}
 
-\item{nu}{vector of frequencies in units of [1/units of x].  If \code{inverse=TRUE}, \code{nu} must have the same length as \code{f}.}
+\item{nu}{vector of frequencies in units of [1/units of x]. If \code{inverse=TRUE}, \code{nu} must have the same length as \code{f}.}
 
 \item{inverse}{logical flag; if TRUE, the inverse Fourier transform is performed.}
 
@@ -30,7 +30,7 @@ ndft(
 Returns a vector of the same length as \code{x} (if \code{inverse=FALSE}) or \code{nu} (if \code{inverse=TRUE}).
 }
 \description{
-Compute the one-dimensional Non-uniform Discrete Fourier Transform (NDFT). This is needed if the data is sampled in non-uniform intervals.
+Compute the one-dimensional Non-uniform Discrete Fourier Transform (NDFT). This is needed if the data are sampled at irregularly spaced times.
 }
 \details{
 The one-dimensional NDFT of a vector \eqn{f=(f_1,...,f_N)} is defined as \deqn{F_j=\sum_i w_i f_i exp(-2\pi i*x_i*\nu_j)} where \eqn{w_i} are optional weights, proportional to the interval around \eqn{x_i}, only used if \code{weighing=TRUE}. Likewise, the inverse NDFT is defined as \deqn{f_i=\sum_j w_j F_j exp(+2\pi i*x_i*nu_j)} where \eqn{w_j} are optional weights, proportional to the interval around \eqn{\nu_j}. In this implementation NDFTs are computed using a brute force algorithm, scaling as \eqn{O(N*N)}, which is considerably worse than the \eqn{O(N)*log(N)} scaling of FFT algorithms. It is therefore important to pick the required frequencies wisely to minimise computing times.
