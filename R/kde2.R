@@ -65,12 +65,13 @@
 #'   graphics::rasterImage(rasterflip(lim(f)^0.3),x,y,x+0.99,y+0.99)
 #'   graphics::text(x+0.05,y+0.9,title,col='orange',pos=4)
 #' }
-#' graphics::par(mar=rep(0.1,4))
+#' oldpar = graphics::par(mar=rep(0.1,4))
 #' nplot(c(0,2),c(0,2),asp=1)
 #' img(f1,0,1,'Input pdf')
 #' img(f2,1,1,'Random sample ("basic")')
 #' img(f3,0,0,'Recovered pdf ("kdefast")')
 #' img(f4,1,0,'Recovered pdf ("kdenn")')
+#' graphics::par(oldpar)
 #'
 #' @export
 #'

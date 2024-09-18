@@ -27,13 +27,14 @@
 #'
 #' # Function to draw a single clock face with two hands
 #' frame = function(time) {
-#'   par(mar=c(0,0,0,0))
+#'   oldpar = graphics::par(mar=c(0,0,0,0))
 #'   nplot(xlim=c(-1.1,1.1),ylim=c(-1.1,1.1),pty='s')
 #'   plotrix::draw.circle(0,0,1,col='#aaaaff')
 #'   radius = c(0.5,0.9)
 #'   speed = 2*pi/c(720,60)
 #'   lwd = c(4,2)
 #'   graphics::arrows(0,0,radius*sin(speed*time),radius*cos(speed*time),lwd=lwd)
+#'   graphics::par(oldpar)
 #' }
 #'
 #' # Produce movie
