@@ -4,6 +4,8 @@
 #'
 #' @param A n-by-m array of a monochromatic image or n-by-m-by-k array of a color image (where k is 3 or 4)
 #'
+#' @return A m-by-n array of a monochromatic image or m-by-n-by-k array of a color image.
+#'
 #' @author Danail Obreschkow
 #'
 #' @export

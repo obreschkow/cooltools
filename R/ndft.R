@@ -3,11 +3,11 @@
 #' @importFrom graphics points legend curve par
 #' @importFrom stats fft
 #'
-#' @description Compute the one-dimensional Non-uniform Discrete Fourier Transform (NDFT). This is needed if the data is sampled in non-uniform intervals.
+#' @description Compute the one-dimensional Non-uniform Discrete Fourier Transform (NDFT). This is needed if the data are sampled at irregularly spaced times.
 #'
 #' @param f vector of real or complex function values
 #' @param x vector of points in direct space, typically time or position coordinates. If \code{inverse=FALSE}, \code{x} must have the same length as \code{f}.
-#' @param nu vector of frequencies in units of [1/units of x].  If \code{inverse=TRUE}, \code{nu} must have the same length as \code{f}.
+#' @param nu vector of frequencies in units of [1/units of x]. If \code{inverse=TRUE}, \code{nu} must have the same length as \code{f}.
 #' @param inverse	logical flag; if TRUE, the inverse Fourier transform is performed.
 #' @param weighing logical flag; if TRUE, irregularly spaced evaluations of \code{f} will be weighted proportionally to their bin width in \code{x} (if \code{inverse=FALSE}) or \code{nu} (if \code{inverse=FALSE}).
 #' @param simplify logical flag; if TRUE, the complex output array will be simplified to a real array, if it is real within the floating point accuracy.
