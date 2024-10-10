@@ -12,15 +12,15 @@
 #'
 #' @export
 
-cst = list(G = 6.67408e-11, # [m^3/kg/s^2] gravitational constant
-           kb = 1.38064852e-23, # [m^2 kg s^(-2) K^(-1)] Boltzmann constant
+cst = list(G = 6.67430e-11, # [m^3/kg/s^2] gravitational constant
+           kb = 1.380649e-23, # [m^2 kg s^(-2) K^(-1)] Boltzmann constant
            c = 299792458, # [m/s] speed of light
            h = 6.62607015e-34, # [J*s] Planck constant
            e = 1.602176634e-19, # [A*s] electron charge
            Na = 6.02214076, # [-] Avogadro constant
            hbar = 6.62607015e-34/2/pi, # [J*s] Planck constant
-           Msun = 1.98847e30, # [kg] solar mass
-           Mearth = 5.972e24, # [kg] Earth mass
+           Msun = 1.988416e30, # [kg] solar mass
+           Mearth = 5.9722e24, # [kg] Earth mass
            dalton = 1.66053906661e-27, # [kg] atomic unit mass (=1/12 of the mass of an unbound neutral atom of carbon-12 in its nuclear and electronic ground state and at rest)
            AU = 149597870700, # [m] astronomical unit
            yr = 31557600, # [s] Julian astronomical year year
@@ -28,9 +28,9 @@ cst = list(G = 6.67408e-11, # [m^3/kg/s^2] gravitational constant
            day = 86400, # [s] day
            hour = 3600, # [s] hour
            min = 60, # [s] minute
-           pc = 3.0857e16, # [m] parsec
-           kpc = 3.0857e19, # [m] kiloparsec
-           Mpc = 3.0857e22, # [m] Megaparsec
-           Gpc = 3.0857e25, # [m] Gigaparsec
-           ly = 9.4605284, # [m] light-year
+           pc = 3.0856775814913673e16, # [m] parsec
+           kpc = 3.0856775814913673e19, # [m] kiloparsec
+           Mpc = 3.0856775814913673e22, # [m] Megaparsec
+           Gpc = 3.0856775814913673e25, # [m] Gigaparsec
+           ly = 9.4607304725808e15, # [m] light-year
            fHI = 1420405751.768) # [Hz] rest-frame frequency of hydrogen 21cm line

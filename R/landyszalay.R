@@ -51,6 +51,15 @@ landyszalay = function(D,R,dr=0.1,cpp=TRUE) {
   RR = RR[1:n]
   DR = DR[1:n]
 
+  # remove pairs of identical points
+  # NB: this was added in 2024, as it is the more sensible definition of an LS
+  #     estimator for otherwise xi(0) depends about linearly on nR, which
+  #     makes little sense. Follwoing this definition, <xi(0)>=0 unless
+  #     different points are deliberately at the same position. This is unlike
+  #     <xi(0)>=<delta^2>, following from the standard definition of the 2PCF.
+  DD[1] = DD[1]-nD
+  RR[1] = RR[1]-nR
+
   # compute L-S estimator
   nDD = nD*(nD-1)/2
   nRR = nR*(nR-1)/2
