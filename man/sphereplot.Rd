@@ -5,7 +5,7 @@
 \title{Plot a spherical function or point set}
 \usage{
 sphereplot(
-  f = NA,
+  f = NULL,
   n = 100,
   theta0 = pi/2,
   phi0 = 0,
@@ -34,7 +34,7 @@ sphereplot(
 \arguments{
 \item{f}{must be either of:
 
-(1) NA to plot just grid without spherical function
+(1) NULL to plot just grid without spherical function
 
 (2) a vectorized real function f(theta,phi) of the polar angle theta [0,pi] and azimuth angle [0,2pi]
 
