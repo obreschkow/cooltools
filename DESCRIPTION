@@ -1,7 +1,7 @@
 Package: cooltools
 Type: Package
 Title: Practical Tools for Scientific Computations and Visualizations
-Version: 2.6
+Version: 2.7
 Authors@R: 
     c(person(given = "Danail",
              family = "Obreschkow",
@@ -24,7 +24,8 @@ Imports:
     bit64,
     randtoolbox,
     Rcpp,
-    FNN
+    FNN,
+    hdf5r
 Suggests:
     EBImage
 LinkingTo: Rcpp
