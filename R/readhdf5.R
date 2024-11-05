@@ -33,9 +33,9 @@
 #'   group4 = 4
 #' )
 #' # Write list to HDF5 file
-#' writehdf5(input, "~/Desktop/example_data.h5")
+#' writehdf5(input, "example_data.h5")
 #' # Read HDF5 into a new list
-#' output <- readhdf5("~/Desktop/example_data.h5")
+#' output <- readhdf5("example_data.h5")
 #' # Test if input and output lists are identical
 #' print(all.equal(input, output))
 #' }
