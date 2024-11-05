@@ -21,8 +21,8 @@
 #' @examples
 #'
 #' \dontrun{
-#' # make test data
-#' input = list(
+#' # Create example data
+#' input <- list(
 #'   group1 = list(
 #'     dataset1 = matrix(1:10, nrow = 2),
 #'     dataset2 = c("A", "B", "C")
@@ -33,17 +33,15 @@
 #'       dataset3 = array(runif(8), dim = c(2, 2, 2))
 #'     )
 #'   ),
-#'   group3 = list(id64 = bit64::as.integer64(123487918235335756), id32 = 5756)
+#'   group3 = list(id32 = 5756, id64 = bit64::as.integer64(123487918235335756)),
+#'   group4 = 4
 #' )
-#'
-#' # write list to HDF5 file
-#' writehdf5(example_data, "example_data.h5")
-#'
-#' # read HDF5 into a new list
-#' output = readhdf5(filename)
-#'
+#' # Write list to HDF5 file
+#' writehdf5(input, "~/Desktop/example_data.h5")
+#' # Read HDF5 into a new list
+#' output <- readhdf5("~/Desktop/example_data.h5")
 #' # Test if input and output lists are identical
-#' print(all.equal(input,output))
+#' print(all.equal(input, output))
 #' }
 #'
 #' @export
