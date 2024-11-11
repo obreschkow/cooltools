@@ -1,6 +1,6 @@
-#' Suppress in-routine output
+#' Suppress console output
 #'
-#' @description Runs any routine or command while suppressing in-routine console output
+#' @description Executes routines and command lines and load packages while suppressing the console output.
 #'
 #' @param x routine to be called
 #'
@@ -28,5 +28,5 @@
 quiet <- function(x) {
   sink(tempfile())
   on.exit(sink())
-  invisible(force(x))
+  invisible(force(suppressMessages(suppressWarnings(x))))
 }

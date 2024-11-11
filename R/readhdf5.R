@@ -3,51 +3,27 @@
 #' @importFrom hdf5r H5File h5attributes
 #' @importFrom bit64 as.integer64
 #'
-#' @description Recursively reads data from an HDF5 file, preserving the structure of groups, datasets, and attributes. The function supports groups and datasets containing only attributes, treating these attributes as the main data for those objects (e.g. as used in the Header group of HDF5 outputs of the Gadget simulation code).
+#' @description Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data.
 #'
-#' @param file A character string specifying the path to the input HDF5 file.
+#' @param file Character string specifying the file name of the input HDF5 file.
+#' @param subtree Optional hierarchical list, specifying groups and datasets to read from the HDF5 file. For example, to read group1-dataset3, group5-dataset7, group5-dataset8, and group7-subgroup3-dataset9, use \code{subtree = list(group1 = list(dataset3 = ""), group5 = list(dataset7 = "", dataset8 = ""), group7 = list(subgroup3 = list(dataset9 = "")))}.
+#'   If \code{subtree} is NULL (default), the entire file hierarchy is read.
+#' @param group.attr.as.data logical flag. If \code{TRUE}, group attributes are converted to datasets. This is useful, for example, for Gadget simulation outputs in HDF5 format, where the simulation parameters are stored as attributes in the `Header' group.
 #'
-#' @details This function reads the contents of an HDF5 file into a nested list structure in R. Groups and datasets are recursively parsed, preserving the original hierarchy.
-#' If a group or dataset contains only attributes and no other data, these attributes are returned as the main data for that object. Attributes for objects with actual data are ignored, except for groups, where they are stored under the `_attributes` key.
+#' @details This function, built on the \code{hdf5r} package, reads the contents of an HDF5 file into a nested list structure in R. Groups and datasets are recursively parsed, preserving the original hierarchy.
 #'
 #' @return A nested list representing the contents of the HDF5 file. Groups are represented as lists, datasets are represented by their data, and attributes are included either as the main data (if no other data is present) or under the `_attributes` key for groups.
 #'
 #' @seealso \code{\link[hdf5r]{H5File}}, \code{\link{writehdf5}}
 #'
-#' @examples
-#'
-#' \dontrun{
-#' # Create example data
-#' input <- list(
-#'   group1 = list(
-#'     dataset1 = matrix(1:10, nrow = 2),
-#'     dataset2 = c("A", "B", "C")
-#'   ),
-#'   group2 = list(
-#'     dataset3 = c(3.14, 2.71),
-#'     subgroup1 = list(
-#'       dataset3 = array(runif(8), dim = c(2, 2, 2))
-#'     )
-#'   ),
-#'   group3 = list(id32 = 5756, id64 = bit64::as.integer64(123487918235335756)),
-#'   group4 = 4
-#' )
-#' # Write list to HDF5 file
-#' writehdf5(input, "example_data.h5")
-#' # Read HDF5 into a new list
-#' output <- readhdf5("example_data.h5")
-#' # Test if input and output lists are identical
-#' print(all.equal(input, output))
-#' }
-#'
 #' @export
 
-readhdf5 <- function(file) {
+readhdf5 <- function(file, subtree = NULL, group.attr.as.data = FALSE) {
   # Open the HDF5 file in read-only mode
   h5file <- hdf5r::H5File$new(file, mode = "r")
 
-  # Recursive helper function to read each element
-  read_data <- function(group) {
+  # Recursive helper function to read each element based on subtree
+  read_data <- function(group, subtree_node = NULL) {
     result <- list()
 
     # Read attributes
@@ -59,30 +35,41 @@ readhdf5 <- function(file) {
       # List the names of all sub-items in the group
       item_names <- names(group)
 
-      if (length(item_names) == 0 && has_attributes) {
-        # If the group has no sub-items but has attributes, treat attributes as data
-        result <- attributes
-      } else {
-        # If the group has sub-items, recursively read each item
-        for (name in item_names) {
-          result[[name]] <- read_data(group[[name]])
-        }
-        # Include group attributes if there are any
-        if (has_attributes) {
-          result[["_attributes"]] <- attributes
+      # If a subtree is provided, filter item_names by subtree keys
+      if (!is.null(subtree_node)) {
+        item_names <- intersect(item_names, names(subtree_node))
+      }
+
+      # If the group has sub-items, recursively read each item
+      for (name in item_names) {
+        # Proceed only if the name is in the subtree (if subtree is defined)
+        if (is.null(subtree_node) || !is.null(subtree_node[[name]])) {
+          result[[name]] <- read_data(group[[name]], subtree_node[[name]])
         }
       }
 
-    } else if (inherits(group, "H5D")) {
-      # It's a dataset
-      data <- group$read()
-
-      if (length(data) == 0 && has_attributes) {
-        # If the dataset is empty and only contains attributes, treat attributes as data
-        result <- attributes
+      # Add group attributes if there are any
+      if (group.attr.as.data) {
+        result <- c(result, attributes)
       } else {
-        # Otherwise, store the actual data and ignore attributes
-        result <- data
+        for (attr_name in names(attributes)) {
+          if (attr_name!='names') { # avoids wrong permutations of dataset names; the attribute names still exists, but is assigned automatically to lists
+            attr(result, attr_name) <- attributes[[attr_name]]
+          }
+        }
+      }
+    } else if (inherits(group, "H5D")) {
+      # It's a dataset, read data if in subtree or subtree is NULL
+      data.is.int64 = group$key_info$type$get_class()=="H5T_INTEGER" & group$key_info$type$get_size() == 8
+      if (data.is.int64) {
+        data <- as.integer64(group$read()) # avoids an automatic conversion of 64bit integers to 32bit integers in some cases
+      } else {
+        data <- group$read()
+      }
+      result <- data
+      # Add dataset attributes if there are any
+      for (attr_name in names(attributes)) {
+        attr(result, attr_name) <- attributes[[attr_name]]
       }
     } else {
       stop("Unsupported object type in HDF5 file.")
@@ -91,10 +78,15 @@ readhdf5 <- function(file) {
     return(result)
   }
 
-  # Start reading from the root group contents
+  # Start reading from the root group, using the subtree structure if provided
   data <- list()
-  for (name in names(h5file)) {
-    data[[name]] <- read_data(h5file[[name]])
+  root_subtree <- if (is.null(subtree)) names(h5file) else names(subtree)
+
+  for (name in root_subtree) {
+    # Proceed only if name exists in h5file and is in subtree
+    if (name %in% names(h5file)) {
+      data[[name]] <- read_data(h5file[[name]], subtree[[name]])
+    }
   }
 
   # Close the file

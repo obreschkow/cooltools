@@ -4,47 +4,24 @@
 \alias{readhdf5}
 \title{Read data from an HDF5 file}
 \usage{
-readhdf5(file)
+readhdf5(file, subtree = NULL, group.attr.as.data = FALSE)
 }
 \arguments{
-\item{file}{A character string specifying the path to the input HDF5 file.}
+\item{file}{Character string specifying the file name of the input HDF5 file.}
+
+\item{subtree}{Optional hierarchical list, specifying groups and datasets to read from the HDF5 file. For example, to read group1-dataset3, group5-dataset7, group5-dataset8, and group7-subgroup3-dataset9, use \code{subtree = list(group1 = list(dataset3 = ""), group5 = list(dataset7 = "", dataset8 = ""), group7 = list(subgroup3 = list(dataset9 = "")))}.
+If \code{subtree} is NULL (default), the entire file hierarchy is read.}
+
+\item{group.attr.as.data}{logical flag. If \code{TRUE}, group attributes are converted to datasets. This is useful, for example, for Gadget simulation outputs in HDF5 format, where the simulation parameters are stored as attributes in the `Header' group.}
 }
 \value{
 A nested list representing the contents of the HDF5 file. Groups are represented as lists, datasets are represented by their data, and attributes are included either as the main data (if no other data is present) or under the `_attributes` key for groups.
 }
 \description{
-Recursively reads data from an HDF5 file, preserving the structure of groups, datasets, and attributes. The function supports groups and datasets containing only attributes, treating these attributes as the main data for those objects (e.g. as used in the Header group of HDF5 outputs of the Gadget simulation code).
+Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data.
 }
 \details{
-This function reads the contents of an HDF5 file into a nested list structure in R. Groups and datasets are recursively parsed, preserving the original hierarchy.
-If a group or dataset contains only attributes and no other data, these attributes are returned as the main data for that object. Attributes for objects with actual data are ignored, except for groups, where they are stored under the `_attributes` key.
-}
-\examples{
-
-\dontrun{
-# Create example data
-input <- list(
-  group1 = list(
-    dataset1 = matrix(1:10, nrow = 2),
-    dataset2 = c("A", "B", "C")
-  ),
-  group2 = list(
-    dataset3 = c(3.14, 2.71),
-    subgroup1 = list(
-      dataset3 = array(runif(8), dim = c(2, 2, 2))
-    )
-  ),
-  group3 = list(id32 = 5756, id64 = bit64::as.integer64(123487918235335756)),
-  group4 = 4
-)
-# Write list to HDF5 file
-writehdf5(input, "example_data.h5")
-# Read HDF5 into a new list
-output <- readhdf5("example_data.h5")
-# Test if input and output lists are identical
-print(all.equal(input, output))
-}
-
+This function, built on the \code{hdf5r} package, reads the contents of an HDF5 file into a nested list structure in R. Groups and datasets are recursively parsed, preserving the original hierarchy.
 }
 \seealso{
 \code{\link[hdf5r]{H5File}}, \code{\link{writehdf5}}

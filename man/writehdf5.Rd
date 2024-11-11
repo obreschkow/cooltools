@@ -2,57 +2,85 @@
 % Please edit documentation in R/writehdf5.R
 \name{writehdf5}
 \alias{writehdf5}
-\title{Write data to an HDF5 file}
+\title{Write structure list to an HDF5 file}
 \usage{
-writehdf5(data, file, level = 6, overwrite = TRUE)
+writehdf5(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE)
 }
 \arguments{
-\item{data}{A list containing the data to be written. Nested lists are interpreted as groups within the HDF5 file. If an element is `NULL`, it creates an empty dataset that can hold only attributes.}
+\item{obj}{List containing the data to be written. Nested sublists are interpreted as sub-groups within the HDF5 file. If a sublist is empty or if an element inside a list is `NULL`, it creates an empty group/dataset that can hold only attributes.}
 
-\item{file}{A character string specifying the path to the output HDF5 file.}
+\item{file}{Character string specifying the file name of the output HDF5 file.}
 
-\item{level}{An integer specifying the compression level for datasets, typically between 0 (no compression) and 9 (maximum compression). Not all dataset types support compression.}
+\item{inherent.attributes}{Logical flag indicating whether to include inherent attributes that some R-objects possess, such as `dim` for matrices.}
 
-\item{overwrite}{A logical value indicating whether to overwrite an existing file.}
+\item{level}{Integer specifying the compression level for datasets, typically between 0 (no compression) and 9 (maximum compression). Not all dataset types support compression.}
+
+\item{overwrite}{Logical value indicating whether to overwrite an existing file.}
 }
 \value{
-This function does not return any value. It writes data directly to the specified HDF5 file.
+None
 }
 \description{
-Recursively writes data to an HDF5 file, creating groups and datasets as needed. The routine supports writing lists, 64-bit integers, character data, and numeric arrays.
+Recursively writes named lists, including nested named sublists, to an HDF5 file, creating HDF5 groups and datasets as needed to preserve the hierarchical structure.
+The routine supports standard data types, including double floats, integers, characters, and logical values, as well as vectors and arrays of these types. It also supports
+64-bit integers (\code{H5T_NATIVE_INT64}) if such input data is provided via the \code{bit64} package. Custom attributes of sublists and data, included in the R-data,
+are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups and datasets.
 }
 \details{
-The function creates the necessary subdirectories for the output file if they do not exist.
-It uses 64-bit integer format (\code{H5T_NATIVE_INT64}) for \code{integer64} data and automatically detects types for character and numeric data.
-Attributes can be added to groups or datasets that contain no other data, allowing for flexible metadata storage.
+The function relies on the \code{hdf5r} package and on the \code{bit64} package.\cr
+If the argument `obj` is a data frame or contains a data frame in a nested sublist, then this data frame is automatically converted into a list with matching names.\cr
+If the input data contain some unnamed elements, e.g. \code{obj=list(a='named','unnamed')}, the unnamed groups/datasets are called `unnamed_#` in the HDF5 file.\cr
+Some data types in R have inherent attributes, such as `names` for data frames and `dim` for arrays. By default, these inherent attributes are not written to the HDF5 file. They are, however, automatically regenerated when the HDF5 file is loaded back via \code{\link{readhdf5}}. The argument \code{inherent.attributes} can be used to force writing all attributes, including the inherent ones, to the HDF5 file.
 }
 \examples{
 
-\dontrun{
 # Create example data
-input <- list(
-  group1 = list(
-    dataset1 = matrix(1:10, nrow = 2),
-    dataset2 = c("A", "B", "C")
+input = list(
+  people = data.frame(
+    ID = as.integer(1:3),
+    Name = c("Alice", "Bob", "Charlie"),
+    Salary = c(2341.2, 3534.2, 4541.9),
+    Employed = c(TRUE, TRUE, FALSE)
   ),
-  group2 = list(
-    dataset3 = c(3.14, 2.71),
-    subgroup1 = list(
-      dataset3 = array(runif(8), dim = c(2, 2, 2))
-    )
+  empty = list(),
+  header = list(),
+  number = 4,
+  groupa = list(
+    header = 'test header',
+    subgroup = list(
+      dataset1 = c("A", "B", "C", "xxx"),
+      dataset3 = array(runif(30), dim = c(2, 5, 3)),
+      dataset2 = matrix(as.integer(1:10), nrow = 2)
+    ),
+    dataset4 = c(pi)
   ),
-  group3 = list(id32 = 5756, id64 = bit64::as.integer64(123487918235335756)),
-  group4 = 4
+  groupb = list(int32 = as.integer(123),
+                int64 = bit64::as.integer64(123),
+                vector = bit64::as.integer64(seq(3)+12345678912345))
 )
+
+# Add attributes to some datasets
+attr(input$groupa$subgroup$dataset3,'Type') = '3D array'
+attr(input$groupb$vector,'Comment') = 'Large integer'
+attr(input$groupb$vector,'Package') = 'bit64'
+
+# Add attributes to some groups
+attr(input$groupb,'Comment') = 'Integer group'
+attr(input$header,'Timestamp') = date()
+attr(input$header,'Working directory') = getwd()
+
 # Write list to HDF5 file
-writehdf5(input, "example_data.h5")
-# Read HDF5 into a new list
-output <- readhdf5("example_data.h5")
-# Test if input and output lists are identical
-print(all.equal(input, output))
-}
+filename = tempfile()
+writehdf5(input, filename)
+
+# Read HDF5 file into a new list
+output = readhdf5(filename)
+
+# Check if input and output lists are identical
+# (up to ordering, as HDF5 uses alphabetic default order)
+print(all.equal(sortlist(input, convert.data.frames = TRUE), output))
 
 }
 \seealso{
-\code{\link[hdf5r]{H5File}}, \code{\link{readhdf5}}
+\code{\link{readhdf5}}
 }

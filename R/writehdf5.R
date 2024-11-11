@@ -1,94 +1,173 @@
-#' Write data to an HDF5 file
+#' Write structure list to an HDF5 file
 #'
 #' @importFrom hdf5r H5File h5types
 #' @importFrom bit64 is.integer64 as.integer64
 #'
-#' @description Recursively writes data to an HDF5 file, creating groups and datasets as needed. The routine supports writing lists, 64-bit integers, character data, and numeric arrays.
+#' @description Recursively writes named lists, including nested named sublists, to an HDF5 file, creating HDF5 groups and datasets as needed to preserve the hierarchical structure.
+#' The routine supports standard data types, including double floats, integers, characters, and logical values, as well as vectors and arrays of these types. It also supports
+#' 64-bit integers (\code{H5T_NATIVE_INT64}) if such input data is provided via the \code{bit64} package. Custom attributes of sublists and data, included in the R-data,
+#' are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups and datasets.
 #'
-#' @param data A list containing the data to be written. Nested lists are interpreted as groups within the HDF5 file. If an element is `NULL`, it creates an empty dataset that can hold only attributes.
-#' @param file A character string specifying the path to the output HDF5 file.
-#' @param level An integer specifying the compression level for datasets, typically between 0 (no compression) and 9 (maximum compression). Not all dataset types support compression.
-#' @param overwrite A logical value indicating whether to overwrite an existing file.
+#' @param obj List containing the data to be written. Nested sublists are interpreted as sub-groups within the HDF5 file. If a sublist is empty or if an element inside a list is `NULL`, it creates an empty group/dataset that can hold only attributes.
+#' @param file Character string specifying the file name of the output HDF5 file.
+#' @param inherent.attributes Logical flag indicating whether to include inherent attributes that some R-objects possess, such as `dim` for matrices.
+#' @param level Integer specifying the compression level for datasets, typically between 0 (no compression) and 9 (maximum compression). Not all dataset types support compression.
+#' @param overwrite Logical value indicating whether to overwrite an existing file.
 #'
-#' @details The function creates the necessary subdirectories for the output file if they do not exist.
-#' It uses 64-bit integer format (\code{H5T_NATIVE_INT64}) for \code{integer64} data and automatically detects types for character and numeric data.
-#' Attributes can be added to groups or datasets that contain no other data, allowing for flexible metadata storage.
+#' @details The function relies on the \code{hdf5r} package and on the \code{bit64} package.\cr
+#' If the argument `obj` is a data frame or contains a data frame in a nested sublist, then this data frame is automatically converted into a list with matching names.\cr
+#' If the input data contain some unnamed elements, e.g. \code{obj=list(a='named','unnamed')}, the unnamed groups/datasets are called `unnamed_#` in the HDF5 file.\cr
+#' Some data types in R have inherent attributes, such as `names` for data frames and `dim` for arrays. By default, these inherent attributes are not written to the HDF5 file. They are, however, automatically regenerated when the HDF5 file is loaded back via \code{\link{readhdf5}}. The argument \code{inherent.attributes} can be used to force writing all attributes, including the inherent ones, to the HDF5 file.
 #'
-#' @return This function does not return any value. It writes data directly to the specified HDF5 file.
+#' @return None
 #'
-#' @seealso \code{\link[hdf5r]{H5File}}, \code{\link{readhdf5}}
+#' @seealso \code{\link{readhdf5}}
 #'
 #' @examples
 #'
-#' \dontrun{
 #' # Create example data
-#' input <- list(
-#'   group1 = list(
-#'     dataset1 = matrix(1:10, nrow = 2),
-#'     dataset2 = c("A", "B", "C")
+#' input = list(
+#'   people = data.frame(
+#'     ID = as.integer(1:3),
+#'     Name = c("Alice", "Bob", "Charlie"),
+#'     Salary = c(2341.2, 3534.2, 4541.9),
+#'     Employed = c(TRUE, TRUE, FALSE)
 #'   ),
-#'   group2 = list(
-#'     dataset3 = c(3.14, 2.71),
-#'     subgroup1 = list(
-#'       dataset3 = array(runif(8), dim = c(2, 2, 2))
-#'     )
+#'   empty = list(),
+#'   header = list(),
+#'   number = 4,
+#'   groupa = list(
+#'     header = 'test header',
+#'     subgroup = list(
+#'       dataset1 = c("A", "B", "C", "xxx"),
+#'       dataset3 = array(runif(30), dim = c(2, 5, 3)),
+#'       dataset2 = matrix(as.integer(1:10), nrow = 2)
+#'     ),
+#'     dataset4 = c(pi)
 #'   ),
-#'   group3 = list(id32 = 5756, id64 = bit64::as.integer64(123487918235335756)),
-#'   group4 = 4
+#'   groupb = list(int32 = as.integer(123),
+#'                 int64 = bit64::as.integer64(123),
+#'                 vector = bit64::as.integer64(seq(3)+12345678912345))
 #' )
+#'
+#' # Add attributes to some datasets
+#' attr(input$groupa$subgroup$dataset3,'Type') = '3D array'
+#' attr(input$groupb$vector,'Comment') = 'Large integer'
+#' attr(input$groupb$vector,'Package') = 'bit64'
+#'
+#' # Add attributes to some groups
+#' attr(input$groupb,'Comment') = 'Integer group'
+#' attr(input$header,'Timestamp') = date()
+#' attr(input$header,'Working directory') = getwd()
+#'
 #' # Write list to HDF5 file
-#' writehdf5(input, "example_data.h5")
-#' # Read HDF5 into a new list
-#' output <- readhdf5("example_data.h5")
-#' # Test if input and output lists are identical
-#' print(all.equal(input, output))
-#' }
+#' filename = tempfile()
+#' writehdf5(input, filename)
+#'
+#' # Read HDF5 file into a new list
+#' output = readhdf5(filename)
+#'
+#' # Check if input and output lists are identical
+#' # (up to ordering, as HDF5 uses alphabetic default order)
+#' print(all.equal(sortlist(input, convert.data.frames = TRUE), output))
 #'
 #' @export
 
-writehdf5 = function(data, file, level = 6, overwrite = TRUE) {
+writehdf5 <- function(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE) {
 
   # Create or overwrite the HDF5 file
   if (file.exists(file)) {
     if (overwrite) {
       file.remove(file)
     } else {
-      stop(sprintf('File %s already exists',file))
+      stop(sprintf('File %s already exists', file))
     }
   } else {
     dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
   }
 
-  h5file = hdf5r::H5File$new(file, mode = "w")
+  h5file <- hdf5r::H5File$new(file, mode = "w")
 
-  write_data = function(group, data, name = NULL) {
-    if (is.list(data)) {
+  write_obj <- function(group, obj, name = NULL) {
+    if (is.list(obj)) {
       # Handle lists (groups) recursively
-      subgroup = if (!is.null(name)) group$create_group(name) else group
-      for (subname in names(data)) {
-        write_data(subgroup, data[[subname]], subname)
+      subgroup <- if (!is.null(name)) group$create_group(name) else group
+      names_obj <- names(obj)
+      if (is.null(names_obj)) names_obj <- rep("", length(obj))
+
+      # Add group attributes if they exist
+      if (!is.null(attributes(obj))) {
+        if (inherent.attributes) {
+          attrs <- attributes(obj)
+        } else {
+          attrs <- userattributes(obj)
+        }
+        for (attr_name in names(attrs)) {
+          subgroup$create_attr(attr_name, robj = attrs[[attr_name]])
+        }
       }
-    } else if (is.null(data)) {
-      # Create an empty dataset for NULL values with specified dtype
-      group$create_dataset(name, dims = c(0), dtype = hdf5r::h5types$H5T_NATIVE_DOUBLE)
+
+      counter <- 0
+      for (i in seq_along(obj)) {
+        subname <- names_obj[i]
+        if (subname == "" || is.null(subname)) {
+          counter <- counter + 1
+          subname <- sprintf("unnamed_%d", counter)
+        }
+        write_obj(subgroup, obj[[i]], subname)
+      }
+
+    } else if (is.null(obj)) {
+      # Create an empty dataset for NULL values with specified dtype and add attributes if they exist
+      dataset <- group$create_dataset(name, dims = c(0), dtype = hdf5r::h5types$H5T_NATIVE_DOUBLE)
+
+      # Add dataset attributes if they exist
+      if (!is.null(attributes(obj))) {
+        if (inherent.attributes) {
+          attrs <- attributes(obj)
+        } else {
+          attrs <- userattributes(obj)
+        }
+        for (attr_name in names(attrs)) {
+          dataset$create_attr(attr_name, robj = attrs[[attr_name]])
+        }
+      }
+
     } else {
-      # Write atomic data types directly within the group
-      if (bit64::is.integer64(data)) {
-        group[[name]] = bit64::as.integer64(data)
-      } else if (is.integer(data)) {
-        group[[name]] = data
-      } else if (is.double(data)) {
-        group[[name]] = data
-      } else if (is.character(data)) {
-        group[[name]] = data
-      } else if (is.logical(data)) {
-        group[[name]] = as.integer(data)
+      # Define chunk dimensions for compression if the data has more than one element
+      chunk_dims <- if (length(obj) > 1) dim(obj) else NULL
+
+      # Write atomic data types with specified compression level in one line
+      dataset <- if (bit64::is.integer64(obj)) {
+        group$create_dataset(name, robj = bit64::as.integer64(obj), dtype = hdf5r::h5types$H5T_NATIVE_LLONG, chunk_dims = chunk_dims, gzip_level = level)
+      } else if (is.integer(obj)) {
+        group$create_dataset(name, robj = obj, chunk_dims = chunk_dims, gzip_level = level)
+      } else if (is.double(obj)) {
+        group$create_dataset(name, robj = obj, chunk_dims = chunk_dims, gzip_level = level)
+      } else if (is.character(obj)) {
+        group$create_dataset(name, robj = obj, chunk_dims = chunk_dims, gzip_level = level)
+      } else if (is.logical(obj)) {
+        group$create_dataset(name, robj = obj, chunk_dims = chunk_dims, gzip_level = level)
+      } else if (is.factor(obj)) {
+        stop("Factors are not supported by HDF5. Convert all factor data to regular data, e.g. using as.character(...).")
       } else {
-        stop("Unsupported data type")
+        stop("Unsupported data type: Class=", class(obj), ", Type=", typeof(obj))
+      }
+
+      # Add dataset attributes if they exist
+      if (!is.null(attributes(obj))) {
+        if (inherent.attributes) {
+          attrs <- attributes(obj)
+        } else {
+          attrs <- userattributes(obj)
+        }
+        for (attr_name in names(attrs)) {
+          dataset$create_attr(attr_name, robj = attrs[[attr_name]])
+        }
       }
     }
   }
 
-  write_data(h5file, data)
-  h5file$close()
+  write_obj(h5file, obj)
+  h5file$close_all()
 }

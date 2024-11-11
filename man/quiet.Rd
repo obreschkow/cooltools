@@ -2,7 +2,7 @@
 % Please edit documentation in R/quiet.R
 \name{quiet}
 \alias{quiet}
-\title{Suppress in-routine output}
+\title{Suppress console output}
 \usage{
 quiet(x)
 }
@@ -13,7 +13,7 @@ quiet(x)
 Returns whatever the called routine returns in invisible form.
 }
 \description{
-Runs any routine or command while suppressing in-routine console output
+Executes routines and command lines and load packages while suppressing the console output.
 }
 \examples{
 # Test function
