@@ -2,7 +2,7 @@
 % Please edit documentation in R/writehdf5.R
 \name{writehdf5}
 \alias{writehdf5}
-\title{Write structure list to an HDF5 file}
+\title{Write structured list to an HDF5 file}
 \usage{
 writehdf5(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE)
 }
@@ -21,16 +21,16 @@ writehdf5(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE)
 None
 }
 \description{
-Recursively writes named lists, including nested named sublists, to an HDF5 file, creating HDF5 groups and datasets as needed to preserve the hierarchical structure.
-The routine supports standard data types, including double floats, integers, characters, and logical values, as well as vectors and arrays of these types. It also supports
-64-bit integers (\code{H5T_NATIVE_INT64}) if such input data is provided via the \code{bit64} package. Custom attributes of sublists and data, included in the R-data,
+Writes a named list, including its hierarchy of nested sublists, to an HDF5 file with HDF5 groups, subgroups and datasets preserving the hierarchical structure.
+The routine supports standard HDF5 data types, including double-precision floating point numbers (64 bit), integers (32 bit), characters (8 bit), and booleans, as well as vectors and arrays of these types. It also supports
+64-bit integers (\code{H5T_NATIVE_INT64}), available in R via the \code{bit64} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}}),
 are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups and datasets.
 }
 \details{
-The function relies on the \code{hdf5r} package and on the \code{bit64} package.\cr
-If the argument `obj` is a data frame or contains a data frame in a nested sublist, then this data frame is automatically converted into a list with matching names.\cr
-If the input data contain some unnamed elements, e.g. \code{obj=list(a='named','unnamed')}, the unnamed groups/datasets are called `unnamed_#` in the HDF5 file.\cr
-Some data types in R have inherent attributes, such as `names` for data frames and `dim` for arrays. By default, these inherent attributes are not written to the HDF5 file. They are, however, automatically regenerated when the HDF5 file is loaded back via \code{\link{readhdf5}}. The argument \code{inherent.attributes} can be used to force writing all attributes, including the inherent ones, to the HDF5 file.
+The function relies on the \code{hdf5r} package and on the \code{bit64} package.\cr\cr
+The nested list \code{obj} should only contain data types available to HDF5. The only exception are data frames, which, if included, are automatically converted to lists. Normally, the list \code{obj} and its nested sublists, should all be named lists, i.e. \code{list(a=1, b=2)} rather than \code{list(1,2)}. Unnamed elements are automatically assigned a name `unnamed_#` in the HDF5 file.\cr\cr
+Some data types in R have inherent attributes, such as `names` for data frames and `dim` for arrays. By default, these inherent attributes are not written to the HDF5 file. They are, however, automatically regenerated when the HDF5 file is loaded back via \code{\link{readhdf5}}. The argument \code{inherent.attributes} can be used to force writing all attributes, including the inherent ones, to the HDF5 file.\cr\cr
+If a structured R list is saved with \code{writehdf5} and then reloaded using \code{\link{readhdf5}}, the recovered list is identical to the input list up to the ordering of list elements, which is alphabetic by default in HDF5. The only other difference between the input and recovered data occurs when the input data contain data frames, as these are automatically converted do lists. A work around is to set \code{inherent.attributes=TRUE} when writing the HDF5 file. In this case, the reloaded HDF5 data becomes a data frame again.
 }
 \examples{
 
@@ -65,6 +65,7 @@ attr(input$groupb$vector,'Comment') = 'Large integer'
 attr(input$groupb$vector,'Package') = 'bit64'
 
 # Add attributes to some groups
+attr(input$people,'Company branch') = 'Sales'
 attr(input$groupb,'Comment') = 'Integer group'
 attr(input$header,'Timestamp') = date()
 attr(input$header,'Working directory') = getwd()
@@ -77,8 +78,20 @@ writehdf5(input, filename)
 output = readhdf5(filename)
 
 # Check if input and output lists are identical
-# (up to ordering, as HDF5 uses alphabetic default order)
+# (up to alphabetic ordering and data frame-to-list conversion)
 print(all.equal(sortlist(input, convert.data.frames = TRUE), output))
+
+# Write list to HDF5 file again, this time with inherent attributes, allowing
+# to keep track of the data frames
+filename = tempfile()
+writehdf5(input, filename, inherent.attributes = TRUE)
+
+# Read HDF5 file into a new list
+output = readhdf5(filename)
+
+# Check if input and output lists are identical
+# (up to alphabetic ordering only)
+print(all.equal(sortlist(input), output))
 
 }
 \seealso{

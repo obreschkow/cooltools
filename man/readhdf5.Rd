@@ -15,7 +15,7 @@ If \code{subtree} is NULL (default), the entire file hierarchy is read.}
 \item{group.attr.as.data}{logical flag. If \code{TRUE}, group attributes are converted to datasets. This is useful, for example, for Gadget simulation outputs in HDF5 format, where the simulation parameters are stored as attributes in the `Header' group.}
 }
 \value{
-A nested list representing the contents of the HDF5 file. Groups are represented as lists, datasets are represented by their data, and attributes are included either as the main data (if no other data is present) or under the `_attributes` key for groups.
+Nested list representing the contents of the HDF5 file. Groups are represented as nested sublists, and datasets are represented by their data. If groups and datasets have attributes in the HDF5 data, these are added attributes to the corresponding sublists and data elements. Use the function \code{\link{userattributes}} to retrieve these custom arguments, or the base R function \code{\link{attributes}} to access all attributes, including inherent ones (e.g. `dim` for arrays).
 }
 \description{
 Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data.
@@ -24,5 +24,5 @@ Reads data from an HDF5 file, including attributes, into a nested list that pres
 This function, built on the \code{hdf5r} package, reads the contents of an HDF5 file into a nested list structure in R. Groups and datasets are recursively parsed, preserving the original hierarchy.
 }
 \seealso{
-\code{\link[hdf5r]{H5File}}, \code{\link{writehdf5}}
+\code{\link{writehdf5}} providing a code example
 }

@@ -12,9 +12,9 @@
 #'
 #' @details This function, built on the \code{hdf5r} package, reads the contents of an HDF5 file into a nested list structure in R. Groups and datasets are recursively parsed, preserving the original hierarchy.
 #'
-#' @return A nested list representing the contents of the HDF5 file. Groups are represented as lists, datasets are represented by their data, and attributes are included either as the main data (if no other data is present) or under the `_attributes` key for groups.
+#' @return Nested list representing the contents of the HDF5 file. Groups are represented as nested sublists, and datasets are represented by their data. If groups and datasets have attributes in the HDF5 data, these are added attributes to the corresponding sublists and data elements. Use the function \code{\link{userattributes}} to retrieve these custom arguments, or the base R function \code{\link{attributes}} to access all attributes, including inherent ones (e.g. `dim` for arrays).
 #'
-#' @seealso \code{\link[hdf5r]{H5File}}, \code{\link{writehdf5}}
+#' @seealso \code{\link{writehdf5}} providing a code example
 #'
 #' @export
 
