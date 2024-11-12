@@ -11,7 +11,7 @@ writehdf5(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE)
 
 \item{file}{Character string specifying the file name of the output HDF5 file.}
 
-\item{inherent.attributes}{Logical flag indicating whether to include inherent attributes that some R-objects possess, such as `dim` for matrices.}
+\item{inherent.attributes}{Logical flag indicating whether to include inherent attributes that some R-objects possess, such as `dim` for matrices or `names` for named vectors and arrays.}
 
 \item{level}{Integer specifying the compression level for datasets, typically between 0 (no compression) and 9 (maximum compression). Not all dataset types support compression.}
 
@@ -23,52 +23,55 @@ None
 \description{
 Writes a named list, including its hierarchy of nested sublists, to an HDF5 file with HDF5 groups, subgroups and datasets preserving the hierarchical structure.
 The routine supports standard HDF5 data types, including double-precision floating point numbers (64 bit), integers (32 bit), characters (8 bit), and booleans, as well as vectors and arrays of these types. It also supports
-64-bit integers (\code{H5T_NATIVE_INT64}), available in R via the \code{bit64} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}}),
-are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups and datasets.
+64-bit integers (\code{H5T_NATIVE_INT64}), available in R via the \code{bit64} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
+are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups (produced by \code{list()}) and datasets (produced by \code{numeric(0)}).
 }
 \details{
 The function relies on the \code{hdf5r} package and on the \code{bit64} package.\cr\cr
 The nested list \code{obj} should only contain data types available to HDF5. The only exception are data frames, which, if included, are automatically converted to lists. Normally, the list \code{obj} and its nested sublists, should all be named lists, i.e. \code{list(a=1, b=2)} rather than \code{list(1,2)}. Unnamed elements are automatically assigned a name `unnamed_#` in the HDF5 file.\cr\cr
 Some data types in R have inherent attributes, such as `names` for data frames and `dim` for arrays. By default, these inherent attributes are not written to the HDF5 file. They are, however, automatically regenerated when the HDF5 file is loaded back via \code{\link{readhdf5}}. The argument \code{inherent.attributes} can be used to force writing all attributes, including the inherent ones, to the HDF5 file.\cr\cr
-If a structured R list is saved with \code{writehdf5} and then reloaded using \code{\link{readhdf5}}, the recovered list is identical to the input list up to the ordering of list elements, which is alphabetic by default in HDF5. The only other difference between the input and recovered data occurs when the input data contain data frames, as these are automatically converted do lists. A work around is to set \code{inherent.attributes=TRUE} when writing the HDF5 file. In this case, the reloaded HDF5 data becomes a data frame again.
+If a structured R list is saved with \code{writehdf5} and then reloaded using \code{\link{readhdf5}}, the recovered list is identical to the input list up to the ordering of list elements, which is alphabetic by default in HDF5. The only other difference between the input and recovered data occurs when the input data contain data frames, as these are automatically converted do lists. A workaround is to set \code{inherent.attributes=TRUE} when writing the HDF5 file. In this case, the reloaded HDF5 data becomes a data frame again.
 }
 \examples{
 
 # Create example data
 input = list(
-  people = data.frame(
+  group_empty = list(),
+  dataset_empty = numeric(0),
+  group_dataframe = data.frame(
     ID = as.integer(1:3),
     Name = c("Alice", "Bob", "Charlie"),
     Salary = c(2341.2, 3534.2, 4541.9),
     Employed = c(TRUE, TRUE, FALSE)
   ),
-  empty = list(),
-  header = list(),
-  number = 4,
-  groupa = list(
+  dataset_parameters = 1.234,
+  group_integers = list(int32 = as.integer(123),
+                        int64 = bit64::as.integer64(123),
+                        vector = bit64::as.integer64((1:3)+12345678912345)),
+  dataset_nonnumeric = c(NA, NaN, Inf, -Inf),
+  group_mixed = list(
     header = 'test header',
-    subgroup = list(
-      dataset1 = c("A", "B", "C", "xxx"),
-      dataset3 = array(runif(30), dim = c(2, 5, 3)),
-      dataset2 = matrix(as.integer(1:10), nrow = 2)
+    subgroup1 = list(
+      dataset1 = c("A", "\%}~&^", "x1y2z3", "", " "),
+      dataset2 = matrix(as.integer(1:10), nrow = 2),
+      dataset3 = array(runif(30), dim = c(2, 5, 3))
     ),
-    dataset4 = c(pi)
-  ),
-  groupb = list(int32 = as.integer(123),
-                int64 = bit64::as.integer64(123),
-                vector = bit64::as.integer64(seq(3)+12345678912345))
+    subgroup2 = list(date = as.character(as.Date("2025-01-01")),
+                     location = 'Perth')
+  )
 )
 
 # Add attributes to some datasets
-attr(input$groupa$subgroup$dataset3,'Type') = '3D array'
-attr(input$groupb$vector,'Comment') = 'Large integer'
-attr(input$groupb$vector,'Package') = 'bit64'
+attr(input$dataset_empty,'Comment') = 'This is a test file.'
+attr(input$group_mixed$subgroup1$dataset3,'Type') = '3D array'
+attr(input$group_integers$vector,'Comment') = 'Vector of long integers'
+attr(input$group_integers$vector,'Package') = 'bit64'
 
 # Add attributes to some groups
-attr(input$people,'Company branch') = 'Sales'
-attr(input$groupb,'Comment') = 'Integer group'
-attr(input$header,'Timestamp') = date()
-attr(input$header,'Working directory') = getwd()
+attr(input$group_dataframe,'Company branch') = 'Sales'
+attr(input$group_integers,'Comment') = 'Testing different integers'
+attr(input$group_empty,'Timestamp') = date()
+attr(input$group_empty,'Working directory') = getwd()
 
 # Write list to HDF5 file
 filename = tempfile()

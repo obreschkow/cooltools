@@ -77,7 +77,7 @@ userattributes <- function(obj) {
     baseline_attrs <- attributes(baseline)
 
     # Identify custom attributes
-    custom_attr_names <- setdiff(names(obj_attrs), names(baseline_attrs))
+    custom_attr_names <- setdiff(names(obj_attrs), c('names',names(baseline_attrs)))
 
     # add attribute values
     if (length(custom_attr_names) == 0) {

@@ -19,8 +19,6 @@
 #' @export
 
 readhdf5 <- function(file, subtree = NULL, group.attr.as.data = FALSE) {
-  # Open the HDF5 file in read-only mode
-  h5file <- hdf5r::H5File$new(file, mode = "r")
 
   # Recursive helper function to read each element based on subtree
   read_data <- function(group, subtree_node = NULL) {
@@ -78,6 +76,10 @@ readhdf5 <- function(file, subtree = NULL, group.attr.as.data = FALSE) {
     return(result)
   }
 
+
+  # Open the HDF5 file in read-only mode
+  h5file <- hdf5r::H5File$new(file, mode = "r")
+
   # Start reading from the root group, using the subtree structure if provided
   data <- list()
   root_subtree <- if (is.null(subtree)) names(h5file) else names(subtree)
@@ -90,7 +92,7 @@ readhdf5 <- function(file, subtree = NULL, group.attr.as.data = FALSE) {
   }
 
   # Close the file
-  h5file$close()
+  h5file$close_all()
 
   return(data)
 }
