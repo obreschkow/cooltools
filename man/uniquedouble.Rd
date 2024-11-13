@@ -2,32 +2,45 @@
 % Please edit documentation in R/uniquedouble.R
 \name{uniquedouble}
 \alias{uniquedouble}
-\title{Turn a 64-bit integer into a unique double value}
+\title{Map positive 64-bit integers onto unique doubles}
 \usage{
-uniquedouble(int64)
+uniquedouble(x, inverse = FALSE)
 }
 \arguments{
-\item{int64}{integer or vector of integers; normally used with 64-bit integers, but also works with other types.}
+\item{x}{If inverse=\code{FALSE} (default), this is a scalar/vector/array of non-negative integers, typically 64-bit integers. If inverse=\code{TRUE}, it is a scalar/vector/array of doubles.}
+
+\item{inverse}{Logical flag. If \code{TRUE}, doubles are converted back to their original 64-bit integers.}
 }
 \value{
-Returns a double floating point value.
+Scalar/vector/array of double values, if inverse=\code{FALSE}, or integer64 values, if inverse=\code{TRUE}.
 }
 \description{
-Turns 64-bit integers into unique doubles for faster comparison. The output double values are completely different from the input values.
+Uses a reversible one-to-one mapping to converts non-negative 64-bit integers, produced via the \code{bit64} package, to double-precision floating-point values for faster handling of 64-bit integer indices, e.g. comparison of indices, count number of unique indices, etc. The double values are completely different from the corresponding integer values.
 }
 \examples{
+# produce example vector of non-negative 64-bit integers
+n = 1e3
+x = c(bit64::as.integer64(0:n),
+      bit64::as.integer64('9218868437227405311')+c(-n:n),
+      bit64::lim.integer64()[2]-c(0:n))
 
-# The comparison of in-built types is very fast:
-int32 = as.integer(0) # (same as int32 = 0)
-system.time(for(i in seq(1e4)) comparison=int32==int32)
+# map this vector onto unique doubles
+y = uniquedouble(x)
 
-# The comparison of 64-bit integers is very slow:
-int64 = bit64::as.integer64(0)
-system.time(for(i in seq(1e4)) comparison=int64==int64)
+# check if the double-vector can be inverted back to the integer-vector
+cat(sprintf('Check inversion = \%s.\n', all(x==uniquedouble(y, inverse=TRUE))))
 
-# The comparison of converted 64-bit integers is again fast:
-int64d = uniquedouble(int64)
-system.time(for(i in seq(1e4)) comparison=int64d==int64d)
+# measure the time taken to compare all the int64 values
+tick('Compare original integer64 values.')
+comparison = TRUE
+for(i in seq_along(x)) comparison = comparison & x[i]==x[i]
+tock(comparison, fmt=" Time taken = \%.3fs. Test result = \%s.\n")
+
+# measure the time taken to compare all the corresponding double values
+tick('Compare corresponding double values.')
+comparison = TRUE
+for(i in seq_along(y)) comparison = comparison & y[i]==y[i]
+tock(comparison, fmt=" Time taken = \%.3fs. Test result = \%s.\n")
 
 }
 \author{
