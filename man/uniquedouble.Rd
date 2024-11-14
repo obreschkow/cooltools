@@ -28,19 +28,19 @@ x = c(bit64::as.integer64(0:n),
 y = uniquedouble(x)
 
 # check if the double-vector can be inverted back to the integer-vector
-cat(sprintf('Check inversion = \%s.\n', all(x==uniquedouble(y, inverse=TRUE))))
+cat(sprintf("Check inversion = \%s.\n", all(x==uniquedouble(y, inverse=TRUE))))
 
 # measure the time taken to compare all the int64 values
-tick('Compare original integer64 values.')
+tick("Compare original integer64 values. ")
 comparison = TRUE
 for(i in seq_along(x)) comparison = comparison & x[i]==x[i]
-tock(comparison, fmt=" Time taken = \%.3fs. Test result = \%s.\n")
+tock(comparison, fmt="Time taken = \%.3fs. Test result = \%s.\n")
 
 # measure the time taken to compare all the corresponding double values
-tick('Compare corresponding double values.')
+tick("Compare corresponding double values. ")
 comparison = TRUE
 for(i in seq_along(y)) comparison = comparison & y[i]==y[i]
-tock(comparison, fmt=" Time taken = \%.3fs. Test result = \%s.\n")
+tock(comparison, fmt="Time taken = \%.3fs. Test result = \%s.\n")
 
 }
 \author{
