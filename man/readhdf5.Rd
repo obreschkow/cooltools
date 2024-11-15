@@ -4,7 +4,7 @@
 \alias{readhdf5}
 \title{Read data from an HDF5 file}
 \usage{
-readhdf5(file, subtree = "*", group.attr.as.data = FALSE)
+readhdf5(file, subtree = "*", group.attr.as.data = FALSE, empty = FALSE)
 }
 \arguments{
 \item{file}{Character string specifying the file name of the input HDF5 file.}
@@ -12,6 +12,8 @@ readhdf5(file, subtree = "*", group.attr.as.data = FALSE)
 \item{subtree}{A structure specifying the HDF5 groups and datasets to be read. Use an asterisk \code{"*"} (default) to read the entire file. To read only part of the file, provide a named list reflecting the hierarchy of groups, subgroups, and datasets. For (sub)groups, use nested lists containing the items to read, or use \code{'*'} to load everything in the group. An empty list \code{list()} reads only the attributes of a group. For datasets, use \code{NULL} to read only attributes, or any other content to read the full data.}
 
 \item{group.attr.as.data}{Logical flag. If \code{TRUE}, group attributes are converted to datasets, which is useful for formats where parameters are stored as attributes (e.g., Gadget simulation outputs).}
+
+\item{empty}{Logical flag. If \code{TRUE}, only names of groups and datasets are returned, with all data equal to NA. This is a fast way of reading the hierarchical structure.}
 }
 \value{
 Nested list representing the contents of the HDF5 file. Groups are nested sublists, datasets are represented by their data. Attributes of groups and datasets are attached as attributes to the corresponding sublists and data elements.
