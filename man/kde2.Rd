@@ -24,7 +24,7 @@ kde2(
 
 \item{w}{optional N-element vector with weights}
 
-\item{nx}{integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.}
+\item{nx}{integer specifying the number of equally spaced grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.}
 
 \item{xlim}{2-element vector specifying the x-range}
 
@@ -40,7 +40,7 @@ kde2(
 
 \item{reflect}{vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected to avoid probability density leaking outside the window}
 
-\item{algorithm}{integer value or character string specifying the smoothing altorithm:\cr
+\item{algorithm}{integer value or character string specifying the smoothing algorithm:\cr
 \code{basic (0):} basic nearest-neighbor gridding algorithm without smoothing\cr
 \code{blur (1):} simple Gaussian blur of gridded density field\cr
 \code{kdefast (2):} 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number of objects in each pixel\cr

@@ -9,7 +9,7 @@
 #'
 #' @param x N-by-D vector of x-coordinates or N-by-2 matrix of (x,y)-coordinates
 #' @param w optional N-element vector with weights
-#' @param nx integer specifying the number of equally space grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.
+#' @param nx integer specifying the number of equally spaced grid cells along the x-axis; the number ny of pixels along the y-axis is determined automatically from xlim and ylim.
 #' @param xlim 2-element vector specifying the x-range
 #' @param ylim 2-element vector specifying the y-range; if needed, this range is slightly adjusted to allow for an integer number of pixels.
 #' @param smoothing positive linear smoothing factor; the larger, the smoother the density field
@@ -17,7 +17,7 @@
 #' @param sigma.min optional value, specifying the minimum blurring of any pixel, expressed in standard deviations in length units of x
 #' @param sigma.max optional value, specifying the maximum blurring of any pixel, expressed in standard deviations in length units of x
 #' @param reflect vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected to avoid probability density leaking outside the window
-#' @param algorithm integer value or character string specifying the smoothing altorithm:\cr
+#' @param algorithm integer value or character string specifying the smoothing algorithm:\cr
 #' \code{basic (0):} basic nearest-neighbor gridding algorithm without smoothing\cr
 #' \code{blur (1):} simple Gaussian blur of gridded density field\cr
 #' \code{kdefast (2):} 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number of objects in each pixel\cr
@@ -83,12 +83,12 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
   if (is.null(dim(x)) || length(dim(x))!=2 || dim(x)[2]<2) stop('x must be a vector or a N-by-D matrix with D>=2.')
   npoints.all = dim(x)[1]
   if (!is.null(sigma)) {
-    if (length(sigma)==1) rep(sigma,npoints.all)
-    if (length(sigma)!=npoints.all) stop('sigma must be an vector with the same number of elements as rows in x')
+    if (length(sigma)==1) sigma=rep(sigma,npoints.all)
+    if (length(sigma)!=npoints.all) stop('sigma must be a vector with the same number of elements as rows in x')
   }
   if (!is.null(w)) {
-    if (length(w)==1) rep(w,npoints.all)
-    if (length(w)!=npoints.all) stop('w must be an vector with the same number of elements as rows in x')
+    if (length(w)==1) w=rep(w,npoints.all)
+    if (length(w)!=npoints.all) stop('w must be a vector with the same number of elements as rows in x')
   }
   if (npoints.all>1) {
     if (is.null(xlim)) xlim=range(x[,1])
@@ -97,7 +97,10 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
     if (is.null(xlim)) xlim=range(x[,1])+c(-0.5,0.5)
     if (is.null(ylim)) ylim=range(x[,2])+c(-0.5,0.5)
   }
-  if (is.numeric(algorithm)) algorithm=c('basic','blur','kdefast','kdenn','manual')[algorithm+1]
+  if (is.numeric(algorithm)) {
+    if (algorithm < 0 || algorithm > 4) stop('Invalid algorithm index.')
+    algorithm=c('basic','blur','kdefast','kdenn','manual')[algorithm+1]
+  }
 
   # make grid spacing and tweak y-range to contain an integer number of pixels
   dpixel = diff(xlim)/nx
@@ -217,7 +220,7 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
 
     } else {
 
-      stop('unknown algorithm')
+      stop('Invalid algorithm.')
 
     }
 
@@ -246,8 +249,8 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
   out = list(field=field,
              x=midseq(xlim[1],xlim[2],nx),
              y=midseq(ylim[1],ylim[2],ny),
-             xbreak=seq(xlim[1],xlim[2],nx+1),
-             ybreak=seq(ylim[1],ylim[2],ny+1),
+             xbreak=seq(xlim[1],xlim[2],length=nx+1),
+             ybreak=seq(ylim[1],ylim[2],length=ny+1),
              dpixel=dpixel,
              algorithm=algorithm)
   return(out)
