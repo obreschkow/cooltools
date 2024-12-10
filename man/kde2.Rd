@@ -41,10 +41,10 @@ kde2(
 \item{reflect}{vector of strings c('left','right','bottom','top') specifying the edges, where the data should be reflected to avoid probability density leaking outside the window}
 
 \item{algorithm}{integer value or character string specifying the smoothing altorithm:\cr
-\code{basic (0):} basic nearest-neighbor gridding algorithm without smoothing
-\code{blur (1):} simple Gaussian blur of gridded density field
-\code{kdefast (2):} 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number of objects in each pixel
-\code{kdennnn  (3):} sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually
+\code{basic (0):} basic nearest-neighbor gridding algorithm without smoothing\cr
+\code{blur (1):} simple Gaussian blur of gridded density field\cr
+\code{kdefast (2):} 2D smoothing method that ignores higher dimensional information and applies a smoothing size to each pixel that depends on the number of objects in each pixel\cr
+\code{kdenn (3):} sophisticated Kernel density estimator that uses D-dimensional nearest neighbor separations to smooth each data point individually\cr
 \code{manual (4):} smooths each data point individually using a Gaussian Kernel with point-dependent standard deviations given in the optional vector \code{sigma}\cr\cr}
 
 \item{probability}{logical flag. If TRUE, the output field is normalized such that sum(field)dpixel^2=1. If FALSE (default), the field is such that sum(field)dpixel^2 equals the effective number of particles (or effective mass, if weights are given) in the range specified by xlim and ylim, including particle fractions that have been smoothed into the field and excluding particle fractions that have been smoothed out of it.}
