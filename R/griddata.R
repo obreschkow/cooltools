@@ -89,6 +89,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
     if (length(w)==1) {
       w=NULL
     } else {
+      if (is.array(w)) w=as.vector(w)
       if (!is.vector(w)) stop('If given, w must be a vector.')
       if (length(w)!=dim(x)[1]) stop('If given, w must be a N-vector.')
     }
