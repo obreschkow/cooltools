@@ -60,8 +60,9 @@ readhdf5 <- function(file, subtree = "*", group.attr.as.data = FALSE, empty = FA
         result = sprintf('dtype=%s, size=%s, dims=(%s)',item$get_type()$get_class(),item$get_space()$get_simple_extent_npoints(),paste0(item$dims,collapse=','))
       } else {
         result = if (is.null(subtree_node)) NULL else item$read()
+        if (length(dim(result))>1) result = aperm(result,length(dim(result)):1)
         if (!is.null(result) && item$key_info$type$get_class() == "H5T_INTEGER" && item$key_info$type$get_size() == 8) {
-          result = as.integer64(result)
+          result = bit64::as.integer64(result)
         }
       }
 
