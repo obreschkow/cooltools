@@ -213,7 +213,7 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
       field = array(0,c(nx,ny)+2*h)
       for (i in unique(idist)) {
         sel = which(idist==i)
-        g = griddata(rbind(x[sel,1:2]),w=w[sel],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')
+        g = griddata(x[sel,1:2,drop=FALSE],w=w[sel],n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')
         sigma = 2^(i/sub)*smoothing
         field = field+EBImage::gblur(g$field,sigma)
       }

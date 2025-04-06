@@ -58,6 +58,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
     if (length(dim(x))!=2) stop('x must be a vector or a N-by-D matrix.')
     d = dim(x)[2]
   }
+  npoints = dim(x)[1]
 
   # handle number of cells
   if (length(n)==1) {
@@ -70,14 +71,22 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
   # handle limits
   limit.given = FALSE
   if (is.null(min)) {
-    min = apply(x,2,min)
+    if (npoints==1) {
+      min = as.vector(x-1)
+    } else {
+      min = apply(x,2,min)
+    }
   } else {
     limit.given = TRUE
     if (length(min)==1) min=rep(min,d)
     if (length(min)!=d) stop('min should be a single number or D-vector.')
   }
   if (is.null(max)) {
-    max = apply(x,2,max)
+    if (npoints==1) {
+      max = as.vector(x+1)
+    } else {
+      max = apply(x,2,max)
+    }
   } else {
     limit.given = TRUE
     if (length(max)==1) max=rep(max,d)
@@ -87,11 +96,11 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
   # handle weights
   if (!is.null(w)) {
     if (length(w)==1) {
-      w=NULL
+      w=rep(w,npoints)
     } else {
       if (is.array(w)) w=as.vector(w)
       if (!is.vector(w)) stop('If given, w must be a vector.')
-      if (length(w)!=dim(x)[1]) stop('If given, w must be a N-vector.')
+      if (length(w)!=npoints) stop('If given, w must be a N-vector.')
     }
   }
 
@@ -113,7 +122,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
       } else {
         for (k in 1:d) {
           s = which(x[,k]>=min[k] & x[,k]<=max[k])
-          x = x[s,]
+          x = x[s,,drop=FALSE]
           w = w[s]
         }
       }
@@ -133,7 +142,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
   if (d==1) g$grid = g$grid[[1]]
 
   # convert continuous d-dimensional coordinates into discrete 1-dimensional index
-  index = rep(1,dim(x)[1])
+  index = rep(1,npoints)
   f = 1
   for (k in 1:d) {
     i = pmax(1,pmin(n[k],ceiling((x[,k]-min[k])/(max[k]-min[k])*n[k])))
@@ -145,7 +154,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
     # efficiently count number of points of each index
     g$field = array(tabulate(index,prod(n)),n)
   } else {
-    # efficiently county mass at each index
+    # efficiently count mass at each index
     DT = data.table(index=index, w=w)
     q = DT[, c(.N, lapply(.SD, sum)), by=index]
     g$field = array(0,n)
@@ -156,7 +165,7 @@ griddata = function(x, w=NULL, n=10, min=NULL, max=NULL, type='counts') {
   if (type=='density') {
     g$field = g$field/g$dV
   } else if (type=='probability') {
-    g$field = g$field/(g$dV*dim(x)[1])
+    g$field = g$field/sum(g$field*g$dV)
   }
 
   # return data
