@@ -3,7 +3,7 @@
 #' @importFrom hdf5r H5File h5attributes
 #' @importFrom bit64 as.integer64
 #'
-#' @description Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data.
+#' @description Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data. The routine can read 64-bit integers and represent them as 64-bit integers in R via the \code{bit64} package. It can also read 32-bit floating points values, not part of native R. These are automatically converted into 64-bit doubles.
 #'
 #' @param file Character string specifying the file name of the input HDF5 file.
 #' @param subtree A structure specifying the HDF5 groups and datasets to be read. Use an asterisk \code{"*"} (default) to read the entire file. To read only part of the file, provide a named list reflecting the hierarchy of groups, subgroups, and datasets. For (sub)groups, use nested lists containing the items to read, or use \code{'*'} to load everything in the group. An empty list \code{list()} reads only the attributes of a group. For datasets, use \code{NULL} to read only attributes, or any other content to read the full data.
@@ -75,7 +75,7 @@ readhdf5 <- function(file, subtree = "*", group.attr.as.data = FALSE, empty = FA
     # Attach attributes
     if (!empty) {
       for (attr_name in names(attributes)) {
-        if (attr_name != "names") {
+        if (attr_name != "names" & attr_name != "dim") {
           attr(result, attr_name) <- attributes[[attr_name]]
         }
       }

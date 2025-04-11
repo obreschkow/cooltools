@@ -23,7 +23,7 @@ None
 \description{
 Writes a named list, including its hierarchy of nested sublists, to an HDF5 file with HDF5 groups, subgroups and datasets preserving the hierarchical structure.
 The routine supports standard HDF5 data types, including double-precision floating point numbers (64 bit), integers (32 bit), characters (8 bit), and booleans, as well as vectors and arrays of these types. It also supports
-64-bit integers (\code{H5T_NATIVE_INT64}), available in R via the \code{bit64} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
+64-bit integers (\code{H5T_NATIVE_INT64}), available via the \code{bit64} package, as well as 32-bit floating points, available via the \code{float} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
 are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups (produced by \code{list()}) and datasets (produced by \code{numeric(0)}).
 }
 \details{

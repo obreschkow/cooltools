@@ -19,7 +19,7 @@ readhdf5(file, subtree = "*", group.attr.as.data = FALSE, empty = FALSE)
 Nested list representing the contents of the HDF5 file. Groups are nested sublists, datasets are represented by their data. Attributes of groups and datasets are attached as attributes to the corresponding sublists and data elements.
 }
 \description{
-Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data.
+Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data. The routine can read 64-bit integers and represent them as 64-bit integers in R via the \code{bit64} package. It can also read 32-bit floating points values, not part of native R. These are automatically converted into 64-bit doubles.
 }
 \details{
 This function, based on the \code{hdf5r} package, recursively parses and reads HDF5 files into nested lists that preserve the original hierarchy. Attributes in groups and datasets are included in the output.

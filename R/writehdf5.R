@@ -5,7 +5,7 @@
 #'
 #' @description Writes a named list, including its hierarchy of nested sublists, to an HDF5 file with HDF5 groups, subgroups and datasets preserving the hierarchical structure.
 #' The routine supports standard HDF5 data types, including double-precision floating point numbers (64 bit), integers (32 bit), characters (8 bit), and booleans, as well as vectors and arrays of these types. It also supports
-#' 64-bit integers (\code{H5T_NATIVE_INT64}), available in R via the \code{bit64} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
+#' 64-bit integers (\code{H5T_NATIVE_INT64}), available via the \code{bit64} package, as well as 32-bit floating points, available via the \code{float} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
 #' are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups (produced by \code{list()}) and datasets (produced by \code{numeric(0)}).
 #'
 #' @param obj List containing the data to be written. Nested sublists are interpreted as sub-groups within the HDF5 file. If a sublist is empty or if an element inside a list is `NULL`, it creates an empty group/dataset that can hold only attributes.
@@ -91,7 +91,6 @@
 
 writehdf5 = function(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE) {
 
-
   write_obj = function(group, obj, name = NULL) {
 
     if (is.list(obj)) { # make group
@@ -114,7 +113,17 @@ writehdf5 = function(obj, file, inherent.attributes = FALSE, level = 6, overwrit
 
       # Write atomic data types with specified compression level in one line
       if (inherits(obj[1], c('numeric','integer','integer64','character','logical'))) {
-        element = group$create_dataset(name, robj = obj, gzip_level = level)
+        if (is.array(obj)) {
+          element = group$create_dataset(name, robj = aperm(obj,length(dim(obj)):1), gzip_level = level)
+        } else {
+          element = group$create_dataset(name, robj = obj, gzip_level = level)
+        }
+      } else if (inherits(obj[1], 'float32')) {
+        if (is.array(obj)) {
+          element = group$create_dataset(name, robj = t(as.numeric(obj)), dtype = hdf5r::h5types$H5T_IEEE_F32LE, gzip_level = level)
+        } else {
+          element = group$create_dataset(name, robj = as.numeric(obj), dtype = hdf5r::h5types$H5T_IEEE_F32LE, gzip_level = level)
+        }
       } else {
         stop("Unsupported input data (class=", paste0(class(obj), collapse='/'), ", type=", typeof(obj),').\n  Consider converting to numeric or character type.')
       }
@@ -123,16 +132,23 @@ writehdf5 = function(obj, file, inherent.attributes = FALSE, level = 6, overwrit
 
     # Add attributes, if they exist, to group/dataset
     if (!is.null(attributes(obj))) {
-      if (inherent.attributes) {
-        attrs = attributes(obj)
+      if (inherits(obj[1], 'float32')) {
+        if (inherent.attributes) {
+          attrs = attributes(as.numeric(obj))
+        } else {
+          attrs = userattributes(as.numeric(obj))
+        }
       } else {
-        attrs = userattributes(obj)
+        if (inherent.attributes) {
+          attrs = attributes(obj)
+        } else {
+          attrs = userattributes(obj)
+        }
       }
       for (attr_name in names(attrs)) {
         element$create_attr(attr_name, robj = attrs[[attr_name]])
       }
     }
-
   }
 
   # Remove existing file and create directory, as required
