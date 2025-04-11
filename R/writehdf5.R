@@ -119,7 +119,7 @@ writehdf5 = function(obj, file, inherent.attributes = FALSE, level = 6, overwrit
           element = group$create_dataset(name, robj = obj, gzip_level = level)
         }
       } else if (inherits(obj[1], 'float32')) {
-        if (is.array(obj)) {
+        if (length(dim(obj))==2) {
           element = group$create_dataset(name, robj = t(as.numeric(obj)), dtype = hdf5r::h5types$H5T_IEEE_F32LE, gzip_level = level)
         } else {
           element = group$create_dataset(name, robj = as.numeric(obj), dtype = hdf5r::h5types$H5T_IEEE_F32LE, gzip_level = level)
