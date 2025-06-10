@@ -19,11 +19,6 @@
 #' @export
 
 tick = function(txt='Start') {
-  if (!is.null(.cooltools.env$timerRunning) && .cooltools.env$timerRunning) {
-    assign("progress_nchar", 0, envir = .cooltools.env)
-    assign("timerRunning", FALSE, envir = .cooltools.env)
-    stop('tick cannot be called twice without calling tock in between.')
-  }
   cat(sprintf('%s',txt))
   assign("tickTime", proc.time()[3], envir = .cooltools.env)
   assign("progress_nchar", 0, envir = .cooltools.env)
