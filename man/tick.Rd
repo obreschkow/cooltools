@@ -7,7 +7,7 @@
 tick(txt = "Start")
 }
 \arguments{
-\item{txt}{custom text}
+\item{txt}{custom text to be displayed.}
 }
 \value{
 None
@@ -23,7 +23,7 @@ tock()
 
 }
 \seealso{
-\code{\link{tock}}
+\code{\link{tock}} \code{\link{progress}}
 }
 \author{
 Danail Obreschkow
