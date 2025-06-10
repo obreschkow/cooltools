@@ -26,7 +26,7 @@ progress = function(txt=NULL) {
 
   if (is.null(.cooltools.env$timerRunning) || !.cooltools.env$timerRunning) stop('progress can only be called if a timer has been started with tick(), but not yet stopped with tock().')
   if (is.null(txt)) txt=sprintf('(%.2fs)',as.double(proc.time()[3]-get("tickTime", envir = .cooltools.env)))
-  cat(sprintf(' %s%s',strrep("\b", .cooltools.env$progress_nchar),txt))
+  cat(sprintf(' %s%s',strrep("\b \b", .cooltools.env$progress_nchar),txt))
   assign("progress_nchar", nchar(txt)+1, envir = .cooltools.env)
 
 }

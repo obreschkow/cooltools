@@ -25,7 +25,7 @@ tock = function(txt='', fmt=' (%.2fs). %s\n') {
   if (length(i)!=2) stop('tock: fmt must contain exactly two placeholders %s and %f/%e.')
   j = as.vector(gregexec('%s',fmt)[[1]])
   if (length(j)!=1) stop('tock: fmt must contain exactly one placeholder %s.')
-  cat(strrep("\b", .cooltools.env$progress_nchar))
+  cat(strrep("\b \b", .cooltools.env$progress_nchar))
   if (j==i[1]) {
     cat(sprintf(fmt,txt,dt))
   } else {
