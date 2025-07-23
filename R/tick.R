@@ -14,7 +14,7 @@
 #'
 #' @return None
 #'
-#' @seealso \code{\link{tock}} \code{\link{progress}} \code{\link{stop}}
+#' @seealso \code{\link{tock}} \code{\link{progress}} \code{\link{error}}
 #'
 #' @export
 

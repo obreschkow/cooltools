@@ -18,7 +18,7 @@
 #'
 #' @return None
 #'
-#' @seealso \code{\link{tick}} \code{\link{tock}} \code{\link{stop}}
+#' @seealso \code{\link{tick}} \code{\link{tock}} \code{\link{error}}
 #'
 #' @export
 

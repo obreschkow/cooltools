@@ -1,6 +1,6 @@
 #' Stop code and produce an error message
 #'
-#' @description Stops the code and produces an error message, like the stop() function of the base library, but terminating a timer started with \code{\link{tick}}, if needed.
+#' @description Stops the code and produces an error message, like the stop() function of the base library, but terminating a timer started with \code{\link{tick}}, if running.
 #'
 #' @param ... zero or more objects which can be coerced to character (and which are pasted together with no separator) or a single condition object.
 #'
@@ -12,10 +12,10 @@
 #'
 #' @export
 
-stop = function(...) {
+error = function(...) {
 
-  if (!is.null(.cooltools.env$timerRunning) && cooltools.env$timerRunning) cat(' Interrupted.\n')
+  if (!is.null(.cooltools.env$timerRunning) && .cooltools.env$timerRunning) cat(' Interrupted.\n')
 
-  stop(...)
+  base::stop(..., call.=FALSE)
 
 }

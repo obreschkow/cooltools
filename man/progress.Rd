@@ -27,7 +27,7 @@ tock()
 
 }
 \seealso{
-\code{\link{tick}} \code{\link{tock}} \code{\link{stop}}
+\code{\link{tick}} \code{\link{tock}} \code{\link{error}}
 }
 \author{
 Danail Obreschkow

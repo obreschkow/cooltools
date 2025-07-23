@@ -15,7 +15,7 @@
 #'
 #' @return Returns the elapsed time in seconds since calling tick().
 #'
-#' @seealso \code{\link{tick}} \code{\link{progress}} \code{\link{stop}}
+#' @seealso \code{\link{tick}} \code{\link{progress}} \code{\link{error}}
 #'
 #' @export
 

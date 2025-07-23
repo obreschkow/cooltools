@@ -23,7 +23,7 @@ tock()
 
 }
 \seealso{
-\code{\link{tock}} \code{\link{progress}} \code{\link{stop}}
+\code{\link{tock}} \code{\link{progress}} \code{\link{error}}
 }
 \author{
 Danail Obreschkow
