@@ -25,7 +25,7 @@ tock()
 
 }
 \seealso{
-\code{\link{tick}} \code{\link{progress}}
+\code{\link{tick}} \code{\link{progress}} \code{\link{stop}}
 }
 \author{
 Danail Obreschkow
