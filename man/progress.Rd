@@ -13,7 +13,8 @@ progress(txt = NULL)
 None
 }
 \description{
-Show progress while a timer is running following a call of tick().
+Show progress while a timer is running following a call of tick(). To suppress all progress updates,
+set the environment variable .cooltools.env$suppressProgress to \code{TRUE}.
 }
 \examples{
 
