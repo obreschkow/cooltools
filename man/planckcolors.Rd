@@ -13,12 +13,13 @@ planckcolors(n)
 Returns an n-vector of RGB colour strings.
 }
 \description{
-Generates color scale matching the one normally used to display the Planck CMB temperature map from -300uK to +300uK.
+Generates a colour scale that closely mimics the official colours used to display the Planck CMB temperature map from -300uK to +300uK.
+}
+\examples{
+nplot()
+rasterImage(rbind(planckcolors(1e3)),0,0,1,1)
+
 }
 \author{
 Danail Obreschkow
-
-#' @examples
-nplot()
-rasterImage(rbind(planck.colors(1e3)),0,0,1,1)
 }

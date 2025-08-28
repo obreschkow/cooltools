@@ -4,7 +4,7 @@
 #' @importFrom graphics rasterImage
 #' @importFrom stats approx
 #'
-#' @description Generates color scale matching the one normally used to display the Planck CMB temperature map from -300uK to +300uK.
+#' @description Generates a colour scale that closely mimics the official colours used to display the Planck CMB temperature map from -300uK to +300uK.
 #'
 #' @param n integer number of colors in the scale
 #'
@@ -12,9 +12,9 @@
 #'
 #' @author Danail Obreschkow
 #'
-#'#' @examples
+#' @examples
 #' nplot()
-#' rasterImage(rbind(planck.colors(1e3)),0,0,1,1)
+#' rasterImage(rbind(planckcolors(1e3)),0,0,1,1)
 #'
 #' @export
 
