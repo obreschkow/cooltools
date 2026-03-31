@@ -130,7 +130,6 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
     if (algorithm%in%c('basic','blur')) {
 
       field = griddata(rbind(x[,1:2]),w=w,n=c(nx,ny)+2*h,min=c(xlim.frame[1],ylim.frame[1]),max=c(xlim.frame[2],ylim.frame[2]),type='density')$field
-
       if (algorithm=='blur' & smoothing>0) {
         if (!requireNamespace("EBImage", quietly=TRUE)) {
           stop('Package EBImage is needed to run kde2 in with blur algorithm.')
@@ -225,7 +224,7 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
     }
 
     # remove very small negatives due to floating point inaccuracies
-    field[field<0] = 0
+    if (is.null(w) || all(w>=0)) field[field<0] = 0
 
     # reflect boundaries if desired
     if (any(reflect=='left')) field[(h+1):(2*h),] = field[(h+1):(2*h),]+field[h:1,]
