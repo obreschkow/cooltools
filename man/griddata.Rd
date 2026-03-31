@@ -4,29 +4,42 @@
 \alias{griddata}
 \title{Distribute a point set onto a regular grid}
 \usage{
-griddata(x, w = NULL, n = 10, min = NULL, max = NULL, type = "counts")
+griddata(
+  x,
+  w = NULL,
+  n = 10,
+  min = NULL,
+  max = NULL,
+  type = c("counts", "density", "probability", "mean")
+)
 }
 \arguments{
 \item{x}{N-element vector (if D=1) or N-by-D matrix (if D>1), giving the Cartesian coordinates of N points in D dimensions.}
 
 \item{w}{optional N-element vector with weights.}
 
-\item{n}{scalar or D-element vector specifying the number of equally space grid cells along each dimension.}
+\item{n}{scalar or D-element vector specifying the number of equally spaced grid cells along each dimension.}
 
-\item{min}{optional scalar or D-element vector specifying the lower bound of the grid. If not given, min is adjusted to the range of x.}
+\item{min}{optional scalar or D-element vector specifying the lower bound of the grid. If not given, \code{min} is adjusted to the range of \code{x}.}
 
-\item{max}{optional scalar or D-element vector specifying the upper bound of the grid. If not given, max is adjusted to the range of x.}
+\item{max}{optional scalar or D-element vector specifying the upper bound of the grid. If not given, \code{max} is adjusted to the range of \code{x}.}
 
-\item{type}{character string ("counts", "density", "probability") specifying the normalization of the output: "counts" (default) returns the number of points (multiplied by their weights, if given) in each cell; thus the total number of points (or total mass, if weights are given) is \code{sum(field)}. "density" returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) dV}. "probability" returns a probability density, such that \code{sum(field) dV}=1.}
+\item{type}{character string specifying the normalization of the output. Must be one of:
+\itemize{
+  \item \code{"counts"}: returns the number of points in each cell, or the sum of weights if \code{w} is given. Thus the total number of points (or total mass, if weights are given) is \code{sum(field)}.
+  \item \code{"density"}: returns the density, such that the total number of points (or total mass, if weights are given) is \code{sum(field) * dV}.
+  \item \code{"probability"}: returns a probability density, such that \code{sum(field) * dV = 1}.
+  \item \code{"mean"}: returns the mean weight in each cell. This option requires \code{w} to be given. Cells with no data are assigned \code{NA}.
+}}
 }
 \value{
 Returns a list of items
 \item{field}{D-dimensional array representing the value in each grid cell. See parameter \code{type} for more details.}
-\item{grid}{List of D elements with the grid properties along each dimension. n: number of grid cells; mid: n-vector of mid-cell coordinates; breaks: (n+1)-vector of cell edges; lim: 2-vector of considered range; delta: cell width.}
+\item{grid}{List of D elements with the grid properties along each dimension: \code{n} = number of grid cells; \code{mid} = n-vector of mid-cell coordinates; \code{breaks} = (n+1)-vector of cell edges; \code{min}, \code{max} = considered range; \code{delta} = cell width.}
 \item{dV}{Single number representing the volume of the D-dimensional grid cells.}
 }
 \description{
-Distributes a set of points in D dimensions onto a regular, D-dimensional grid, using a fast nearest neighbor algorithm. Weights can be used optionally.
+Distributes a set of points in D dimensions onto a regular, D-dimensional grid, using a fast nearest-neighbor algorithm. Weights can be used optionally.
 }
 \examples{
 
@@ -48,6 +61,12 @@ points(x,y,col='red',pch=16)
 # ... same with weights
 w = runif(100)
 g = griddata(cbind(x,y),w,min=c(0,0),max=c(2,1),n=c(20,10))
+image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$field,
+      asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
+points(x,y,col='red',pch=16,cex=w)
+
+# ... mean weight in each cell
+g = griddata(cbind(x,y),w,min=c(0,0),max=c(2,1),n=c(20,10),type='mean')
 image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$field,
       asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
 points(x,y,col='red',pch=16,cex=w)
