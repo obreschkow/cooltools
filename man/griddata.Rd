@@ -42,6 +42,10 @@ Returns a list of items
 Distributes a set of points in D dimensions onto a regular, D-dimensional grid, using a fast nearest-neighbor algorithm. Weights can be used optionally.
 }
 \examples{
+# On some machines data.table does not perform well in multi-threading mode.
+# The following command limits this to one thread as a precaution, but
+# may not be needed on most machines.
+data.table::setDTthreads(1L)
 
 # Distribute 1-dimensional data onto a regular grid
 npoints = 1e4
@@ -65,7 +69,8 @@ image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$field,
       asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')
 points(x,y,col='red',pch=16,cex=w)
 
-# ... mean weight in each cell
+# ... mean weight in each cell (dark red, where no data)
+par(bg = "darkred")
 g = griddata(cbind(x,y),w,min=c(0,0),max=c(2,1),n=c(20,10),type='mean')
 image(g$grid[[1]]$breaks,g$grid[[2]]$breaks,g$field,
       asp=1,col=grey.colors(100,0,1),xlab='x',ylab='y')

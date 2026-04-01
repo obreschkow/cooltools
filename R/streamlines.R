@@ -100,7 +100,8 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100, add = FALSE, ..
   np = length(px)
 
   # integrate forward and backward
-  d = (diff(range(xlim))^2 + diff(range(ylim))^2) / nsteps
+  d = sqrt(diff(range(xlim))^2 + diff(range(ylim))^2) / nsteps
+  print(d)
 
   p = q = array(NA_real_, c(np, 2, nsteps))
   p[, 1, 1] = q[, 1, 1] = px
