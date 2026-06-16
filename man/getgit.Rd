@@ -10,13 +10,13 @@ getgit(reponame, ...)
 \item{reponame}{Character string. GitHub repository name in the form
 \code{"owner/repo"}, e.g. \code{"obreschkow/cooltools"}.}
 
-\item{...}{Additional arguments passed to \code{devtools::install_github()}.}
+\item{...}{Additional arguments passed to \code{pak::pak()}.}
 }
 \value{
-Invisibly returns the result of \code{devtools::install_github()}.
+Invisibly returns the result of \code{pak::pak()}.
 }
 \description{
-Installs an R package from GitHub using \code{devtools::install_github()}.
+Installs an R package from GitHub using \code{pak::pak()}.
 If installation fails with GitHub HTTP error 401 / bad credentials, the
 stored GitHub credentials are deleted using \code{gitcreds::gitcreds_delete()},
 and the installation is attempted once more.

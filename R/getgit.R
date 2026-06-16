@@ -1,19 +1,19 @@
 #' Install a GitHub Package
 #'
-#' @importFrom devtools install_github
+#' @importFrom pak pak
 #' @importFrom gitcreds gitcreds_delete
 #'
 #' @description
-#' Installs an R package from GitHub using \code{devtools::install_github()}.
+#' Installs an R package from GitHub using \code{pak::pak()}.
 #' If installation fails with GitHub HTTP error 401 / bad credentials, the
 #' stored GitHub credentials are deleted using \code{gitcreds::gitcreds_delete()},
 #' and the installation is attempted once more.
 #'
 #' @param reponame Character string. GitHub repository name in the form
 #'   \code{"owner/repo"}, e.g. \code{"obreschkow/cooltools"}.
-#' @param ... Additional arguments passed to \code{devtools::install_github()}.
+#' @param ... Additional arguments passed to \code{pak::pak()}.
 #'
-#' @return Invisibly returns the result of \code{devtools::install_github()}.
+#' @return Invisibly returns the result of \code{pak::pak()}.
 #'
 #' @examples
 #' \dontrun{
@@ -23,17 +23,9 @@
 #' @export
 getgit = function(reponame, ...) {
 
-  if (!requireNamespace("devtools", quietly = TRUE)) {
-    stop("Package 'devtools' is required.")
-  }
-
-  if (!requireNamespace("gitcreds", quietly = TRUE)) {
-    stop("Package 'gitcreds' is required.")
-  }
-
   tryCatch(
     {
-      invisible(devtools::install_github(reponame, ...))
+      invisible(pak::pak(reponame, ...))
     },
     error = function(e) {
 
@@ -51,7 +43,7 @@ getgit = function(reponame, ...) {
 
       gitcreds::gitcreds_delete()
 
-      invisible(devtools::install_github(reponame, ...))
+      invisible(pak::pak(reponame, ...))
     }
   )
 }
