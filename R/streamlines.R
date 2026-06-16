@@ -18,20 +18,35 @@
 #'     \item a numeric matrix with 2 columns, giving explicit starting coordinates.
 #'   }
 #' @param nsteps Integer giving the number of integration steps in each direction.
+#' @param arrows Controls where arrows are drawn. This can be:
+#'   \itemize{
+#'     \item `FALSE`: no arrows are drawn;
+#'     \item `TRUE`: one arrow is drawn on every streamline, centered on its
+#'       starting point and aligned with the local field direction;
+#'     \item an integer vector: arrows are drawn only on the corresponding
+#'       streamlines, using the indices of the starting points;
+#'     \item a numeric matrix with 2 columns: arrows are drawn at the specified
+#'       coordinates, aligned with the local field direction at those points.
+#'   }
 #' @param add Logical; if `FALSE` a new plot is created, otherwise streamlines are
 #'   added to the existing plot.
-#' @param ... Further graphical parameters passed to [graphics::lines()].
+#' @param ... Further graphical parameters passed to [graphics::lines()] and
+#'   [graphics::arrows()].
 #'
 #' @details
 #' The integration uses a fixed step length based on the plot diagonal,
-#' \deqn{d = (dx^2 + dy^2) / nsteps,}
+#' \deqn{d = \sqrt{dx^2 + dy^2} / nsteps,}
 #' where `dx = diff(range(xlim))` and `dy = diff(range(ylim))`.
 #' At each step, only the direction of the vector field is used, via
 #' [unitvector()], so the result shows streamlines of the field rather than
 #' trajectories with speed information.
 #'
-#' If `add = FALSE`, a new plot is initialized using [nplot()] and
-#' axes are drawn using [magaxis()].
+#' If `add = FALSE`, a new plot is initialized using [plot()].
+#'
+#' Arrows are drawn along the local field direction. If `arrows = TRUE`, each
+#' arrow is centered on the streamline starting point. If `arrows` is a matrix
+#' of coordinates, the arrows are placed at those coordinates, regardless of
+#' whether they lie exactly on a streamline.
 #'
 #' @return
 #' Invisibly returns a list with components:
@@ -45,13 +60,16 @@
 #' f = function(x,y) {
 #'   vx = -x-y
 #'   vy = -y+(x-0.5)
-#'   return(cbind(vx,vy))
+#'   cbind(vx,vy)
 #' }
 #'
-#' streamlines(f, c(-1,1), c(-1,1), 50, 500, col='#5555ff')
+#' streamlines(f, c(-1,1), c(-1,1), 50, 500, col = "#5555ff")
+#' streamlines(f, c(-1,1), c(-1,1), 20, 200, arrows = TRUE, add = FALSE,
+#'             col = "#5555ff")
 #'
 #' @export
-streamlines = function(f, xlim, ylim, points = 20, nsteps = 100, add = FALSE, ...) {
+streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
+                       arrows = FALSE, add = FALSE, ...) {
 
   if (!is.function(f)) {
     stop('"f" must be a function.')
@@ -108,20 +126,66 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100, add = FALSE, ..
 
   for (i in seq_len(nsteps - 1)) {
     v = unitvector(f(p[, 1, i], p[, 2, i]))
-    p[, , i + 1] = p[, , i] + v * d
+    p[, , i + 1] = p[, , i] + v[, 1:2, drop = FALSE] * d
 
     v = unitvector(f(q[, 1, i], q[, 2, i]))
-    q[, , i + 1] = q[, , i] - v * d
+    q[, , i + 1] = q[, , i] - v[, 1:2, drop = FALSE] * d
   }
 
   # draw plot if requested
-  if (!add) plot(NULL, xlab='', ylab='', xlim=xlim, ylim=ylim)
+  if (!add) plot(NULL, xlab = "", ylab = "", xlim = xlim, ylim = ylim)
 
   # draw streamlines
   for (i in seq_len(np)) {
     coordx = c(rev(q[i, 1, ]), p[i, 1, 2:nsteps])
     coordy = c(rev(q[i, 2, ]), p[i, 2, 2:nsteps])
     lines(coordx, coordy, ...)
+  }
+
+  # draw arrows if requested
+  draw_one_arrow = function(x0, y0, vx, vy, len = 1.5 * d, ...) {
+    v = unitvector(cbind(vx, vy))
+    if (!is.finite(v[1, 1]) || !is.finite(v[1, 2])) return(invisible(NULL))
+    dx = 0.5 * len * v[1, 1]
+    dy = 0.5 * len * v[1, 2]
+    graphics::arrows(x0 - dx, y0 - dy, x0 + dx, y0 + dy,
+                     length = 0.08, ...)
+    invisible(NULL)
+  }
+
+  if (!identical(arrows, FALSE)) {
+
+    if (identical(arrows, TRUE)) {
+
+      v0 = unitvector(f(px, py))
+      for (i in seq_len(np)) {
+        draw_one_arrow(px[i], py[i], v0[i, 1], v0[i, 2], ...)
+      }
+
+    } else if (is.numeric(arrows) && is.null(dim(arrows))) {
+
+      ii = unique(as.integer(arrows))
+      ii = ii[is.finite(ii) & ii >= 1 & ii <= np]
+      if (length(ii) > 0) {
+        v0 = unitvector(f(px[ii], py[ii]))
+        for (j in seq_along(ii)) {
+          i = ii[j]
+          draw_one_arrow(px[i], py[i], v0[j, 1], v0[j, 2], ...)
+        }
+      }
+
+    } else if (is.matrix(arrows) && ncol(arrows) == 2) {
+
+      ax = arrows[, 1]
+      ay = arrows[, 2]
+      v0 = unitvector(f(ax, ay))
+      for (i in seq_len(nrow(arrows))) {
+        draw_one_arrow(ax[i], ay[i], v0[i, 1], v0[i, 2], ...)
+      }
+
+    } else {
+      stop('"arrows" must be FALSE, TRUE, an integer vector, or an n-by-2 matrix.')
+    }
   }
 
   invisible(list(

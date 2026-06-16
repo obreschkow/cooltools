@@ -4,7 +4,16 @@
 \alias{streamlines}
 \title{Draw streamlines of a two-dimensional vector field}
 \usage{
-streamlines(f, xlim, ylim, points = 20, nsteps = 100, add = FALSE, ...)
+streamlines(
+  f,
+  xlim,
+  ylim,
+  points = 20,
+  nsteps = 100,
+  arrows = FALSE,
+  add = FALSE,
+  ...
+)
 }
 \arguments{
 \item{f}{A function of the form `f(x, y)` returning an \eqn{n \times 2}
@@ -25,10 +34,22 @@ the second column is the y-component.}
 
 \item{nsteps}{Integer giving the number of integration steps in each direction.}
 
+\item{arrows}{Controls where arrows are drawn. This can be:
+\itemize{
+  \item `FALSE`: no arrows are drawn;
+  \item `TRUE`: one arrow is drawn on every streamline, centered on its
+    starting point and aligned with the local field direction;
+  \item an integer vector: arrows are drawn only on the corresponding
+    streamlines, using the indices of the starting points;
+  \item a numeric matrix with 2 columns: arrows are drawn at the specified
+    coordinates, aligned with the local field direction at those points.
+}}
+
 \item{add}{Logical; if `FALSE` a new plot is created, otherwise streamlines are
 added to the existing plot.}
 
-\item{...}{Further graphical parameters passed to [graphics::lines()].}
+\item{...}{Further graphical parameters passed to [graphics::lines()] and
+[graphics::arrows()].}
 }
 \value{
 Invisibly returns a list with components:
@@ -46,22 +67,28 @@ matrix of coordinates.
 }
 \details{
 The integration uses a fixed step length based on the plot diagonal,
-\deqn{d = (dx^2 + dy^2) / nsteps,}
+\deqn{d = \sqrt{dx^2 + dy^2} / nsteps,}
 where `dx = diff(range(xlim))` and `dy = diff(range(ylim))`.
 At each step, only the direction of the vector field is used, via
 [unitvector()], so the result shows streamlines of the field rather than
 trajectories with speed information.
 
-If `add = FALSE`, a new plot is initialized using [nplot()] and
-axes are drawn using [magaxis()].
+If `add = FALSE`, a new plot is initialized using [plot()].
+
+Arrows are drawn along the local field direction. If `arrows = TRUE`, each
+arrow is centered on the streamline starting point. If `arrows` is a matrix
+of coordinates, the arrows are placed at those coordinates, regardless of
+whether they lie exactly on a streamline.
 }
 \examples{
 f = function(x,y) {
   vx = -x-y
   vy = -y+(x-0.5)
-  return(cbind(vx,vy))
+  cbind(vx,vy)
 }
 
-streamlines(f, c(-1,1), c(-1,1), 50, 500, col='#5555ff')
+streamlines(f, c(-1,1), c(-1,1), 50, 500, col = "#5555ff")
+streamlines(f, c(-1,1), c(-1,1), 20, 200, arrows = TRUE, add = FALSE,
+            col = "#5555ff")
 
 }
