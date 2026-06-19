@@ -87,8 +87,19 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
     if (length(sigma)!=npoints.all) stop('sigma must be a vector with the same number of elements as rows in x')
   }
   if (!is.null(w)) {
-    if (length(w)==1) w=rep(w,npoints.all)
-    if (length(w)!=npoints.all) stop('w must be a vector with the same number of elements as rows in x')
+    if (length(w) == 1) {
+      w = as.vector(unlist(w))
+      if (length(w) == 1) {
+        w = rep(w, npoints.all)
+      } else if (!is.vector(w)) {
+        stop('If given, w must be a number or a vector.')
+      }
+    } else {
+      if (is.array(w)) w = as.vector(w)
+      if (!is.vector(w)) stop('If given, w must be a vector.')
+      if (length(w) != npoints.all) stop('If given, w must be a N-vector.')
+    }
+    if (any(w<0)) stop('kde2 cannot handle negative weights, as it deals with probability densities')
   }
   if (npoints.all>1) {
     if (is.null(xlim)) xlim=range(x[,1])
