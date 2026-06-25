@@ -54,7 +54,10 @@ angularmomentum = function(m, x, v, x0 = NULL, v0 = NULL) {
   v = t(t(v) - as.vector(v0))
 
   # total angular momentum
-  J = colSums(m * cooltools::vectorproduct(x, v))
+  if (nrow(x)==1) {
+    m * cooltools::vectorproduct(x, v)
+  } else {
+    colSums(m * cooltools::vectorproduct(x, v))
+  }
 
-  return(J)
 }

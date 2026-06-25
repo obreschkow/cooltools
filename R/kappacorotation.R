@@ -75,8 +75,11 @@ kappacorotation = function(m, x, v, x0 = NULL, v0 = NULL) {
   j = cooltools::vectorproduct(x, v)
 
   # axis of total angular momentum
-  J = colSums(m * j)
-  ez = cooltools::unitvector(J)
+  if (nrow(x)==1) {
+    ez = cooltools::unitvector(j)
+  } else {
+    ez = cooltools::unitvector(colSums(m * j))
+  }
 
   if (any(!is.finite(ez))) return(NA)
 
