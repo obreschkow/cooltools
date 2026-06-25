@@ -1,12 +1,14 @@
 #' Normalize vectors to unit length
 #'
-#' @description Compute the unit vectors for for a matrix of non-normalised vectors
+#' @description
+#' Computes unit vectors from one or more vectors.
 #'
-#' @param x m-element vector or n-by-m matrix \code{x[1:n,1:m]} representing n m-element vectors
+#' @param x Numeric vector or matrix. If a matrix is supplied, each row is
+#'   interpreted as a vector.
 #'
-#' @return Returns a data type identical to \code{x}, but with normalised vectors. Zero-vectors are returned for vectors of length zero.
-#'
-#' @author Danail Obreschkow
+#' @return
+#' An object of the same type and dimensions as \code{x}, with each vector
+#' normalized to unit length. Zero vectors are returned unchanged.
 #'
 #' @seealso \code{\link{vectornorm}}
 #'
@@ -14,13 +16,16 @@
 
 unitvector = function(x) {
 
+  n = vectornorm(x)
+
   if (is.vector(x)) {
 
-    return(x/max(.Machine$double.eps,sqrt(sum(x^2))))
+    if (n > 0) x / n else x
 
   } else {
 
-    return(x/pmax(.Machine$double.eps,sqrt(rowSums(x^2))))
+    n[n == 0] = 1
+    x / n
 
   }
 

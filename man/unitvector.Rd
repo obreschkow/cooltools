@@ -7,17 +7,16 @@
 unitvector(x)
 }
 \arguments{
-\item{x}{m-element vector or n-by-m matrix \code{x[1:n,1:m]} representing n m-element vectors}
+\item{x}{Numeric vector or matrix. If a matrix is supplied, each row is
+interpreted as a vector.}
 }
 \value{
-Returns a data type identical to \code{x}, but with normalised vectors. Zero-vectors are returned for vectors of length zero.
+An object of the same type and dimensions as \code{x}, with each vector
+normalized to unit length. Zero vectors are returned unchanged.
 }
 \description{
-Compute the unit vectors for for a matrix of non-normalised vectors
+Computes unit vectors from one or more vectors.
 }
 \seealso{
 \code{\link{vectornorm}}
-}
-\author{
-Danail Obreschkow
 }

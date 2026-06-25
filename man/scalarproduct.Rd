@@ -7,17 +7,18 @@
 scalarproduct(x, y)
 }
 \arguments{
-\item{x, y}{d-element vectors or n-by-d matrices representing n d-element vectors}
+\item{x, y}{Numeric vectors or matrices. If a matrix is supplied, each row is
+interpreted as a vector.}
 }
 \value{
-Returns a scalar or a n-element vector with the scalar products.
+Returns either a scalar (vector-vector case) or a vector containing the
+row-wise scalar products.
 }
 \description{
-Compute scalar product of two vectors
+Computes the scalar (dot) product of vectors. The inputs may be individual
+vectors or matrices whose rows represent vectors.
 }
 \seealso{
-\code{\link{vectorproduct}}
-}
-\author{
-Danail Obreschkow
+\code{\link{scalarproduct}}, \code{\link{vectornorm}},
+  \code{\link{unitvector}}
 }

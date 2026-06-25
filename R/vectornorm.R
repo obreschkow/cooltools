@@ -16,11 +16,17 @@ vectornorm = function(x) {
 
   if (is.vector(x)) {
 
-    return(sqrt(sum(x^2)))
+    s = max(abs(x))
+    if (s == 0) return(0)
+    s * sqrt(sum((x / s)^2))
 
   } else {
 
-    return(sqrt(rowSums(x^2)))
+    s = apply(abs(x), 1, max)
+    s0 = s
+    s0[s0 == 0] = 1
+
+    s * sqrt(rowSums((x / s0)^2))
 
   }
 

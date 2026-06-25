@@ -7,19 +7,21 @@
 vectorproduct(x, y, normalize = FALSE)
 }
 \arguments{
-\item{x, y}{3-element vectors or n-by-3 matrices representing n 3-element vectors}
+\item{x, y}{Numeric vectors of length three or matrices with three columns.
+If a matrix is supplied, each row is interpreted as a vector.}
 
-\item{normalize}{logical flag; if set to TRUE the cross-product(s) is/are automatically normalized}
+\item{normalize}{Logical flag indicating whether the resulting vector(s)
+should be normalized to unit length.}
 }
 \value{
-Returns a 3-element vector or a n-by-3 element matrix with the cross products
+Returns either a 3-element vector or an \eqn{n\times3} matrix containing
+the row-wise vector products.
 }
 \description{
-Compute cross product of two 3-element vectors
+Computes the vector (cross) product of two three-dimensional vectors. The
+inputs may be individual vectors or matrices whose rows represent vectors.
 }
 \seealso{
-\code{\link{scalarproduct}}, \code{\link{vectornorm}} and \code{\link{unitvector}}
-}
-\author{
-Danail Obreschkow
+\code{\link{scalarproduct}}, \code{\link{vectornorm}},
+  \code{\link{unitvector}}
 }
