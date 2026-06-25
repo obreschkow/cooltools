@@ -49,7 +49,7 @@
 #'
 kappacorotation = function(m, x, v, x0 = NULL, v0 = NULL) {
 
-  if (is.null(m)) return(NA)
+  if (is.null(m) || length(m)==0 || sum(m)==0) return(NA)
 
   # handle single-particle input
   if (length(x)==3) x = matrix(x, nrow = 1)
