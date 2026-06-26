@@ -7,19 +7,29 @@
 quadrupole(x, m = 1)
 }
 \arguments{
-\item{x}{n-by-3 matrix (x[1:n,1:3]) specifying the 3D Cartesian coordinates of n points}
+\item{x}{Numeric vector or matrix. If a matrix is supplied, each row is
+interpreted as a point.}
 
-\item{m}{n-vector with point masses, or single scalar giving a uniform mass for all points (default is unity)}
+\item{m}{Numeric scalar or vector of point masses. If a scalar is supplied,
+the same mass is assigned to every point.}
 }
 \value{
-Returns a 3-by-3 symmetric matrix
+A symmetric \eqn{d\times d} matrix containing the trace-free quadrupole
+tensor.
 }
 \description{
-Compute the trace-free quadrupole tensor of a set of point masses
+Computes the trace-free mass quadrupole tensor of a set of point masses in
+arbitrary dimensions,
+\deqn{
+\mathbf{Q}
+=
+\sum_i m_i
+\left(
+d\,\mathbf{x}_i\mathbf{x}_i^\mathrm{T}
+-
+|\mathbf{x}_i|^2\mathbf{I}
+\right),
 }
-\seealso{
-\code{\link{inertia}}, \code{\link{moments}}
-}
-\author{
-Danail Obreschkow
+where \eqn{d} is the dimensionality of the points and \eqn{\mathbf{I}} is
+the \eqn{d\times d} identity matrix.
 }

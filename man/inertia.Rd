@@ -2,24 +2,36 @@
 % Please edit documentation in R/inertia.R
 \name{inertia}
 \alias{inertia}
-\title{Inertia tensor}
+\title{Moment of inertia tensor}
 \usage{
 inertia(x, m = 1)
 }
 \arguments{
-\item{x}{n-by-3 matrix (x[1:n,1:3]) specifying the 3D Cartesian coordinates of n points}
+\item{x}{Numeric vector or matrix. If a matrix is supplied, each row is
+interpreted as a point.}
 
-\item{m}{n-vector with point masses, or single scalar giving a uniform mass for all points (default is unity)}
+\item{m}{Numeric scalar or vector of point masses. If a scalar is supplied,
+the same mass is assigned to every point.}
 }
 \value{
-Returns a 3-by-3 symmetric matrix
+A symmetric \eqn{d\times d} matrix containing the moment of inertia tensor,
+where \eqn{d} is the dimension of the points.
 }
 \description{
-Computes the symmetric tensor of moments of inertia
+Computes the moment of inertia tensor of a set of point masses in arbitrary
+dimensions,
+\deqn{
+\mathbf{I}
+=
+\sum_i m_i
+\left(
+|\mathbf{x}_i|^2\mathbf{1}
+-
+\mathbf{x}_i\mathbf{x}_i^\mathrm{T}
+\right),
+}
+where \eqn{\mathbf{1}} is the identity matrix.
 }
 \seealso{
 \code{\link{quadrupole}}, \code{\link{moments}}
-}
-\author{
-Danail Obreschkow
 }
