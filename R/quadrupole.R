@@ -25,35 +25,21 @@
 #' A symmetric \eqn{d\times d} matrix containing the trace-free quadrupole
 #' tensor.
 #'
+#' @seealso
+#' \code{\link{moments}}, \code{\link{inertia}}
+#'
 #' @export
 #'
 quadrupole = function(x, m = 1) {
 
-  x = as.matrix(x)
-  if (ncol(x) == 1) x = t(x)
+  M = moments(x, m)
+  d = nrow(M)
+  d * M - sum(diag(M)) * diag(d)
 
-  n = nrow(x)
-  d = ncol(x)
-
-  if (length(m) == 1)
-    m = rep(m, n)
-
-  if (length(m) != n)
-    stop("m must have length one or the number of rows of x")
-
-  # sum_i m_i x_i x_i^T
-  M = crossprod(x, x * m)
-
-  # sum_i m_i |x_i|^2
-  r2 = rowSums(x^2)
-  tr = sum(m * r2)
-
-  # trace-free quadrupole tensor
-  d * M - tr * diag(d)
 }
 
 # PREVIOUS SIMPLE 3D-ONLY VERSION, TESTED TO GIVE IDENTICAL RESULTS IN 3D
-# quadrupole2 = function(x,m=1) {
+# quadrupole = function(x,m=1) {
 #
 #   if (length(x)==3) x = array(x,c(1,3)) # to make sure that x is an array
 #

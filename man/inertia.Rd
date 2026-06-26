@@ -33,5 +33,5 @@ dimensions,
 where \eqn{\mathbf{1}} is the identity matrix.
 }
 \seealso{
-\code{\link{quadrupole}}, \code{\link{moments}}
+\code{\link{moments}}, \code{\link{quadrupole}}
 }

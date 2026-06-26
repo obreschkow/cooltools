@@ -7,30 +7,25 @@
 moments(x, m = 1)
 }
 \arguments{
-\item{x}{n-by-3 matrix (x[1:n,1:3]) specifying the 3D Cartesian coordinates of n points}
+\item{x}{Numeric vector or matrix. If a matrix is supplied, each row is
+interpreted as a point.}
 
-\item{m}{n-vector with point masses, or single scalar giving a uniform mass for all points (default is unity)}
+\item{m}{Numeric scalar or vector of point masses. If a scalar is supplied,
+the same mass is assigned to every point.}
 }
 \value{
-Returns a 3-by-3 symmetric matrix
+A symmetric \eqn{d\times d} matrix containing the second moment tensor,
+where \eqn{d} is the dimension of the points.
 }
 \description{
-Compute the tensor of second moments of a set of point masses
+Computes the second moment tensor of a set of point masses in arbitrary
+dimensions,
+\deqn{
+\mathbf{M}
+=
+\sum_i m_i\,\mathbf{x}_i\mathbf{x}_i^\mathrm{T}.
 }
-\examples{
-# Make a randomly oriented ellipsoid of semi-axes a=2.1, b=1.73, c=0.8
-x = t(t(fibonaccisphere(1e4))*c(2.1,1.73,0.8))
-x = x\%*\%rotation3(c(0.3,1.64,2.31))
-
-# Recover lengths of semi-axes from eigenvalues of second moment tensor
-M = moments(x,m=1/dim(x)[1])
-v = sqrt(3*eigen(M)$values)
-print(v)
-
 }
 \seealso{
-\code{\link{inertia}}, \code{\link{quadrupole}}
-}
-\author{
-Danail Obreschkow
+\code{\link{quadrupole}}, \code{\link{inertia}}
 }

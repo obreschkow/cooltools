@@ -33,3 +33,6 @@ d\,\mathbf{x}_i\mathbf{x}_i^\mathrm{T}
 where \eqn{d} is the dimensionality of the points and \eqn{\mathbf{I}} is
 the \eqn{d\times d} identity matrix.
 }
+\seealso{
+\code{\link{moments}}, \code{\link{inertia}}
+}

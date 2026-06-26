@@ -25,28 +25,16 @@
 #' where \eqn{d} is the dimension of the points.
 #'
 #' @seealso
-#' \code{\link{quadrupole}}, \code{\link{moments}}
+#' \code{\link{moments}}, \code{\link{quadrupole}}
 #'
 #' @export
 
 inertia = function(x, m = 1) {
 
-  x = as.matrix(x)
-  if (ncol(x) == 1) x = t(x)
+  M = moments(x, m)
+  d = nrow(M)
+  sum(diag(M)) * diag(d) - M
 
-  n = nrow(x)
-  d = ncol(x)
-
-  if (length(m) == 1)
-    m = rep(m, n)
-
-  if (length(m) != n)
-    stop("m must have length one or the number of rows of x")
-
-  M = crossprod(x, x * m)
-  trM = sum(m * rowSums(x^2))
-
-  trM * diag(d) - M
 }
 
 # PREVIOUS SIMPLE 3D-ONLY VERSION, TESTED TO GIVE IDENTICAL RESULTS IN 3D
