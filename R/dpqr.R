@@ -1,25 +1,29 @@
-#' d/p/q/r-family for a custom distribution
+#' Generate the d/p/q/r family for an arbitrary distribution
 #'
-#' @importFrom stats integrate uniroot
+#' @importFrom stats integrate uniroot runif
 #'
-#' @description Produces the family of d/p/q/r functions associated with a custom one-dimensional distribution function; similarly to the standard families dnorm/pnorm/qnorm/rnorm, dunif/punif/...
+#' @description
+#' Generates the standard \code{d}, \code{p}, \code{q}, and \code{r}
+#' functions associated with an arbitrary one-dimensional probability density
+#' function, analogous to \code{dnorm}/\code{pnorm}/\code{qnorm}/\code{rnorm}
+#' and related families.
 #'
-#' @param fun distribution function of a single variable; does not have to be normalized
-#' @param min,max domain of distribution function; outside this domain \code{fun} will be considered equal to 0. In practice, this should be the most restrictive domain containing (almost) all the mass of \code{fun}.
+#' @param fun A non-negative, vectorised function proportional to a probability density. It does not need to be normalised.
+#' @param min,max Lower and upper bounds of the support. The density is assumed to be zero outside this interval.
 #'
-#' @return Returns a list of items:
-#' \item{d(x)}{Probability distribution function (PDF), i.e. a normalised version of \code{fun}, limited to the domain \code{[xmin,xmax]}.}
-#' \item{p(x)}{Cumulative distributiont function, defined as the integrated PDF up to x.}
-#' \item{q(p)}{Quantile function, returning the position x, at which the cumulative probability equals \code{p}.}
-#' \item{r(n)}{A vector of \code{n} random numbers drawn from the PDF.}
+#' @return Returns a list with the following functions:
+#' \item{d(x)}{Probability density function (PDF), i.e. a normalised version of \code{fun} on the domain \code{[min,max]}.}
+#' \item{p(x)}{Cumulative distribution function (CDF).}
+#' \item{q(p)}{Quantile function.}
+#' \item{r(n)}{Generates \code{n} random samples from the distribution.}
 #'
 #' @examples
-#'
 #' f = function(x) sin(x)
-#' rsin = dpqr(f,0,pi)$r
-#' x = rsin(1e3)
-#' hist(x,freq=FALSE)
-#' curve(sin(x)/2,0,pi,add=TRUE)
+#' dist = dpqr(f, 0, pi)
+#'
+#' x = dist$r(1000)
+#' hist(x, probability = TRUE)
+#' curve(dist$d(x), add = TRUE)
 #'
 #' @author Danail Obreschkow
 #'
@@ -27,15 +31,73 @@
 #'
 #' @export
 
-dpqr = function(fun,min,max) {
-  # fun = function of one variable, representing an arbitrary non-normalised PDF
-  # min, max = truncation values of the PDF
-  e = (max-min)*1e-12
-  norm = integrate(fun,min,max)$value
-  f = function(x) fun(x)/norm
-  d = function(x) f(x)*as.numeric(x>=min & x<=max) # PDF
-  p = function(x) integrate(f,min,x)$value # CDF
-  q = function(p) uniroot(function(x) p(x)-p,c(min-e,max+e))$root # QF
-  r = function(n) Vectorize(q)(runif(n)) # RNG
-  return(list(d = d, p = Vectorize(p), q = Vectorize(q), r = r))
+dpqr = function(fun, min, max) {
+
+  # Basic checks
+  stopifnot(
+    is.function(fun),
+    length(min) == 1L,
+    length(max) == 1L,
+    is.finite(min),
+    is.finite(max),
+    min < max
+  )
+
+  # Normalisation
+  norm = integrate(fun, lower = min, upper = max)$value
+
+  if (!is.finite(norm) || norm <= 0) {
+    stop("The integral of 'fun' over [min, max] must be finite and positive.")
+  }
+
+  pdf = function(x) {
+    y = numeric(length(x))
+    inside = is.finite(x) & x >= min & x <= max
+    y[inside] = fun(x[inside]) / norm
+    y[is.na(x)] = NA_real_
+    y
+  }
+
+  cdf_scalar = function(x) {
+    if (is.na(x)) return(NA_real_)
+    if (x <= min) return(0)
+    if (x >= max) return(1)
+
+    integrate(
+      fun,
+      lower = min,
+      upper = x
+    )$value / norm
+  }
+
+  cdf = Vectorize(cdf_scalar, USE.NAMES = FALSE)
+
+  quantile_scalar = function(prob) {
+    if (is.na(prob)) return(NA_real_)
+
+    if (prob < 0 || prob > 1) {
+      return(NaN)
+    }
+
+    if (prob == 0) return(min)
+    if (prob == 1) return(max)
+
+    uniroot(
+      function(x) cdf_scalar(x) - prob,
+      interval = c(min, max)
+    )$root
+  }
+
+  quantile = Vectorize(quantile_scalar, USE.NAMES = FALSE)
+
+  random = function(n) {
+    quantile(runif(n))
+  }
+
+  list(
+    d = pdf,
+    p = cdf,
+    q = quantile,
+    r = random
+  )
 }

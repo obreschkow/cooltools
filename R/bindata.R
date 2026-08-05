@@ -92,7 +92,7 @@ bindata = function(x, y=NULL, bins=20, method='regular', xlim=NULL) {
     xedges = c(xlim[1],stats::quantile(x,probs=seq(0,1,length=bin$n+1)[2:bin$n],names=FALSE),xlim[2])
   } else if (method=='custom') {
     if (length(bins)<2) stop('For method "custom", bins as to be a vector containing the bin edges.')
-    bin$n = length(bins)
+    bin$n = length(bins)-1
     xedges = bins
   } else {
     stop('unknown method')

@@ -2,7 +2,7 @@
 % Please edit documentation in R/contourlevel.R
 \name{contourlevel}
 \alias{contourlevel}
-\title{Find contour levels of a d-dimensional density field}
+\title{Highest-density contour levels}
 \usage{
 contourlevel(
   f,
@@ -10,68 +10,147 @@ contourlevel(
   xmin = NULL,
   xmax = NULL,
   neval = 10000,
-  napprox = 10,
+  subdivisions = 1000,
+  napprox = 30,
+  rel.tol = 1e-05,
+  abs.tol = 0,
   ...
 )
 }
 \arguments{
-\item{f}{either a d-dimensional vector/array or a function \code{f(x)} of a d-element vector \code{x}. There is no need for \code{f} to be normalized.}
+\item{f}{A non-negative numeric vector or array, or a function of a numeric
+vector. If \code{f} is a function, it must return a single finite,
+non-negative density value.}
 
-\item{p}{vector of probabilities}
+\item{p}{Numeric vector of enclosed probability masses. Every value must lie
+strictly between 0 and 1.}
 
-\item{xmin, xmax}{(only used if \code{f} is a function) vectors with of lower and upper limits of \code{x}, defining the domain on which the function \code{f(x)} is evaluated. Outside this domain, \code{f} is assumed to vanish. These limits should be chosen as narrow as possible for the algorithm to converge quickly.}
+\item{xmin, xmax}{Numeric vectors giving the lower and upper limits of the
+integration domain. These arguments are required when \code{f} is a
+function and must have equal lengths. Outside this rectangular domain,
+\code{f} is assumed to be zero.}
 
-\item{neval}{(only used if \code{f} is a function) maximum number of function evaluations in numerical integrals}
+\item{neval}{Positive integer giving the maximum number of function
+evaluations used in each multidimensional numerical integration.}
 
-\item{napprox}{(only used if \code{f} is a function) number of points used interpolate the cumulative probability density. If set to 0, no interpolation is used.}
+\item{subdivisions}{Positive integer giving the maximum number of
+subintervals used by \code{\link[stats]{integrate}} in one dimension.}
 
-\item{...}{(only used if \code{f} is a function) additional parameters to be passed to the function f.}
+\item{napprox}{Number of trial density levels used to interpolate the
+enclosed-mass function when \code{f} is a function. Larger values are
+generally more accurate but require more numerical integrations. If
+\code{napprox=0}, each requested contour level is determined directly by
+root-finding.}
+
+\item{rel.tol}{Positive relative tolerance used for numerical integration.}
+
+\item{abs.tol}{Non-negative absolute tolerance used for numerical
+integration.}
+
+\item{...}{Additional arguments passed to \code{f}.}
 }
 \value{
-Returns a vector of levels l, which has the same length as p.
+A numeric vector of density levels with the same length and ordering as
+\code{p}.
+
+For a vector or array, all entries are assumed to represent cells of equal
+volume or equal statistical weight. Because the enclosed mass changes in
+discrete steps, the returned level is the sampled density threshold whose
+superlevel set first contains at least the requested probability mass.
 }
 \description{
-Given a vector d-dimensional vector/array \code{f} or function \code{f(x)} of a d-element vector \code{x}, this routine evaluates the value l, such that the sum/integral of f over the domain f>l makes up a fraction p of the total sum/integral of f. The main purpose of this routine is to determine the iso-contour levels of a likelihood or density function, containing a cumulative probability-mass p.
+Computes density thresholds defining highest-density regions.
+
+For each probability \code{p}, the function returns a level \eqn{\ell} such
+that the region where the density is at least \eqn{\ell} contains a fraction
+\code{p} of the total probability mass:
+\deqn{
+  \frac{\int_{f(\mathbf{x}) \geq \ell}
+  f(\mathbf{x})\,d\mathbf{x}}
+  {\int f(\mathbf{x})\,d\mathbf{x}}
+  = p.
+}
+
+The input may be a numeric vector or array containing sampled density
+values, or a function representing a density over a bounded rectangular
+domain. The density does not need to be normalised, but it must be
+non-negative and have a finite, positive integral or sum.
+}
+\details{
+The returned contours define highest-density regions: points are included
+in decreasing order of density until the requested probability mass is
+enclosed. For multimodal densities, the resulting region may consist of
+several disconnected components.
+
+When \code{f} is a function, the enclosed mass above a trial level is
+evaluated by numerically integrating
+\deqn{
+  f(\mathbf{x}) I[f(\mathbf{x})\geq\ell].
+}
+This integrand is discontinuous at the contour boundary, so convergence may
+be slower than for a smooth integrand, particularly in high dimensions or
+for complicated contours.
+
+One-dimensional densities are integrated using
+\code{\link[stats]{integrate}}. Multidimensional densities are integrated
+using \code{\link[cubature]{cuhre}}.
+
+If \code{napprox>0}, the enclosed-mass function is evaluated on a grid of
+density levels and inverted by monotonic linear interpolation. If
+\code{napprox=0}, each requested probability is solved separately using
+\code{\link[stats]{uniroot}}. The latter is generally slower but avoids the
+interpolation approximation.
 }
 \examples{
 
-## f(x) is a 1D PDF
-# compute 1-sigma and 2-sigma contour levels of a normal distribution, i.e.
-# the values l, such that int_{dnorm(x)>l} dnorm(x) dx = p (=68.3\%, 95.4\%).
-l = contourlevel(dnorm,xmin=-10,xmax=10,napprox=0)
+## f(x) is a one-dimensional PDF
+# Compute the one- and two-sigma contour levels of a normal distribution,
+# i.e. the values l such that
+# integral over dnorm(x) >= l of dnorm(x) dx = p,
+# where p = 68.3\% and 95.4\%.
+l = contourlevel(dnorm, xmin = -10, xmax = 10, napprox = 0)
 print(l)
 
-# compare these values to the solutions dnorm(1), dnorm(2)
-print(dnorm(c(1,2)))
+# Compare these values with dnorm(1) and dnorm(2)
+print(dnorm(c(1, 2)))
 
 
-## f(x) is a 2D likelihood function
-# Produce 20\%, 40\%, 60\% and 80\% iso contours on the 2D likelihood function f(x)
-f = function(x) cos(2*x[1]-x[2]-1)^2*exp(-x[1]^2-x[2]^2-x[1]*x[2])
-p = c(0.2,0.4,0.6,0.8) # cumulative probability
-l = contourlevel(f,p,c(-5,-5),c(5,5)) # values l, such that int_{f>l}(f(x)dx)=p int(f(x)*dx)
+## f(x) is a two-dimensional likelihood function
+# Produce 20\%, 40\%, 60\%, and 80\% highest-density contours.
+f = function(x) {
+  cos(2*x[1]-x[2]-1)^2*exp(-x[1]^2-x[2]^2-x[1]*x[2])
+}
 
-# Plot function and contours at the levels l
-x = seq(-3,3,length=200)
+p = c(0.2, 0.4, 0.6, 0.8)
+
+# Values l such that
+# integral over f(x) >= l of f(x) dx = p * integral f(x) dx
+l = contourlevel(f, p, c(-5, -5), c(5, 5))
+
+# Plot the function and contours at the levels l
+x = seq(-3, 3, length.out = 200)
 m = pracma::meshgrid(x)
-z = array(Vectorize(function(x,y) f(c(x,y)))(m$Y,m$X),dim(m$X))
-image(x,x,z,col=terrain.colors(100))
-contour(x,x,z,levels=l,add=TRUE,labels=sprintf('\%.0f\%\%',p*100),labcex=0.7)
+z = array(Vectorize(function(x, y) f(c(x, y)))(m$Y, m$X), dim(m$X))
+
+image(x, x, z, col = terrain.colors(100))
+contour(x, x, z, levels = l, add = TRUE,
+        labels = sprintf("\%.0f\%\%", p*100), labcex = 0.7)
 
 
-## f is a 20-by20 array representing a gridded pointset
-# produce a set of 1000 points in 2D, drawn from a 2D normal distribution
+## f is a 20-by-20 array representing a gridded point set
+# Produce 1000 points drawn from a two-dimensional normal distribution.
 set.seed(1)
-x = MASS::mvrnorm(n=1000, mu=c(0,0), matrix(c(3,1,1,2),2,2))
+x = MASS::mvrnorm(n = 1000, mu = c(0, 0), Sigma = matrix(c(3, 1, 1, 2), 2, 2))
 
-# grid these points onto a regular 20-by-20 grid
-g = griddata(x, min=-6, max=6)
+# Grid these points onto a regular 20-by-20 grid
+g = griddata(x, min = -6, max = 6)
 
-# find 1-sigma and 2-sigma contour levels and draw contours at these levels
+# Find one- and two-sigma contour levels and draw the contours
 l = contourlevel(g$field)
-plot(x, xlim=g$grid[[1]]$lim, ylim=g$grid[[2]]$lim, pch=20, cex=0.5)
-contour(g$grid[[1]]$mid,g$grid[[2]]$mid,g$field,
-        levels=l,add=TRUE,col='red',lwd=c(2,1),labels=NA)
+
+plot(x, xlim = g$grid[[1]]$lim, ylim = g$grid[[2]]$lim, pch = 20, cex = 0.5)
+contour(g$grid[[1]]$mid, g$grid[[2]]$mid, g$field,
+        levels = l, add = TRUE, col = "red", lwd = c(2, 1), labels = NA)
 
 }
 \seealso{

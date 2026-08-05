@@ -83,7 +83,7 @@ colorbar = function(xleft, ybottom, xright, ytop,
     }
     for (i in seq_along(at)) {
       lines(c(x0,x1),c(at[i],at[i]),lwd=lwd)
-      text(x1+shift,at,at,pos=pos,srt=srt,...)
+      text(x1+shift,at[i],at[i],pos=pos,srt=srt,...)
     }
 
     # restore plotting area

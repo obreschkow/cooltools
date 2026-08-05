@@ -1,14 +1,14 @@
 Package: cooltools
 Type: Package
-Title: Practical Tools for Scientific Computations and Visualizations
-Version: 2.31
+Title: Practical Tools for Scientific Computation and Visualisation
+Version: 2.32
 Authors@R: 
     c(person(given = "Danail",
              family = "Obreschkow",
              role = c("aut", "cre"),
              email = "danail.obreschkow@gmail.com",
              comment = c(ORCID = "0000-0002-1527-0762")))
-Description: Collection of routines for efficient scientific computations in physics and astrophysics. These routines include utility functions, numerical computation tools, as well as visualisation tools. They can be used, for example, for generating random numbers from spherical and custom distributions, information and entropy analysis, special Fourier transforms, two-point correlation estimation (e.g. as in Landy & Szalay (1993) <doi:10.1086/172900>), binning & gridding of point sets, 2D interpolation, Monte Carlo integration, vector arithmetic and coordinate transformations. Also included is a non-exhaustive list of important constants and cosmological conversion functions. The graphics routines can be used to produce and export publication-ready scientific plots and movies, e.g. as used in Obreschkow et al. (2020, MNRAS Vol 493, Issue 3, Pages 4551–4569). These routines include special color scales, projection functions, and bitmap handling routines.
+Description: Provides utilities for scientific computation and visualisation, with an emphasis on applications in physics and astrophysics. Functionality includes random sampling from spherical and custom distributions, information and entropy analysis, Fourier transforms, two-point correlation estimation, binning and gridding of point sets, two-dimensional interpolation, Monte Carlo integration, vector operations, coordinate transformations, physical constants, and cosmological conversions. Graphics tools support the creation and export of publication-quality plots, animations, colour scales, map projections, and bitmap images. Several of these tools were used by Obreschkow et al. (2020) [doi:10.1093/mnras/staa445](doi:10.1093/mnras/staa445).
 Imports:
     plotrix,
     celestial,

@@ -17,7 +17,7 @@ cst = list(G = 6.67430e-11, # [m^3/kg/s^2] gravitational constant
            c = 299792458, # [m/s] speed of light
            h = 6.62607015e-34, # [J*s] Planck constant
            e = 1.602176634e-19, # [A*s] electron charge
-           Na = 6.02214076, # [-] Avogadro constant
+           Na = 6.02214076e23, # [-] Avogadro constant
            hbar = 6.62607015e-34/2/pi, # [J*s] Planck constant
            Msun = 1.988416e30, # [kg] solar mass
            Mearth = 5.9722e24, # [kg] Earth mass

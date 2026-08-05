@@ -21,12 +21,8 @@ car2pol = function(x) {
 
   if (!d%in%c(2,3)) stop('x must have 2 or 3 elements or columns')
 
-  if (d==2) {
-    r = sqrt(x[,1]^2+x[,2]^2)
-  } else {
-    r = sqrt(x[,1]^2+x[,2]^2+x[,3]^2)
-  }
-  phi = (atan2(x[,2],x[,1])+2*pi)%%(2*pi)
+  r = sqrt(x[,1]^2 + x[,2]^2)
+  phi = (atan2(x[,2], x[,1]) + 2*pi) %% (2*pi)
 
   if (d==2) {
     return(cbind(r=r,phi=phi))
