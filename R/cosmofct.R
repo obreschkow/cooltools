@@ -38,11 +38,11 @@ cosmofct = function(zmin=0,zmax=1,dz=0.02,H0=70,OmegaM=0.3,...) {
   da = out$AngDist
   t = out$TravelTime
 
-  return(list(z2dl = splinefun(z,dl), z2dc = splinefun(z,dc), z2da = splinefun(z,da), z2t = splinefun(z,t),
-              dl2z = splinefun(dl,z), dl2dc = splinefun(dl,dc), dl2da = splinefun(dl,da), dl2t = splinefun(dl,t),
-              dc2z = splinefun(dc,z), dc2dl = splinefun(dc,dl), dc2da = splinefun(dc,da), dc2t = splinefun(dc,t),
-              da2z = splinefun(da,z), da2dl = splinefun(da,dl), da2dc = splinefun(da,dc), da2t = splinefun(da,t),
-              t2z = splinefun(t,z), t2dl = splinefun(t,dl), t2dc = splinefun(t,dc), t2da = splinefun(t,da),
+  return(list(z2dl = stats::splinefun(z,dl), z2dc = stats::splinefun(z,dc), z2da = stats::splinefun(z,da), z2t = stats::splinefun(z,t),
+              dl2z = stats::splinefun(dl,z), dl2dc = stats::splinefun(dl,dc), dl2da = stats::splinefun(dl,da), dl2t = stats::splinefun(dl,t),
+              dc2z = stats::splinefun(dc,z), dc2dl = stats::splinefun(dc,dl), dc2da = stats::splinefun(dc,da), dc2t = stats::splinefun(dc,t),
+              da2z = stats::splinefun(da,z), da2dl = stats::splinefun(da,dl), da2dc = stats::splinefun(da,dc), da2t = stats::splinefun(da,t),
+              t2z = stats::splinefun(t,z), t2dl = stats::splinefun(t,dl), t2dc = stats::splinefun(t,dc), t2da = stats::splinefun(t,da),
               age = out$UniAgeNow[1]))
 
 }

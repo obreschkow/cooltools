@@ -60,7 +60,7 @@ bindata = function(x, y=NULL, bins=20, method='regular', xlim=NULL) {
   if (is.null(y)) {
     x = sort(x)
   } else {
-    s = sort.int(x,index.return = T)
+    s = sort.int(x,index.return = TRUE)
     x = s$x
     y = y[s$ix]
     s = NULL
@@ -112,7 +112,6 @@ bindata = function(x, y=NULL, bins=20, method='regular', xlim=NULL) {
   if (!is.null(y)) bin$y = bin$ymedian = bin$yerr = bin$ysd = bin$y16 = bin$y84 = rep(NA,bin$n)
   bin$count = rep(0,bin$n)
   for (k in seq_along(indexlist)) {
-    print
     i = indexlist[k]
     sel = seq(current.index,length=nindex[k])
     current.index = current.index+nindex[k]

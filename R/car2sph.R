@@ -14,6 +14,9 @@
 
 car2sph = function(x) {
 
+  if (is.null(dim(x)) || ncol(x) != 3)
+    stop("x must have 3 elements or columns")
+
   if (length(unlist(x,use.names = FALSE))==3) x = matrix(x,1,3)
 
   r = sqrt(rowSums(x^2))

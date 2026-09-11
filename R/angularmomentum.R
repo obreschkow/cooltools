@@ -31,6 +31,7 @@
 #'
 angularmomentum = function(m, x, v, x0 = NULL, v0 = NULL) {
 
+  if (anyNA(m)) stop("m must not contain NA values")
   if (is.null(m) || length(m)==0 || sum(m)==0) return(c(0,0,0))
 
   # handle single-particle input

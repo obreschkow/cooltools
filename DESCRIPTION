@@ -1,7 +1,7 @@
 Package: cooltools
 Type: Package
 Title: Practical Tools for Scientific Computation and Visualisation
-Version: 2.32
+Version: 2.33
 Authors@R: 
     c(person(given = "Danail",
              family = "Obreschkow",
@@ -22,7 +22,6 @@ Imports:
     sp,
     cubature,
     bit64,
-    float,
     randtoolbox,
     Rcpp,
     FNN,
@@ -37,4 +36,4 @@ Encoding: UTF-8
 LazyData: true
 NeedsCompilation: yes
 URL: https://github.com/obreschkow/cooltools
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

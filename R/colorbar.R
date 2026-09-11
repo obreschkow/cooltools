@@ -1,6 +1,6 @@
 #' Vertical color bar
 #'
-#' @importFrom graphics rect axis rasterImage
+#' @importFrom graphics rect rasterImage
 #' @importFrom grDevices gray.colors
 #'
 #' @description Adds a vertical color bar to a plot with a custom axis.

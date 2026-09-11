@@ -89,7 +89,7 @@ blur = function(x, sigma, boundary = "replicate") {
     }
 
     if (mode == "circular") {
-      vp = c(tail(v, r), v, utils::head(v, r))
+      vp = c(utils::tail(v, r), v, utils::head(v, r))
     } else if (mode == "replicate") {
       vp = c(rep(v[1], r), v, rep(v[length(v)], r))
     } else {

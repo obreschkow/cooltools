@@ -17,9 +17,10 @@ car2pol = function(x) {
   if (length(unlist(x,use.names = FALSE))==2) x = matrix(x,1,2)
   if (length(unlist(x,use.names = FALSE))==3) x = matrix(x,1,3)
 
-  d = dim(x)[2]
+  if (is.null(dim(x)) || !ncol(x) %in% c(2,3))
+    stop("x must have 2 or 3 elements or columns")
 
-  if (!d%in%c(2,3)) stop('x must have 2 or 3 elements or columns')
+  d = dim(x)[2]
 
   r = sqrt(x[,1]^2 + x[,2]^2)
   phi = (atan2(x[,2], x[,1]) + 2*pi) %% (2*pi)

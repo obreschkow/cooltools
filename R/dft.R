@@ -39,8 +39,8 @@ dft = function(f, inverse=FALSE, shift=-floor(dim(as.array(f))/2), simplify=TRUE
   } else {
     g = cshift(stats::fft(f),-shift)/length(f)
   }
-  if (simplify) {
-    if (mean(abs(Im(g)))/(mean(abs(g))+.Machine$double.xmin)<1e-13) g = Re(g)
+  if (simplify && all(is.finite(g))) {
+    if (mean(abs(Im(g))) / (mean(abs(g)) + .Machine$double.xmin) < 1e-13) g = Re(g)
   }
   return(g)
 }

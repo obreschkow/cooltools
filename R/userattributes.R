@@ -1,7 +1,6 @@
 #' Retrieve Custom Object Attributes
 #'
 #' @importFrom bit64 as.integer64
-#' @importFrom float as.float
 #' @importFrom stats lm ts
 #'
 #' @description This function takes a generic R object and returns the custom attributes
@@ -70,7 +69,6 @@ userattributes <- function(obj) {
                        ts = stats::ts(1:2),
                        lm = stats::lm(y ~ x, data = data.frame(x = 1:2, y = 1:2)),
                        integer64 = bit64::as.integer64(1),
-                       float32 = float::as.float(1),
 
                        # Default case if object type isn't covered
                        0)

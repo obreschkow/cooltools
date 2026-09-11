@@ -16,6 +16,7 @@ entropy = function(p, b=exp(1), normalize=TRUE) {
 
   if (!is.vector(p)) stop('p must be a vector.')
   if (normalize) p = p/sum(p)
-  return(-sum(p*log(p+1e-300))/log(b))
+  p = p[p > 0]
+  -sum(p * log(p)) / log(b)
 
 }
