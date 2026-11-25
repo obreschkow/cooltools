@@ -129,11 +129,6 @@ importFrom(graphics,
   rect,
   text
 )
-importFrom(hdf5r,
-  H5File,
-  h5attributes,
-  h5types
-)
 importFrom(jpeg,
   readJPEG,
   writeJPEG

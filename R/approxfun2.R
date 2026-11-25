@@ -26,41 +26,61 @@
 
 approxfun2 = function(x,y,z,outside=NA) {
 
-  if (is.unsorted(x,strictly=TRUE)) stop('x must be strictly monotonically increasing')
-  if (is.unsorted(y,strictly=TRUE)) stop('y must be strictly monotonically increasing')
-
   nx = length(x)
   ny = length(y)
 
-  if (is.array(z)) {
-    if (dim(z)[1]!=nx) stop('z must be an array of dimension (length(x),length(y))')
-    if (dim(z)[2]!=ny) stop('z must be an array of dimension (length(x),length(y))')
-  } else {
-    stop('z must be a 2D array')
-  }
+  # Check input
+  if (!is.numeric(x) || nx<2 || any(!is.finite(x)) ||
+      is.unsorted(x,strictly=TRUE))
+    stop('x must be finite and strictly monotonically increasing')
 
-  xmin = min(x)
-  xmax = max(x)
-  interval = (xmax-xmin)*2
+  if (!is.numeric(y) || ny<2 || any(!is.finite(y)) ||
+      is.unsorted(y,strictly=TRUE))
+    stop('y must be finite and strictly monotonically increasing')
 
-  xvect = rep(c(-1e-5,x-xmin,max(x)-xmin+1e-5),ny+2)+rep(seq(ny+2)*interval,each=nx+2)
-  zvect = as.vector(cbind(rep(Inf,nx+2),rbind(rep(Inf,ny),z,rep(Inf,ny)),rep(Inf,nx+2)))
+  if (!is.numeric(z) || !is.matrix(z) || any(dim(z)!=c(nx,ny)))
+    stop('z must be a numeric matrix of dimension (length(x),length(y))')
 
-  fun = approxfun(xvect,zvect,yleft=outside,yright=outside)
+  if (length(outside)!=1)
+    stop('outside must be a scalar')
 
-  index = approxfun(y,seq(2,ny+1),yleft=1,yright=ny+2)
+  # Precompute grid intervals
+  dx = diff(x)
+  dy = diff(y)
 
-  fout = function(x,y) {
-    f = index(y)
-    i = floor(f)
-    j = ceiling(f)
-    w = f-i
-    x1 = (x-xmin)+i*interval
-    x2 = (x-xmin)+j*interval
-    out = (1-w)*fun(x1)+w*fun(x2)
-    out[!is.finite(out)] = outside
-    out[x<xmin | x>xmax] = outside
-    return(out)
+  # Vectorised interpolation function
+  fout = function(px,py) {
+
+    if (!length(px) || !length(py)) return(numeric(0))
+
+    n = max(length(px),length(py))
+    px = rep_len(px,n)
+    py = rep_len(py,n)
+
+    out = rep(as.numeric(outside),n)
+
+    # Select points inside the grid
+    k = which(is.finite(px) & is.finite(py) &
+                px>=x[1] & px<=x[nx] &
+                py>=y[1] & py<=y[ny])
+
+    if (!length(k)) return(out)
+
+    # Find enclosing grid cells
+    i = findInterval(px[k],x,rightmost.closed=TRUE)
+    j = findInterval(py[k],y,rightmost.closed=TRUE)
+
+    # Fractional coordinates within each cell
+    a = (px[k]-x[i])/dx[i]
+    b = (py[k]-y[j])/dy[j]
+
+    # Bilinear interpolation
+    out[k] = (1-a)*(1-b)*z[cbind(i,j)] +
+      a*(1-b)*z[cbind(i+1,j)] +
+      (1-a)*b*z[cbind(i,j+1)] +
+      a*b*z[cbind(i+1,j+1)]
+
+    out
   }
 
   return(fout)

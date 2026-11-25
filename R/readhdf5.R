@@ -1,9 +1,8 @@
 #' Read data from an HDF5 file
 #'
-#' @importFrom hdf5r H5File h5attributes
 #' @importFrom bit64 as.integer64
 #'
-#' @description Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data. The routine can read 64-bit integers and represent them as 64-bit integers in R via the \code{bit64} package. It can also read 32-bit floating points values, not part of native R. These are automatically converted into 64-bit doubles.
+#' @description Reads data from an HDF5 file, including attributes, into a nested list that preserves the hierarchical structure of the HDF5 data. The routine can read 64-bit integers and represent them as 64-bit integers in R via the \code{bit64} package. It can also read 32-bit floating-points values, not part of native R. These are automatically converted into 64-bit doubles.
 #'
 #' @param file Character string specifying the file name of the input HDF5 file.
 #' @param subtree A structure specifying the HDF5 groups and datasets to be read. Use an asterisk \code{"*"} (default) to read the entire file. To read only part of the file, provide a named list reflecting the hierarchy of groups, subgroups, and datasets. For (sub)groups, use nested lists containing the items to read, or use \code{'*'} to load everything in the group. An empty list \code{list()} reads only the attributes of a group. For datasets, use \code{NULL} to read only attributes, or any other content to read the full data.
@@ -19,6 +18,10 @@
 #' @export
 
 readhdf5 <- function(file, subtree = "*", group.attr.as.data = FALSE, empty = FALSE) {
+
+  if (!requireNamespace("hdf5r", quietly = TRUE)) {
+    stop("Package 'hdf5r' is required for this function.")
+  }
 
   # Recursive helper function to read each element in the HDF5 structure
   read_data <- function(item, subtree_node) {
@@ -86,7 +89,7 @@ readhdf5 <- function(file, subtree = "*", group.attr.as.data = FALSE, empty = FA
 
   # Check file
   if (!file.exists(file)) stop('File does not exist: ',file)
-  if (file.info(file)$isdir) stop('Provide a filename instead of director: ',file)
+  if (file.info(file)$isdir) stop('Provide a filename instead of directory: ',file)
   if (file.access(file,4)!=0) stop('You do not have read permission for file: ',file)
 
   # Open the HDF5 file in read-only mode

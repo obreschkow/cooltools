@@ -1,11 +1,10 @@
 #' Write structured list to an HDF5 file
 #'
-#' @importFrom hdf5r H5File h5types
 #' @importFrom bit64 as.integer64
 #'
 #' @description Writes a named list, including its hierarchy of nested sublists, to an HDF5 file with HDF5 groups, subgroups and datasets preserving the hierarchical structure.
 #' The routine supports standard HDF5 data types, including double-precision floating point numbers (64 bit), integers (32 bit), characters (8 bit), and booleans, as well as vectors and arrays of these types. It also supports
-#' 64-bit integers (\code{H5T_NATIVE_INT64}), available via the \code{bit64} package, as well as 32-bit floating points, available via the \code{float} package. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
+#' 64-bit integers (\code{H5T_NATIVE_INT64}), available via the \code{bit64} package, as well as 32-bit floating-point objects of class \code{float32}. Custom attributes of sublists and data, assigned in R via \code{\link{attr}},
 #' are automatically transcribed to group and dataset attributes in the HDF5 file. Such attributes can also be provided for empty groups (produced by \code{list()}) and datasets (produced by \code{numeric(0)}).
 #'
 #' @param obj List containing the data to be written. Nested sublists are interpreted as sub-groups within the HDF5 file. If a sublist is empty or if an element inside a list is `NULL`, it creates an empty group/dataset that can hold only attributes.
@@ -64,32 +63,38 @@
 #' attr(input$group_empty,'Timestamp') = date()
 #' attr(input$group_empty,'Working directory') = getwd()
 #'
-#' # Write list to HDF5 file
-#' filename = tempfile()
-#' writehdf5(input, filename)
+#' if (requireNamespace("hdf5r", quietly = TRUE)) {
 #'
-#' # Read HDF5 file into a new list
-#' output = readhdf5(filename)
+#'   # Write list to HDF5 file
+#'   filename = tempfile()
+#'   writehdf5(input, filename)
 #'
-#' # Check if input and output lists are identical
-#' # (up to alphabetic ordering and data frame-to-list conversion)
-#' print(all.equal(sortlist(input, convert.data.frames = TRUE), output))
+#'   # Read HDF5 file into a new list
+#'   output = readhdf5(filename)
 #'
-#' # Write list to HDF5 file again, this time with inherent attributes, allowing
-#' # to keep track of the data frames
-#' filename = tempfile()
-#' writehdf5(input, filename, inherent.attributes = TRUE)
+#'   # Check if input and output lists are identical
+#'   # (up to alphabetic ordering and data frame-to-list conversion)
+#'   print(all.equal(sortlist(input, convert.data.frames = TRUE), output))
 #'
-#' # Read HDF5 file into a new list
-#' output = readhdf5(filename)
+#'   # Write list to HDF5 file again, this time with inherent attributes
+#'   filename = tempfile()
+#'   writehdf5(input, filename, inherent.attributes = TRUE)
 #'
-#' # Check if input and output lists are identical
-#' # (up to alphabetic ordering only)
-#' print(all.equal(sortlist(input), output))
+#'   # Read HDF5 file into a new list
+#'   output = readhdf5(filename)
+#'
+#'   # Check if input and output lists are identical
+#'   # (up to alphabetic ordering only)
+#'   print(all.equal(sortlist(input), output))
+#' }
 #'
 #' @export
 
 writehdf5 = function(obj, file, inherent.attributes = FALSE, level = 6, overwrite = TRUE) {
+
+  if (!requireNamespace("hdf5r", quietly = TRUE)) {
+    stop("Package 'hdf5r' is required for this function.")
+  }
 
   write_obj = function(group, obj, name = NULL) {
 

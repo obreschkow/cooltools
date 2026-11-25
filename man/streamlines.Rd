@@ -11,14 +11,17 @@ streamlines(
   points = 20,
   nsteps = 100,
   arrows = FALSE,
+  arrow.size = 0.004,
   add = FALSE,
+  nplot = 200,
   ...
 )
 }
 \arguments{
-\item{f}{A function of the form `f(x, y)` returning an \eqn{n \times 2}
-matrix of vector components, where the first column is the x-component and
-the second column is the y-component.}
+\item{f}{A vectorized function of the form `f(x,y)` returning an
+\eqn{n \times 2} matrix of vector components. Each row must depend only
+on the corresponding input coordinates. Non-finite or zero vectors
+terminate integration in the corresponding direction.}
 
 \item{xlim}{Numeric vector of length 2 giving the x-limits of the plot.}
 
@@ -32,7 +35,8 @@ the second column is the y-component.}
   \item a numeric matrix with 2 columns, giving explicit starting coordinates.
 }}
 
-\item{nsteps}{Integer giving the number of integration steps in each direction.}
+\item{nsteps}{Integer giving the number of stored integration points in each
+direction, including the starting point.}
 
 \item{arrows}{Controls where arrows are drawn. This can be:
 \itemize{
@@ -45,11 +49,18 @@ the second column is the y-component.}
     coordinates, aligned with the local field direction at those points.
 }}
 
+\item{arrow.size}{Length of the arrow shaft as a fraction of
+the plot diagonal, independent of the integration step size.}
+
 \item{add}{Logical; if `FALSE` a new plot is created, otherwise streamlines are
 added to the existing plot.}
 
+\item{nplot}{Maximum number of plotted vertices per integration direction
+(including the starting and final valid points). Use `Inf` to plot all
+integration points. Does not affect integration or returned coordinates.}
+
 \item{...}{Further graphical parameters passed to [graphics::lines()] and
-[graphics::arrows()].}
+[graphics::arrows()]. Graphical parameters are shared by all streamlines.}
 }
 \value{
 Invisibly returns a list with components:
@@ -58,6 +69,8 @@ Invisibly returns a list with components:
   \item `backward`: array of backward-integrated coordinates;
   \item `start`: matrix of starting coordinates.
 }
+The arrays have dimensions `c(number of starting points, 2, nsteps)`.
+Unused entries after termination are `NA`.
 }
 \description{
 Draws streamlines of a planar vector field \eqn{f(x,y)} by integrating
@@ -66,19 +79,21 @@ provided as a single integer, a length-2 integer vector, or an \eqn{n \times 2}
 matrix of coordinates.
 }
 \details{
-The integration uses a fixed step length based on the plot diagonal,
+The integration uses a fixed Euler step length based on the plot diagonal,
 \deqn{d = \sqrt{dx^2 + dy^2} / nsteps,}
 where `dx = diff(range(xlim))` and `dy = diff(range(ylim))`.
-At each step, only the direction of the vector field is used, via
-[unitvector()], so the result shows streamlines of the field rather than
-trajectories with speed information.
+Only the direction of the vector field is used, via [unitvector()], so the
+result shows streamlines rather than trajectories with speed information.
+Forward and backward integration are vectorized together, and terminated
+paths are excluded from subsequent field evaluations.
+
+Plotting vertices are uniformly subsampled along each valid path when
+necessary, preserving its starting and final valid points. All streamlines
+are drawn in a single graphics call, separated by missing coordinates.
 
 If `add = FALSE`, a new plot is initialized using [plot()].
-
-Arrows are drawn along the local field direction. If `arrows = TRUE`, each
-arrow is centered on the streamline starting point. If `arrows` is a matrix
-of coordinates, the arrows are placed at those coordinates, regardless of
-whether they lie exactly on a streamline.
+Arrows are centered on the starting points or on explicitly specified
+coordinates and aligned with the local field direction.
 }
 \examples{
 f = function(x,y) {
