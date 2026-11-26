@@ -37,6 +37,15 @@
 #' @param nplot Maximum number of plotted vertices per integration direction
 #'   (including the starting and final valid points). Use `Inf` to plot all
 #'   integration points. Does not affect integration or returned coordinates.
+#' @param width.power Exponent relating line width to local field magnitude.
+#'   Zero (default) gives constant width; negative values emphasize slow flow.
+#' @param width.range Two positive limits for the width multiplier relative to
+#'   the supplied `lwd` (or `par("lwd")`).
+#' @param dt Optional positive time interval between markers. Time is measured
+#'   in coordinate units divided by the units of `f`. NULL disables markers.
+#' @param marker.cex Size of equal-time dots, relative to the default point size.
+#' @param max.markers Maximum number of time markers per direction per path.
+#'   If exceeded, markers are truncated and a warning is issued.
 #' @param ... Further graphical parameters passed to [graphics::lines()] and
 #'   [graphics::arrows()]. Graphical parameters are shared by all streamlines.
 #'
@@ -44,14 +53,17 @@
 #' The integration uses a fixed Euler step length based on the plot diagonal,
 #' \deqn{d = \sqrt{dx^2 + dy^2} / nsteps,}
 #' where `dx = diff(range(xlim))` and `dy = diff(range(ylim))`.
-#' Only the direction of the vector field is used, via [unitvector()], so the
-#' result shows streamlines rather than trajectories with speed information.
+#' Spatial integration uses only the direction of the vector field. Optional
+#' widths encode speed relative to the median plotted segment speed. Optional
+#' markers integrate time using dt = ds/speed at each Euler step, independently
+#' of plotting subsampling. These represent travel times in a frozen field.
 #' Forward and backward integration are vectorized together, and terminated
 #' paths are excluded from subsequent field evaluations.
 #'
 #' Plotting vertices are uniformly subsampled along each valid path when
 #' necessary, preserving its starting and final valid points. All streamlines
-#' are drawn in a single graphics call, separated by missing coordinates.
+#' are drawn in a single graphics call, separated by missing coordinates,
+#' unless variable widths are requested, in which case segments are drawn.
 #'
 #' If `add = FALSE`, a new plot is initialized using [plot()].
 #' Arrows are centered on the starting points or on explicitly specified
@@ -65,7 +77,9 @@
 #'   \item `start`: matrix of starting coordinates.
 #' }
 #' The arrays have dimensions `c(number of starting points, 2, nsteps)`.
-#' Unused entries after termination are `NA`.
+#' Unused entries after termination are `NA`. When `dt` is supplied,
+#' `time.forward` and `time.backward` contain signed elapsed times (matrices
+#' with one row per starting point).
 #'
 #' @examples
 #' f = function(x,y) {
@@ -81,7 +95,8 @@
 #' @export
 streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
                        arrows = FALSE, arrow.size=0.004, add = FALSE,
-                       nplot = 200, ...) {
+                       nplot = 200, width.power = 0, width.range = c(0.25,4),
+                       dt = NULL, marker.cex = 0.4, max.markers = 1000, ...) {
 
   if (!is.function(f)) stop('"f" must be a function.')
   if (!is.numeric(xlim) || length(xlim)!=2 || any(!is.finite(xlim)) || diff(xlim)<=0)
@@ -97,6 +112,20 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
   if (!is.numeric(arrow.size) || length(arrow.size)!=1 ||
       !is.finite(arrow.size) || arrow.size<0)
     stop('"arrow.size" must be a finite non-negative scalar.')
+  if (!is.numeric(width.power) || length(width.power)!=1 || !is.finite(width.power))
+    stop('"width.power" must be a finite scalar.')
+  if (!is.numeric(width.range) || length(width.range)!=2 ||
+      any(!is.finite(width.range)) || any(width.range<=0) || diff(width.range)<0)
+    stop('"width.range" must contain two ordered positive finite values.')
+  if (!is.null(dt) && (!is.numeric(dt) || length(dt)!=1 || !is.finite(dt) || dt<=0))
+    stop('"dt" must be NULL or a positive finite scalar.')
+  if (!is.numeric(marker.cex) || length(marker.cex)!=1 || !is.finite(marker.cex) || marker.cex<=0)
+    stop('"marker.cex" must be positive and finite.')
+  if (!is.numeric(max.markers) || length(max.markers)!=1 || !is.finite(max.markers) ||
+      max.markers<1 || max.markers!=floor(max.markers))
+    stop('"max.markers" must be a positive integer.')
+  timing = !is.null(dt)
+  measure = timing || width.power!=0
   nsteps = as.integer(nsteps)
 
   # Determine starting points
@@ -127,13 +156,21 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
   d = diagonal/nsteps
 
   # Normalize valid field vectors only
-  velocity = function(x,y) {
+  velocity = function(x,y, magnitude=FALSE) {
     v = f(x,y)
     if (!is.matrix(v) || !is.numeric(v) || nrow(v)!=length(x) || ncol(v)!=2)
       stop('"f" must return a numeric matrix with one row per point and two columns.')
     good = which(is.finite(v[,1]) & is.finite(v[,2]) & (v[,1]!=0 | v[,2]!=0))
     out = matrix(NA_real_,length(x),2)
     if (length(good)) out[good,] = unitvector(v[good,,drop=FALSE])
+    if (magnitude) {
+      speed = rep(NA_real_,length(x))
+      if (length(good)) {
+        scale = pmax(abs(v[good,1]),abs(v[good,2]))
+        speed[good] = scale*sqrt((v[good,1]/scale)^2+(v[good,2]/scale)^2)
+      }
+      return(list(v=out,speed=speed))
+    }
     out
   }
 
@@ -146,10 +183,21 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
   active = which(is.finite(pos[,1]) & is.finite(pos[,2]))
   last = rep(1L,2*np)
 
+  if (measure) {
+    tp = tq = matrix(NA_real_,np,nsteps)
+    tp[,1] = tq[,1] = 0
+    elapsed = numeric(2*np)
+  }
+
   for (i in seq_len(nsteps-1L)) {
     if (!length(active)) break
-    v = velocity(pos[active,1],pos[active,2])
+    v = velocity(pos[active,1],pos[active,2],measure)
+    if (measure) {
+      speed = v$speed
+      v = v$v
+    }
     good = which(is.finite(v[,1]) & is.finite(v[,2]))
+    if (measure) speed = speed[good]
     active = active[good]
     if (!length(active)) break
 
@@ -166,6 +214,11 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
     backward = active[active>np]
     if (length(forward)) p[forward,,i+1L] = pos[forward,,drop=FALSE]
     if (length(backward)) q[backward-np,,i+1L] = pos[backward,,drop=FALSE]
+    if (measure) {
+      elapsed[active] = elapsed[active]+d/speed[good]
+      if (length(forward)) tp[forward,i+1L] = elapsed[forward]
+      if (length(backward)) tq[backward-np,i+1L] = elapsed[backward]
+    }
   }
 
   # Draw plot if requested
@@ -176,15 +229,61 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
     if (n<=nplot) seq_len(n) else unique(round(seq(1,n,length.out=nplot)))
   }
   coords = vector('list',np)
+  times = vector('list',np)
   for (i in seq_len(np)) {
     kp = plotindex(last[i])
     kq = rev(plotindex(last[np+i]))
     coords[[i]] = cbind(c(q[i,1,kq],p[i,1,kp[-1L]],NA_real_),
                         c(q[i,2,kq],p[i,2,kp[-1L]],NA_real_))
+    if (measure) times[[i]] = c(-tq[i,kq],tp[i,kp[-1L]],NA_real_)
   }
   if (np) {
     xy = do.call(rbind,coords)
-    graphics::lines(xy[,1],xy[,2],...)
+    if (width.power==0) {
+      graphics::lines(xy[,1],xy[,2],...)
+    } else {
+      tt = unlist(times,use.names=FALSE)
+      ds = sqrt(rowSums((xy[-1,,drop=FALSE]-xy[-nrow(xy),,drop=FALSE])^2))
+      speed = ds/diff(tt)
+      k = which(is.finite(speed) & speed>0)
+      if (length(k)) {
+        ref = stats::median(speed[k])
+        mult = pmin(width.range[2],pmax(width.range[1],(speed[k]/ref)^width.power))
+        args = list(...)
+        lwd = if (is.null(args$lwd)) par('lwd') else args$lwd
+        args$lwd = lwd*mult
+        do.call(graphics::segments,c(list(x0=xy[k,1],y0=xy[k,2],
+                                         x1=xy[k+1L,1],y1=xy[k+1L,2]),args))
+      }
+    }
+  }
+
+  # Equal-time markers interpolated on the full-resolution paths
+  if (timing && np) {
+    dots = vector('list',2*np)
+    truncated = FALSE
+    for (j in seq_len(2*np)) {
+      i = if (j<=np) j else j-np
+      k = seq_len(last[j])
+      t = if (j<=np) tp[i,k] else tq[i,k]
+      a = if (j<=np) p else q
+      valid = which(is.finite(t) & !duplicated(t))
+      if (length(valid)<2) next
+      t = t[valid]
+      k = k[valid]
+      n = floor(t[length(t)]/dt)
+      if (n>max.markers) truncated = TRUE
+      n = min(n,max.markers)
+      if (n<1) next
+      at = seq_len(n)*dt
+      dots[[j]] = cbind(stats::approx(t,a[i,1,k],xout=at)$y,
+                        stats::approx(t,a[i,2,k],xout=at)$y)
+    }
+    xy = rbind(cbind(px,py),do.call(rbind,dots))
+    args = list(...)
+    graphics::points(xy[,1],xy[,2],pch=16,cex=marker.cex,
+                     col=if (is.null(args$col)) par('col') else args$col)
+    if (truncated) warning('Equal-time markers truncated at max.markers per direction.')
   }
 
   # Draw all arrows in one graphics call
@@ -221,5 +320,10 @@ streamlines = function(f, xlim, ylim, points = 20, nsteps = 100,
     }
   }
 
-  invisible(list(forward=p,backward=q,start=cbind(x=px,y=py)))
+  out = list(forward=p,backward=q,start=cbind(x=px,y=py))
+  if (timing) {
+    out$time.forward = tp
+    out$time.backward = -tq
+  }
+  invisible(out)
 }

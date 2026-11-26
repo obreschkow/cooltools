@@ -14,6 +14,11 @@ streamlines(
   arrow.size = 0.004,
   add = FALSE,
   nplot = 200,
+  width.power = 0,
+  width.range = c(0.25, 4),
+  dt = NULL,
+  marker.cex = 0.4,
+  max.markers = 1000,
   ...
 )
 }
@@ -59,6 +64,20 @@ added to the existing plot.}
 (including the starting and final valid points). Use `Inf` to plot all
 integration points. Does not affect integration or returned coordinates.}
 
+\item{width.power}{Exponent relating line width to local field magnitude.
+Zero (default) gives constant width; negative values emphasize slow flow.}
+
+\item{width.range}{Two positive limits for the width multiplier relative to
+the supplied `lwd` (or `par("lwd")`).}
+
+\item{dt}{Optional positive time interval between markers. Time is measured
+in coordinate units divided by the units of `f`. NULL disables markers.}
+
+\item{marker.cex}{Size of equal-time dots, relative to the default point size.}
+
+\item{max.markers}{Maximum number of time markers per direction per path.
+If exceeded, markers are truncated and a warning is issued.}
+
 \item{...}{Further graphical parameters passed to [graphics::lines()] and
 [graphics::arrows()]. Graphical parameters are shared by all streamlines.}
 }
@@ -70,7 +89,9 @@ Invisibly returns a list with components:
   \item `start`: matrix of starting coordinates.
 }
 The arrays have dimensions `c(number of starting points, 2, nsteps)`.
-Unused entries after termination are `NA`.
+Unused entries after termination are `NA`. When `dt` is supplied,
+`time.forward` and `time.backward` contain signed elapsed times (matrices
+with one row per starting point).
 }
 \description{
 Draws streamlines of a planar vector field \eqn{f(x,y)} by integrating
@@ -82,14 +103,17 @@ matrix of coordinates.
 The integration uses a fixed Euler step length based on the plot diagonal,
 \deqn{d = \sqrt{dx^2 + dy^2} / nsteps,}
 where `dx = diff(range(xlim))` and `dy = diff(range(ylim))`.
-Only the direction of the vector field is used, via [unitvector()], so the
-result shows streamlines rather than trajectories with speed information.
+Spatial integration uses only the direction of the vector field. Optional
+widths encode speed relative to the median plotted segment speed. Optional
+markers integrate time using dt = ds/speed at each Euler step, independently
+of plotting subsampling. These represent travel times in a frozen field.
 Forward and backward integration are vectorized together, and terminated
 paths are excluded from subsequent field evaluations.
 
 Plotting vertices are uniformly subsampled along each valid path when
 necessary, preserving its starting and final valid points. All streamlines
-are drawn in a single graphics call, separated by missing coordinates.
+are drawn in a single graphics call, separated by missing coordinates,
+unless variable widths are requested, in which case segments are drawn.
 
 If `add = FALSE`, a new plot is initialized using [plot()].
 Arrows are centered on the starting points or on explicitly specified

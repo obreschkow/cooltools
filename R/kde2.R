@@ -157,7 +157,7 @@ kde2 = function(x, w=NULL, nx=300, xlim=NULL, ylim=NULL,
 
       # make smoothing kernels
       n.pix = nx*ny
-      sd.max = max(2*d,min(min(c(nx,ny))/10,sigma.max))
+      sd.max = max(2*d,sd.max)
       sd = seq(0,sd.max,by=d) # list of standard deviations
       n.kernels = length(sd)
       kernel = {}

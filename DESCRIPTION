@@ -1,7 +1,7 @@
 Package: cooltools
 Type: Package
 Title: Practical Tools for Scientific Computation and Visualisation
-Version: 2.34
+Version: 2.35
 Authors@R: 
     c(person(given = "Danail",
              family = "Obreschkow",

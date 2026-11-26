@@ -91,7 +91,7 @@ rng = function(f,n,min,max,fmax=NULL,quasi=FALSE,start=1,warn=TRUE) {
     ntrials = ntrials+dn
     feval = fvect(xtrial)
     if (quasi) {
-      s = feval>halt[,d+1]
+      s = feval>halt[,d+1]*fmax
     } else {
       s = feval>stats::runif(dn,max=fmax)
     }
